@@ -1,0 +1,90 @@
+#format = """
+#[░▒▓](#a3aed2)\
+#[  ](bg:#a3aed2 fg:#000000)\
+#[](bg:#769ff0 fg:#a3aed2)\
+#$directory\
+#[](fg:#769ff0 bg:#76D7C4)\
+#$git_branch\
+#$git_status\
+#[](fg:#76D7C4 bg:#82E0AA)\
+#$nodejs\
+#$rust\
+#$golang\
+#$php\
+#[](fg:#82E0AA bg:#D5D8DC)\
+#$time\
+#[ ](fg:#D5D8DC)\
+#\n$character"""
+
+format = """
+[░▒▓](#a3aed2)\
+[  ](bg:#a3aed2 fg:#000000)\
+[](bg:#769ff0 fg:#a3aed2)\
+$directory\
+[](fg:#769ff0 bg:#76D7C4)\
+$git_branch\
+$git_status\
+[](fg:#76D7C4 bg:#82E0AA)\
+$nodejs\
+$rust\
+$golang\
+$php\
+[](fg:#82E0AA bg:#D5D8DC)\
+$time\
+[ ](fg:#D5D8DC)\
+\n$character"""
+
+[directory]
+# 文本改为黑色 (fg:#000000)
+style = "fg:#000000 bg:#769ff0"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncation_symbol = "…/"
+
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = " "
+"Music" = " "
+"Pictures" = " "
+
+[git_branch]
+symbol = ""
+# 背景提亮 (bg:#76D7C4)，文本改为黑色
+style = "bg:#76D7C4"
+format = '[[ $symbol $branch ](fg:#000000 bg:#76D7C4)]($style)'
+
+[git_status]
+# 背景提亮 (bg:#76D7C4)，文本改为黑色
+style = "bg:#76D7C4"
+format = '[[($all_status$ahead_behind )](fg:#000000 bg:#76D7C4)]($style)'
+
+[nodejs]
+symbol = ""
+# 背景提亮 (bg:#82E0AA)，文本改为黑色
+style = "bg:#82E0AA"
+format = '[[ $symbol ($version) ](fg:#000000 bg:#82E0AA)]($style)'
+
+[rust]
+symbol = ""
+# 背景提亮 (bg:#82E0AA)，文本改为黑色
+style = "bg:#82E0AA"
+format = '[[ $symbol ($version) ](fg:#000000 bg:#82E0AA)]($style)'
+
+[golang]
+symbol = ""
+# 背景提亮 (bg:#82E0AA)，文本改为黑色
+style = "bg:#82E0AA"
+format = '[[ $symbol ($version) ](fg:#000000 bg:#82E0AA)]($style)'
+
+[php]
+symbol = ""
+# 背景提亮 (bg:#82E0AA)，文本改为黑色
+style = "bg:#82E0AA"
+format = '[[ $symbol ($version) ](fg:#000000 bg:#82E0AA)]($style)'
+
+[time]
+disabled = false
+time_format = "%R"
+# 背景提亮 (bg:#D5D8DC)，文本改为黑色
+style = "bg:#D5D8DC"
+format = '[[  $time ](fg:#000000 bg:#D5D8DC)]($style)'

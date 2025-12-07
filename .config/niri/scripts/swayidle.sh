@@ -1,50 +1,49 @@
 #!/usr/bin/env bash
 
-# 定义 swayidle 的启动命令
-# 注意：这里去掉了 timeout 前面的判断逻辑，恢复为最原始、最纯净的命令
-# 因为判断逻辑现在由外层的 while 循环接管了
-START_SWAYIDLE() {
-    swayidle -w \
-        timeout 300  'swaylock -f' \
-        timeout 600  'niri msg action power-off-monitors' \
-        resume       'niri msg action power-on-monitors' \
-        timeout 1200 'systemctl suspend' &
-}
+# 定义 PID 变量
+PID=0
 
-# 停止 swayidle 的函数
-STOP_SWAYIDLE() {
-    if pgrep -x "swayidle" > /dev/null; then
-        killall swayidle
+# 启动函数
+start_swayidle() {
+    # 只有当 PID 为 0 或进程不存在时才启动
+    if [[ $PID -eq 0 ]] || ! kill -0 "$PID" 2>/dev/null; then
+        swayidle -w \
+            timeout 300  'swaylock -f' \
+            timeout 600  'niri msg action power-off-monitors' \
+            resume       'niri msg action power-on-monitors' \
+            timeout 1200 'systemctl suspend' &
+        PID=$! # 记录 swayidle 的进程 ID
     fi
 }
 
-# 脚本退出时清理现场
-trap STOP_SWAYIDLE SIGINT SIGTERM
+# 停止函数 (关机触发)
+cleanup() {
+    # 简单粗暴：如果有 PID，直接杀掉，不等待，不废话
+    if [[ $PID -ne 0 ]]; then
+        kill -9 "$PID" 2>/dev/null
+    fi
+    exit 0
+}
+
+# 捕捉信号：一旦收到关机信号，立即跳转到 cleanup
+trap cleanup SIGTERM SIGINT
 
 echo "Swayidle Manager Started..."
 
 while true; do
-    # 1. 检查是否存在 Noctalia 的抑制锁
-    # 搜索你提供的日志中的特征字符串: "Manually activated by user"
-    if systemd-inhibit --list --no-pager | grep -q "Manually activated by user"; then
-        # === 发现抑制锁 (Noctalia 开启中) ===
-        
-        # 如果 swayidle 正在运行，就杀掉它
-        if pgrep -x "swayidle" > /dev/null; then
-            echo "Inhibitor detected. Killing swayidle..."
-            STOP_SWAYIDLE
+    # 使用 timeout 防止 systemd-inhibit 在关机时卡死 (关键修复)
+    if timeout 2s systemd-inhibit --list --no-pager | grep -q "Manually activated by user"; then
+        # === 发现抑制锁 ===
+        if [[ $PID -ne 0 ]] && kill -0 "$PID" 2>/dev/null; then
+            kill "$PID" 2>/dev/null
+            PID=0
         fi
-        
     else
-        # === 没有抑制锁 (Noctalia 关闭) ===
-        
-        # 如果 swayidle 没有运行，就启动它
-        if ! pgrep -x "swayidle" > /dev/null; then
-            echo "No inhibitor. Starting swayidle..."
-            START_SWAYIDLE
-        fi
+        # === 正常状态 ===
+        start_swayidle
     fi
 
-    # 每 5 秒检查一次
-    sleep 5
+    # 【关键技巧】将 sleep 放入后台并 wait，这样信号能瞬间打断等待
+    sleep 5 &
+    wait $!
 done
