@@ -308,8 +308,6 @@ layout {
 spawn-at-startup "wl-paste" "--type" "text" "--watch" "cliphist" "store"
 //监听图片复制
 spawn-at-startup "wl-paste" "--type" "image" "--watch" "cliphist" "store"
-// 启动闲置守护进程 (自动熄屏/锁屏)
-spawn-at-startup "hypridle"
 // 强制同步环境变量到 DBus/Systemd 会话
 // 这能修复 Nautilus、Loupe 等通过 DBus 启动的应用没有中文、不吃主题的问题
 spawn-at-startup "dbus-update-activation-environment" "--systemd" "LANG" "LC_MESSAGES" "GSK_RENDERER" "XMODIFIERS" "GTK_IM_MODULE" "QT_IM_MODULE" "QT_QPA_PLATFORMTHEME"
@@ -317,7 +315,8 @@ spawn-at-startup "dbus-update-activation-environment" "--systemd" "LANG" "LC_MES
 spawn-at-startup "qs" "-c" "noctalia-shell"
 //解决蓝牙/USB耳机连接时，输出设备不自动切换的问题
 spawn-at-startup "pactl" "load-module" "module-switch-on-connect"
-
+//自动熄屏锁屏休眠
+spawn-at-startup "~/.config/niri/scripts/swayidle.sh"
 // This line starts waybar, a commonly used bar for Wayland compositors.
 //spawn-at-startup "waybar" "-c" "/home/Caster/.config/waybar/config-niri.jsonc"
 spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
@@ -361,6 +360,32 @@ animations {
 // Window rules let you adjust behavior for individual windows.
 // Find more information on the wiki:
 // https://yalter.github.io/niri/Configuration:-Window-Rules
+
+window-rule {
+    // 匹配游戏标题
+    match title=r#"Chill With You"#
+    match app-id=r#"Chill With You"#
+
+    // 1. 【关键】设置默认打开宽度为 1920 像素
+    // 您的屏幕逻辑宽度大约是 1969 (2560 / 1.3)，
+    // 设置为 1920 意味着它打开时几乎会占满整个横向屏幕，
+    // 但依然保持在平铺列中。
+    default-column-width { fixed 1920; }
+
+    // 2. 【核心修复】禁用几何裁剪
+    // 解决鼠标输入错位的根本原因。
+    clip-to-geometry false
+
+    // 3. 【辅助】禁用圆角
+    geometry-corner-radius 0
+}
+
+//steam
+window-rule {
+    match app-id="steam" title="^notificationtoasts_.*_desktop$"
+    open-floating true
+    default-floating-position x=10 y=10 relative-to="bottom-right"
+}
 
 //Noctalia
 window-rule {
@@ -410,8 +435,8 @@ window-rule {
 // Example: enable rounded corners for all windows.
 // (This example rule is commented out with a "/-" in front.)
 window-rule {
-    geometry-corner-radius 12 //设置圆角像素
-    clip-to-geometry true //强制裁剪内容
+    //geometry-corner-radius 12 //设置圆角像素
+    //clip-to-geometry true //强制裁剪内容
 }
 
 binds {
@@ -424,10 +449,13 @@ binds {
     Mod+Shift+S hotkey-overlay-title="区域截图并编辑" { spawn "bash" "-c" "~/.config/niri/scripts/screenshot_edit.sh"; }
     Menu hotkey-overlay-title="显示快捷键说明 (映射CapsLock键)" { show-hotkey-overlay; }
     Mod+A hotkey-overlay-title="打开应用程序菜单fuzzel" { spawn "fuzzel"; }
-    Mod+E hotkey-overlay-title="打开文件管理器nautilus" { spawn "nautilus" "--new-window"; }
+    Mod+E hotkey-overlay-title="打开文件管理器nautilus" { spawn "env" "GSK_RENDERER=gl" "nautilus" "--new-window"; }
     Ctrl+T hotkey-overlay-title="打开kitty终端模拟器" { spawn "kitty"; }
     Shift+WheelScrollDown hotkey-overlay-title="在当前工作区横向切换到下一个聚焦窗口"     { focus-column-right; }
     Shift+WheelScrollUp hotkey-overlay-title="在当前工作区横向切换到上一个聚焦窗口"       { focus-column-left; }
+    Mod+X hotkey-overlay-title="打开剪切板历史" {
+        spawn-sh "cliphist list | fuzzel -d | cliphist decode | wl-copy"
+    }
 
     // Keys consist of modifiers separated by + signs, followed by an XKB key name
     // in the end. To find an XKB name for a particular key, you may use a program
@@ -701,3 +729,4 @@ layer-rule {
   place-within-backdrop true
 }
 
+include "./noctalia.kdl"
