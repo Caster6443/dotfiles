@@ -3,17 +3,15 @@
 // Check the wiki for a full description of the configuration:
 // https://yalter.github.io/niri/Configuration:-Introduction
 environment {
+    ELECTRON_OZONE_PLATFORM_HINT "auto"
     //LANG "zh_CN.UTF-8"
     LC_MESSAGES "zh_CN.UTF-8"
-
     //修复 GTK4 应用 (Nautilus, 设置等) 在 N 卡下的卡顿问题
     GSK_RENDERER "gl"
-
     //确保 XWayland 应用能使用 Fcitx5 输入中文
     XMODIFIERS "@im=fcitx"
     //GTK_IM_MODULE "fcitx"
     QT_IM_MODULE "fcitx"
-
     //让 Qt 应用 (VLC, OBS等) 使用 qt6ct/qt5ct 进行主题管理
     QT_QPA_PLATFORMTHEME "qt6ct"
 }
@@ -133,7 +131,7 @@ output "eDP-1" {
 output "HDMI-A-1" {
 		mode "1920x1080@60"
 		scale 1
-		position x=0 y=0 //
+		position x=0 y=0 
 }
 // Settings that influence how windows are positioned and sized.
 // Find more information on the wiki:
@@ -201,6 +199,7 @@ layout {
 
 	// 启用渐变色 (从粉色到蓝色，45度角)
         // 这里的颜色代码取自 Catppuccin Mocha 配色表
+	//noctalia配置文件设置的颜色覆盖了边框配置，想恢复渐变，需要注释noctalia的设置
         active-gradient from="#f5c2e7" to="#89b4fa" angle=45
 
         // Color of the ring on inactive monitors.
@@ -249,7 +248,7 @@ layout {
     // You can enable drop shadows for windows.
     shadow {
         // Uncomment the next line to enable shadows.
-        // on
+        on
 
         // By default, the shadow draws only around its window, and not behind it.
         // Uncomment this setting to make the shadow draw behind its window.
@@ -292,7 +291,7 @@ layout {
 	//设置屏幕四周与窗口的间隙
          left 5
          right 5
-         top -35
+         top -5
          bottom 2
     }
 }
@@ -315,8 +314,9 @@ spawn-at-startup "dbus-update-activation-environment" "--systemd" "LANG" "LC_MES
 spawn-at-startup "qs" "-c" "noctalia-shell"
 //解决蓝牙/USB耳机连接时，输出设备不自动切换的问题
 spawn-at-startup "pactl" "load-module" "module-switch-on-connect"
-//自动熄屏锁屏休眠
-spawn-at-startup "~/.config/niri/scripts/swayidle.sh"
+
+//休眠监听功能
+spawn-at-startup "hypridle"
 // This line starts waybar, a commonly used bar for Wayland compositors.
 //spawn-at-startup "waybar" "-c" "/home/Caster/.config/waybar/config-niri.jsonc"
 spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
@@ -360,25 +360,6 @@ animations {
 // Window rules let you adjust behavior for individual windows.
 // Find more information on the wiki:
 // https://yalter.github.io/niri/Configuration:-Window-Rules
-
-window-rule {
-    // 匹配游戏标题
-    match title=r#"Chill With You"#
-    match app-id=r#"Chill With You"#
-
-    // 1. 【关键】设置默认打开宽度为 1920 像素
-    // 您的屏幕逻辑宽度大约是 1969 (2560 / 1.3)，
-    // 设置为 1920 意味着它打开时几乎会占满整个横向屏幕，
-    // 但依然保持在平铺列中。
-    default-column-width { fixed 1920; }
-
-    // 2. 【核心修复】禁用几何裁剪
-    // 解决鼠标输入错位的根本原因。
-    clip-to-geometry false
-
-    // 3. 【辅助】禁用圆角
-    geometry-corner-radius 0
-}
 
 //steam
 window-rule {
@@ -442,13 +423,13 @@ window-rule {
 binds {
 
     //custom
+    Mod+L hotkey-overlay-title="锁屏" { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "lockScreen" "lock"; }
     Mod+Space hotkey-overlay-title="打开noctalia控制中心" { spawn "bash" "-c" "qs -c noctalia-shell ipc call controlCenter toggle"; }
-    Mod+F2 hotkey-overlay-title="重启waybar" { spawn "bash" "-c" "pkill waybar || true && waybar -c ~/.config/waybar/config-niri.jsonc"; }
     Mod+S hotkey-overlay-title="全屏截图并保存到剪切板" { spawn "bash" "-c" "~/.config/niri/scripts/screenshot_quick.sh"; }
     Mod+F10 hotkey-overlay-title="触控板开关" { spawn "bash" "-c" "~/.config/niri/scripts/Disable_Touchpad.sh"; }
     Mod+Shift+S hotkey-overlay-title="区域截图并编辑" { spawn "bash" "-c" "~/.config/niri/scripts/screenshot_edit.sh"; }
     Menu hotkey-overlay-title="显示快捷键说明 (映射CapsLock键)" { show-hotkey-overlay; }
-    Mod+A hotkey-overlay-title="打开应用程序菜单fuzzel" { spawn "fuzzel"; }
+    Mod+A hotkey-overlay-title="打开noctalia应用程序菜单" { spawn "bash" "-c" "qs -c noctalia-shell ipc call launcher toggle"; }
     Mod+E hotkey-overlay-title="打开文件管理器nautilus" { spawn "env" "GSK_RENDERER=gl" "nautilus" "--new-window"; }
     Ctrl+T hotkey-overlay-title="打开kitty终端模拟器" { spawn "kitty"; }
     Shift+WheelScrollDown hotkey-overlay-title="在当前工作区横向切换到下一个聚焦窗口"     { focus-column-right; }
@@ -472,7 +453,7 @@ binds {
     //Mod+Shift+Slash { show-hotkey-overlay; }
 
     // Suggested binds for running programs: terminal, app launcher, screen locker.
-    Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "swaylock"; }
+    //Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "swaylock"; }
 
     // Use spawn-sh to run a shell command. Do this if you need pipes, multiple commands, etc.
     // Note: the entire command goes as a single argument. It's passed verbatim to `sh -c`.
@@ -504,10 +485,10 @@ binds {
     Mod+Down  { focus-window-down; }
     Mod+Up    { focus-window-up; }
     Mod+Right { focus-column-right; }
-    Mod+H     { focus-column-left; }
-    Mod+J     { focus-window-down; }
-    Mod+K     { focus-window-up; }
-    Mod+L     { focus-column-right; }
+    //Mod+H     { focus-column-left; }
+    //Mod+J     { focus-window-down; }
+    //Mod+K     { focus-window-up; }
+    //Mod+L     { focus-column-right; }
 
     Mod+Ctrl+Left  { move-column-left; }
     Mod+Ctrl+Down  { move-window-down; }
