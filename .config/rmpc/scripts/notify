@@ -1,0 +1,40 @@
+#!/usr/bin/env sh
+
+# 基础路径配置
+TMP_DIR="/tmp/rmpc"
+mkdir -p "$TMP_DIR"
+
+# 封面提取临时存放位置
+ALBUM_ART_PATH="$TMP_DIR/notification_cover.jpg"
+
+# 默认图片路径
+# 在 .config/rmpc/themes/ 下放一张名为 default.jpg 的图片作为默认音乐封面
+DEFAULT_ALBUM_ART_PATH="$HOME/Pictures/anime/others/95601E8B745C9D343D64DD3265966AFC.jpg"
+
+# 2. 提取封面逻辑 
+# 如果提取失败（返回非0），则把路径变量指向默认图片
+if ! rmpc albumart --output "$ALBUM_ART_PATH" > /dev/null 2>&1; then
+    ALBUM_ART_PATH="${DEFAULT_ALBUM_ART_PATH}"
+fi
+
+# (可选) 压缩图片大小，如果觉得通知图片太大可以解开下面注释
+# magick convert "$ALBUM_ART_PATH" -resize 320x240^ "$ALBUM_ART_PATH"
+
+# 发送通知 
+# 添加了 -h string:x-canonical-private-synchronous... 参数
+# 这样切歌时，新通知会直接替换旧通知，不会刷屏
+notify-send \
+    -i "${ALBUM_ART_PATH}" \
+    -a "RMPC" \
+    -h string:x-canonical-private-synchronous:rmpc_notification \
+    "Now Playing" \
+    "$ARTIST - $TITLE"
+
+# 4. 播放计数器 
+# 获取播放次数，如果没有就设为 1，有就 +1
+sticker=$(rmpc sticker get "$FILE" "playCount" | jq -r '.value // empty')
+if [ -z "$sticker" ]; then
+    rmpc sticker set "$FILE" "playCount" "1" >/dev/null 2>&1
+else
+    rmpc sticker set "$FILE" "playCount" "$((sticker + 1))" >/dev/null 2>&1
+fi
