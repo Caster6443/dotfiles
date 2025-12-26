@@ -42,7 +42,7 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}           # 补全列表�
 zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31' # kill 命令补全时高亮 PID
 zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 
-# 修正建议 (如果你不喜欢输错命令时 zsh 问你 "did you mean...", 将下面改为 false)
+# 修正建议 (如果不喜欢输错命令时 zsh 问你 "did you mean...", 将下面改为 false)
 zstyle ':completion:*:correct:*' original true
 zstyle ':completion:*:correct:*' insert-unambiguous true
 setopt correct                                                  # 开启命令纠错
@@ -50,10 +50,13 @@ setopt correct                                                  # 开启命令�
 # =============================================================================
 # 4. 实用别名 
 # =============================================================================
+# --- 自定义别名 ---
 alias ls='ls --color=auto'
 alias l='ls -CF --color=auto'
 alias la='ls -A --color=auto'
 alias ll='ls -lA --color=auto'
+alias rmpc="rmpc; mpc stop"
+alias rm='trash-put'
 
 eval "$(dircolors -b)"
 alias ...='cd ../..'
