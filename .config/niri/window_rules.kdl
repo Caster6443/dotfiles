@@ -1,0 +1,81 @@
+// 窗口规则允许你调整单个特定窗口的行为。
+// 在 Wiki 上查找更多信息：
+// https://yalter.github.io/niri/Configuration:-Window-Rules
+
+// 取消注释此行以请求客户端尽可能省略其客户端装饰 (CSD，即软件自带的标题栏/边框)。
+// 如果客户端明确要求必须使用 CSD，该请求将被尊重（不会强行去除）。
+// 此外，客户端将被通知它们正处于平铺状态，这通常会移除软件自带的圆角。
+// 此选项还将修复边框/聚焦环在某些半透明窗口 *后面* 绘制（导致看不清）的问题。
+// 启用或禁用此选项后，你需要重启应用程序才能生效。
+prefer-no-csd //似乎和窗口自定义美化配置是否生效有关
+
+//steam
+window-rule {
+    match app-id="steam" title="^notificationtoasts_.*_desktop$"
+    open-floating true
+    default-floating-position x=10 y=10 relative-to="bottom-right"
+}
+
+//Noctalia
+window-rule {
+  // 设置圆角
+  geometry-corner-radius 20
+
+  // 将窗口内容裁剪至圆角边界内。
+  // 有些程序比较“顽固”，即使设置了圆角，它的画面内容可能还是直角的，会从圆角边框
+  // 里“溢出来”或者是露出一小白尖。这个设置就是强制把溢出的直角切掉，保证圆角完美。
+  clip-to-geometry true
+}
+
+debug {
+  // 允许来自 Noctalia 的通知操作和窗口激活（自动弹出/获取焦点)
+  // 具体地说，就是noctalia弹出通知时，点击通知会自动聚焦到对应程序
+  honor-xdg-activation-with-invalid-serial
+}
+
+// 通过设置空的 default-column-width (默认列宽)
+// 来绕过 WezTerm 初始配置时的 Bug。
+window-rule {
+    // 这个正则表达式被故意写得尽可能具体，
+    // 因为这是默认配置，我们要避免误判（影响到别的程序）。
+    // 如果是你自己用，其实直接写 app-id="wezterm" 也可以。
+    match app-id=r#"^org\.wezfurlong\.wezterm$"#
+    default-column-width {}
+}
+
+// 默认将 Firefox 的画中画 (Picture-in-Picture) 播放器以悬浮窗口打开。
+window-rule {
+    // 这个 app-id 正则表达式适用于两种情况：
+    // - 原生安装的 Firefox (app-id 是 "firefox")
+    // - Flatpak 版 Firefox (app-id 是 "org.mozilla.firefox")
+    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
+    open-floating true
+}
+
+// 示例：在屏幕截取中屏蔽两个密码管理器。
+// (此示例规则前面加了 "/-"，表示已被注释/禁用。)
+/-window-rule {
+    match app-id=r#"^org\.keepassxc\.KeePassXC$"#
+    match app-id=r#"^org\.gnome\.World\.Secrets$"#
+
+    // 从 "screen-capture" 中屏蔽 (包含截图 + 录屏)
+    // 效果：不仅录屏看不见，你自己截图也截不到它。
+    block-out-from "screen-capture"
+
+    // 如果你想让它们在第三方截图工具中可见，但仅在录屏/投屏时隐藏，请改用下面这行。
+    // block-out-from "screencast"
+}
+
+// 示例：为所有窗口启用圆角。
+// (此示例规则前面加了 "/-"... 额，你这行注释没删，但代码其实已经启用了)
+window-rule {
+    //geometry-corner-radius 12 //设置圆角像素
+    //clip-to-geometry true //强制裁剪内容 (把溢出的直角切掉)
+}
+
+// Noctalia
+// 将概览 (Overview) 的壁纸放置在背景层 (Backdrop) 上。
+layer-rule {
+  match namespace="^noctalia-overview*"
+  place-within-backdrop true
+}

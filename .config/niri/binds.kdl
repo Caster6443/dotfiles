@@ -1,0 +1,301 @@
+binds {
+    //custom
+    Mod+L hotkey-overlay-title="锁屏" { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "lockScreen" "lock"; }
+    Mod+Space hotkey-overlay-title="打开noctalia控制中心" { spawn "bash" "-c" "qs -c noctalia-shell ipc call controlCenter toggle"; }
+    Mod+S hotkey-overlay-title="全屏截图并保存到剪切板" { spawn "bash" "-c" "~/.config/niri/scripts/screenshot_quick.sh"; }
+    Mod+F10 hotkey-overlay-title="触控板开关" { spawn "bash" "-c" "~/.config/niri/scripts/Disable_Touchpad.sh"; }
+    Mod+Shift+S hotkey-overlay-title="区域截图并编辑" { spawn "bash" "-c" "~/.config/niri/scripts/screenshot_edit.sh"; }
+    Menu hotkey-overlay-title="显示快捷键说明 (映射CapsLock键)" { show-hotkey-overlay; }
+    Mod+A hotkey-overlay-title="打开noctalia应用程序菜单" { spawn "bash" "-c" "qs -c noctalia-shell ipc call launcher toggle"; }
+    Mod+E hotkey-overlay-title="打开文件管理器nautilus" { spawn "env" "GSK_RENDERER=gl" "nautilus" "--new-window"; }
+    Ctrl+T hotkey-overlay-title="打开kitty终端模拟器" { spawn "kitty"; }
+    Shift+WheelScrollDown hotkey-overlay-title="在当前工作区横向切换到下一个聚焦窗口"     { focus-column-right; }
+    Shift+WheelScrollUp hotkey-overlay-title="在当前工作区横向切换到上一个聚焦窗口"       { focus-column-left; }
+    Mod+X hotkey-overlay-title="打开剪切板历史" {
+        spawn-sh "cliphist list | fuzzel -d | cliphist decode | wl-copy"
+    }
+
+    // 按键配置由用 + 号分隔的修饰键（Modifiers），
+    // 后面跟一个 XKB 按键名称组成。
+    // 要查找特定按键的 XKB 名称，你可以使用像 `wev` 这样的程序。
+    //
+    // "Mod" 是一个特殊的修饰键。
+    // 当 Niri 在 TTY 上运行（作为主桌面）时，它等于 Super 键（Win键）；
+    // 当作为 winit 窗口（在其他桌面里测试 Niri）运行时，它等于 Alt 键。
+    //
+    // 这里能绑定的大多数操作，也可以通过命令行
+    // `niri msg action do-something` 以编程方式调用。
+
+    // Mod-Shift-/ ，通常也就是 Mod-?，
+    // 用来显示重要快捷键的列表（帮助蒙版）。
+    //Mod+Shift+Slash { show-hotkey-overlay; }
+
+    // 建议的运行程序的绑定：终端、应用启动器、屏幕锁。
+    //Super+Alt+L hotkey-overlay-title="锁定屏幕: swaylock" { spawn "swaylock"; }
+
+    // 使用 spawn-sh 来运行 Shell 命令。如果你需要管道符、多条命令组合等，请用这个。
+    // 注意：整个命令作为单个参数传入。它会被原样传递给 `sh -c` 执行。
+    // 例如，这是一个切换屏幕阅读器 (orca) 的标准绑定。
+    //Super+Alt+S allow-when-locked=true hotkey-overlay-title=null { spawn-sh "pkill orca || exec orca"; }
+
+    // 针对 PipeWire 和 WirePlumber 的音量键映射示例。
+    // allow-when-locked=true 属性让这些快捷键即使在锁屏时也能生效。
+    // 使用 spawn-sh 允许你向命令传递多个参数。
+    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-"; }
+    XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
+    XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
+
+    // 针对 brightnessctl 的亮度键映射示例。
+    // 你也可以使用带有多参数的普通 spawn (以此避免通过 "sh" shell 调用)，
+    // 但你需要手动将每个参数分别放入单独的 "" 引号中。
+    XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "+10%"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "10%-"; }
+
+    // 打开/关闭概览：这是工作区和窗口的缩小视图（鸟瞰图）。
+    // 你也可以将鼠标移到左上角的热角 (Hot Corner)，
+    // 或者在触控板上使用四指上滑来触发。
+    Mod+O repeat=false { toggle-overview; }
+
+    Mod+Q hotkey-overlay-title="关闭当前聚焦窗口" repeat=false { close-window; }
+
+    Mod+Left  { focus-column-left; }
+    Mod+Down  { focus-window-down; }
+    Mod+Up    { focus-window-up; }
+    Mod+Right { focus-column-right; }
+    //Mod+H     { focus-column-left; }
+    //Mod+J     { focus-window-down; }
+    //Mod+K     { focus-window-up; }
+    //Mod+L     { focus-column-right; }
+
+    Ctrl+Alt+W hotkey-overlay-title="向上移动当前窗口" { move-window-up; }
+    Ctrl+Alt+A hotkey-overlay-title="向左移动当前列"   { move-column-left; }
+    Ctrl+Alt+S hotkey-overlay-title="向下移动当前窗口" { move-window-down; }
+    Ctrl+Alt+D hotkey-overlay-title="向右移动当前列"   { move-column-right; }
+    //Mod+Ctrl+Left  { move-column-left; }
+    //Mod+Ctrl+Down  { move-window-down; }
+    //Mod+Ctrl+Up    { move-window-up; }
+    //Mod+Ctrl+Right { move-column-right; }
+    //Mod+Ctrl+H     { move-column-left; }
+    //Mod+Ctrl+J     { move-window-down; }
+    //Mod+Ctrl+K     { move-window-up; }
+    //Mod+Ctrl+L     { move-column-right; }
+
+    // 当到达当前列的第一个或最后一个窗口时，
+    // 可以跨越工作区移动的替代命令。
+    // Mod+J     { focus-window-or-workspace-down; }
+    // Mod+K     { focus-window-or-workspace-up; }
+    // Mod+Ctrl+J     { move-window-down-or-to-workspace-down; }
+    // Mod+Ctrl+K     { move-window-up-or-to-workspace-up; }
+
+    Mod+Home { focus-column-first; }
+    Mod+End  { focus-column-last; }
+    Mod+Ctrl+Home { move-column-to-first; }
+    Mod+Ctrl+End  { move-column-to-last; }
+
+    Mod+Shift+Left  { focus-monitor-left; }
+    Mod+Shift+Down  { focus-monitor-down; }
+    Mod+Shift+Up    { focus-monitor-up; }
+    Mod+Shift+Right { focus-monitor-right; }
+    Mod+Shift+H     { focus-monitor-left; }
+    Mod+Shift+J     { focus-monitor-down; }
+    Mod+Shift+K     { focus-monitor-up; }
+    Mod+Shift+L     { focus-monitor-right; }
+
+    Mod+Shift+Ctrl+Left  { move-column-to-monitor-left; }
+    Mod+Shift+Ctrl+Down  { move-column-to-monitor-down; }
+    Mod+Shift+Ctrl+Up    { move-column-to-monitor-up; }
+    Mod+Shift+Ctrl+Right { move-column-to-monitor-right; }
+    Mod+Shift+Ctrl+H     { move-column-to-monitor-left; }
+    Mod+Shift+Ctrl+J     { move-column-to-monitor-down; }
+    Mod+Shift+Ctrl+K     { move-column-to-monitor-up; }
+    Mod+Shift+Ctrl+L     { move-column-to-monitor-right; }
+
+    // 或者，也有仅移动单个窗口到其他显示器的命令：
+    // Mod+Shift+Ctrl+Left  { move-window-to-monitor-left; }
+    // ...
+
+    // 而且你也可以将整个工作区（包含里面的所有窗口）移动到另一个显示器：
+    // Mod+Shift+Ctrl+Left  { move-workspace-to-monitor-left; }
+    // ...
+
+    Mod+Page_Down      { focus-workspace-down; }
+    Mod+Page_Up        { focus-workspace-up; }
+    Mod+U              { focus-workspace-down; }
+    Mod+I              { focus-workspace-up; }
+    Mod+Ctrl+Page_Down { move-column-to-workspace-down; }
+    Mod+Ctrl+Page_Up   { move-column-to-workspace-up; }
+    Mod+Ctrl+U         { move-column-to-workspace-down; }
+    Mod+Ctrl+I         { move-column-to-workspace-up; }
+
+    // 或者，也有仅移动单个窗口（到其他工作区）的命令：
+    // Mod+Ctrl+Page_Down { move-window-to-workspace-down; }
+    // ...
+
+    Mod+Shift+Page_Down { move-workspace-down; }
+    Mod+Shift+Page_Up   { move-workspace-up; }
+    Mod+Shift+U         { move-workspace-down; }
+    Mod+Shift+I         { move-workspace-up; }
+
+    // 你可以使用以下语法来绑定鼠标滚轮的滚动刻度 (Scroll Ticks)。
+    // 这些绑定会根据“自然滚动 (natural-scroll)”的设置自动改变方向。
+    //
+    // 为了避免切换工作区时的滚动速度过快（一下滑过好几个），你可以使用
+    // cooldown-ms 属性。该绑定将受限于此数值的触发频率（冷却时间）。
+    // 你可以在任何绑定上设置冷却时间，但它对滚轮来说最有用。
+    Mod+WheelScrollDown      cooldown-ms=150 { focus-workspace-down; }
+    Mod+WheelScrollUp        cooldown-ms=150 { focus-workspace-up; }
+    Mod+Ctrl+WheelScrollDown hotkey-overlay-title="将当前聚焦窗口移动到下一个工作区"  cooldown-ms=150 { move-column-to-workspace-down; }
+    Mod+Ctrl+WheelScrollUp hotkey-overlay-title="将当前聚焦窗口移动到上一个工作区"  cooldown-ms=150 { move-column-to-workspace-up; }
+
+    Mod+WheelScrollRight      { focus-column-right; }
+    Mod+WheelScrollLeft       { focus-column-left; }
+    Mod+Ctrl+WheelScrollRight { move-column-right; }
+    Mod+Ctrl+WheelScrollLeft  { move-column-left; }
+
+    // 通常在应用程序中配合 Shift 进行上下滚动会产生水平滚动的效果；
+    // 这些绑定复刻了这一行为（即用 Shift+滚轮来左右切换窗口）。
+    //Mod+Shift+WheelScrollDown hotkey-overlay-title="在当前工作区横向切换到下一个聚焦窗口"      { focus-column-right; }
+    //Mod+Shift+WheelScrollUp hotkey-overlay-title="在当前工作区横向切换到上一个聚焦窗口"        { focus-column-left; }
+    Mod+Ctrl+Shift+WheelScrollDown { move-column-right; }
+    Mod+Ctrl+Shift+WheelScrollUp   { move-column-left; }
+
+    // 同样，你也可以绑定触控板滚动的“刻度” (ticks)。
+    // 触控板滚动是连续的信号，所以对于这些绑定，它被分割成了离散的间隔。
+    // 这些绑定也会受到触控板“自然滚动”设置的影响，
+    // 因此这些示例绑定是写成“反向”的，因为默认情况下我们为触控板启用了自然滚动。
+    // (解释：因为开启了自然滚动，手指向下滑=ScrollDown=内容向下/页面向上，所以这里配成了音量加)
+    // Mod+TouchpadScrollDown { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.02+"; }
+    // Mod+TouchpadScrollUp   { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.02-"; }
+
+    // 你可以通过索引（序号）来指定工作区。
+    // 但是，请记住 niri 是一个动态工作区系统，所以这些命令属于“尽力而为” (best effort)。
+    // 试图引用一个大于当前工作区总数的索引，将会指向最底部的那个（空的）工作区。
+    //
+    // 例如，如果有 2 个正在用的工作区 + 1 个空的，那么索引 3、4、5 等等
+    // 都会指向第 3 个工作区。
+    Mod+1 { focus-workspace 1; }
+    Mod+2 { focus-workspace 2; }
+    Mod+3 { focus-workspace 3; }
+    Mod+4 { focus-workspace 4; }
+    Mod+5 { focus-workspace 5; }
+    Mod+6 { focus-workspace 6; }
+    Mod+7 { focus-workspace 7; }
+    Mod+8 { focus-workspace 8; }
+    Mod+9 { focus-workspace 9; }
+    Mod+Ctrl+1 { move-column-to-workspace 1; }
+    Mod+Ctrl+2 { move-column-to-workspace 2; }
+    Mod+Ctrl+3 { move-column-to-workspace 3; }
+    Mod+Ctrl+4 { move-column-to-workspace 4; }
+    Mod+Ctrl+5 { move-column-to-workspace 5; }
+    Mod+Ctrl+6 { move-column-to-workspace 6; }
+    Mod+Ctrl+7 { move-column-to-workspace 7; }
+    Mod+Ctrl+8 { move-column-to-workspace 8; }
+    Mod+Ctrl+9 { move-column-to-workspace 9; }
+
+    // 或者，也有仅移动单个窗口（到指定编号工作区）的命令：
+    // Mod+Ctrl+1 { move-window-to-workspace 1; }
+
+    // 在当前工作区和“上一个”工作区之间切换焦点。
+    // (类似于 Alt+Tab，但这是针对工作区的“回头看”功能)
+    // Mod+Tab { focus-workspace-previous; }
+
+    // 以下绑定将聚焦的窗口移入或移出“列” (Column)。
+    // 如果该窗口是独立的（独占一列），命令会将它“吞噬” (Consume) 进侧面相邻的列中（变成垂直堆叠）。
+    // 如果该窗口已经在列中（与别人垂直堆叠），命令会将它“驱逐” (Expel) 出去（变成独立的一列）。
+    //Mod+BracketLeft  { consume-or-expel-window-left; }
+    //Mod+BracketRight { consume-or-expel-window-right; }
+    Ctrl+Alt+Q hotkey-overlay-title="吸入左侧窗口 / 移出至左侧" { consume-or-expel-window-left; }
+    Ctrl+Alt+E hotkey-overlay-title="吸入右侧窗口 / 移出至右侧" { consume-or-expel-window-right; }
+
+
+    // 从右侧“吞噬” (Consume) 一个窗口，将其放入当前聚焦列的底部。
+    Mod+Comma  { consume-window-into-column; }
+    // 将当前聚焦列底部的窗口向右“驱逐” (Expel) 出去（使其成为独立列）。
+    Mod+Period { expel-window-from-column; }
+
+    // 切换预设的列宽度（例如：小 -> 中 -> 大 -> 小...）。
+    Mod+R { switch-preset-column-width; }
+    // 也可以反向循环切换预设。
+    // Mod+R { switch-preset-column-width-back; }
+
+    // 切换预设的窗口高度（用于调整同一列内，上下堆叠窗口的高度比例）。
+    Mod+Shift+R { switch-preset-window-height; }
+    // 重置窗口高度（让同一列内的窗口平分高度）。
+    Mod+Ctrl+R { reset-window-height; }
+
+    // 最大化当前列（填满屏幕，但保留顶栏/底栏）。
+    // allow-inhibiting=false 表示强制执行，忽略程序的阻止请求。
+    Mod+F allow-inhibiting=false hotkey-overlay-title="全屏化当前聚焦窗口" { maximize-column; }
+    // 真正的全屏（覆盖所有内容，包括顶栏，适用于游戏/看电影）。
+    Mod+Shift+F { fullscreen-window; }
+
+    // 将当前聚焦的列扩展到“未被其他完全可见列占用”的空间。
+    // 让该列“填满剩余空间”。
+    Mod+Ctrl+F { expand-column-to-available-width; }
+
+    // 将当前列居中显示。
+    Mod+C { center-column; }
+
+    // 将屏幕上所有完全可见的列作为一个整体居中。
+    Mod+Ctrl+C { center-visible-columns; }
+
+    // 更精细的宽度调整。
+    // 此命令还可以：
+    // * 以像素为单位设定固定宽度："1000"
+    // * 以像素为单位微调宽度（增减）："-5" 或 "+5"
+    // * 以屏幕宽度的百分比设定宽度："25%"
+    // * 以屏幕宽度的百分比微调宽度（增减）："-10%" 或 "+10%"
+    // 像素大小使用的是逻辑像素（即缩放后的像素）。
+    // 也就是说，在一个缩放比例 (Scale) 为 2.0 的显示器上，
+    // set-column-width "100" 实际上会让该列占用 200 个物理屏幕像素
+    Mod+Minus { set-column-width "-10%"; }
+    Mod+Equal { set-column-width "+10%"; }
+
+    // 当与其他窗口同在一列（垂直堆叠）时，进行更精细的高度调整
+    Mod+Shift+Minus { set-window-height "-10%"; }
+    Mod+Shift+Equal { set-window-height "+10%"; }
+
+    // 将当前聚焦的窗口在“悬浮”和“平铺”布局之间移动。
+    // (即：把窗口变成像 Windows 那样可以随意拖动的，或者变回平铺卡片)
+    Mod+V       { toggle-window-floating; }
+    // 在悬浮层和平铺层之间切换焦点。
+    // (例如：你有一个悬浮的视频窗口挡住了平铺的终端，按这个键可以把操作焦点切回底下的终端)
+    Mod+Shift+V { switch-focus-between-floating-and-tiling; }
+
+    // 切换列的“标签页显示模式” (Tabbed Display)。
+    // 处于此模式的列中，窗口将显示为垂直标签页（像浏览器标签一样前后折叠），
+    // 而不是彼此上下堆叠（平分高度）。
+    Mod+W { toggle-column-tabbed-display; }
+
+    // 切换键盘布局（输入法/语言）的操作。
+    // 注意：如果你取消注释这些行，请确保你在上面的 xkb 选项中
+    // 没有配置相同的布局切换快捷键。
+    // 如果同一个快捷键同时存在（xkb 配置了一次，niri 又配置了一次），
+    // 会导致切换功能失效（因为按一次键会瞬间切换两次，又切回去了）。
+    // Mod+Space       { switch-layout "next"; }
+    // Mod+Shift+Space { switch-layout "prev"; }
+
+    // 截图快捷键
+    Print { screenshot; }       // 交互式截图（通常是让你选区域）
+    Ctrl+Print { screenshot-screen; } // 截取整个屏幕
+    Alt+Print { screenshot-window; }  // 截取当前活动窗口
+
+    // 诸如远程桌面客户端和软件 KVM切换器之类的应用程序，
+    // 可能会请求 niri 停止处理此处定义的键盘快捷键，
+    // 以便它们可以将按键原样发送到远程机器（而不是被 niri 拦截）。
+    // 最好绑定一个“逃生通道”快捷键来切换这种屏蔽状态，
+    // 以免有 Bug 的应用程序“绑架”了你的会话（让你切不出来）。
+    //
+    // allow-inhibiting=false 属性也可以应用于其他绑定，
+    // 这确保了即使在屏蔽处于活动状态时，niri 也始终会处理这些特定的键。
+    Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
+
+    // 退出动作会显示一个确认对话框，以避免意外退出。
+    Mod+Shift+E { quit; }
+    Ctrl+Alt+Delete { quit; }
+
+    // 关闭显示器电源。要重新打开它们，进行任何输入即可，
+    // 比如移动鼠标或按任意键。
+    Mod+Shift+P { power-off-monitors; }
+}

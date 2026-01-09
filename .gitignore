@@ -1,16 +1,13 @@
-#敏感文件
 .bash_history
 .zsh_history
 .lesshst
 .ssh/
 gnupg/
 
-#密钥文件
 secrets.conf
 *.key
 *.token
 
-#系统垃圾与临时文件
 .DS_Store
 Thumbs.db
 *.log
@@ -19,7 +16,6 @@ Thumbs.db
 *.swp
 *~
 
-#编译产生的垃圾
 node_modules/
 target/
 build/

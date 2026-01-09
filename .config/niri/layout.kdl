@@ -1,0 +1,156 @@
+// 影响窗口位置和大小的设置。
+// 在 Wiki 上查找更多信息：
+// https://yalter.github.io/niri/Configuration:-Layout
+layout {
+    // 设置窗口周围的间隙（以逻辑像素为单位）。
+    gaps 10 //浮动窗口之间的间隙
+
+    // 当改变焦点时何时将列居中，选项包括：
+    // - "never" (从不)，默认行为。聚焦屏幕外的列时，它会保持在屏幕的左边缘
+    //   或右边缘。
+    // - "always" (总是)，聚焦的列将始终居中。
+    // - "on-overflow" (溢出时)，如果聚焦的列无法与之前聚焦的列
+    //   一起容纳（显示不下），则将其居中。
+    center-focused-column "never" //移动焦点时窗口不动，光标动
+    //center-focused-column "always" //聚焦窗口永远在屏幕正中央
+
+    // 你可以自定义 "switch-preset-column-width" (Mod+R) 切换的宽度预设。
+    preset-column-widths {
+	// Proportion 将宽度设置为输出（显示器）宽度的比例，并会自动将间隙考虑在内。
+        // 例如，你可以在一个输出上完美容纳四个大小为 "proportion 0.25" 的窗口。
+        // 默认的预设宽度是输出的 1/3、1/2 和 2/3。
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+
+	// Fixed 以逻辑像素为单位精确设置宽度。
+        // fixed 1920
+    }
+
+    // 你也可以自定义 "switch-preset-window-height" (Mod+Shift+R) 切换的高度预设。
+    // preset-window-heights { }
+
+    // 你可以更改新窗口的默认宽度。
+    default-column-width { proportion 0.5; }
+    // 如果你留空括号，窗口将自己决定其初始宽度。
+    // default-column-width {}
+
+    // 默认情况下，聚焦环和边框被渲染为窗口 *背后* 的实心背景矩形。
+    // 也就是说，它们会透过半透明窗口显示出来。
+    // 这是因为使用客户端装饰 (CSD) 的窗口可能具有任意形状。
+    //
+    // 如果你不喜欢这样，你应该取消注释下方的 `prefer-no-csd`。
+    // Niri 会在那些同意省略其客户端装饰的窗口 *周围* 绘制聚焦环和边框。
+    //
+    // 或者，你可以使用名为 `draw-border-with-background` 的窗口规则来覆盖它。
+
+    // 你可以更改聚焦环的外观。
+    focus-ring {
+        // 取消注释此行以禁用聚焦环。
+        // off
+
+        // 聚焦环从窗口向外延伸的逻辑像素数。
+        width 4
+
+        // 颜色设置方式多种多样：
+        // - CSS 命名颜色: "red"
+        // - RGB 十六进制: "#rgb", "#rgba", "#rrggbb", "#rrggbbaa"
+        // - 类 CSS 标记: "rgb(255, 127, 0)", rgba(), hsl() 等其他格式。
+
+        // 活动显示器上的聚焦环颜色。
+        //active-color "#7fc8ff"
+
+        // 启用渐变色 (从粉色到蓝色，45度角)
+        // 这里的颜色代码取自 Catppuccin Mocha 配色表
+        // noctalia配置文件设置的颜色覆盖了边框配置，想恢复渐变，需要注释noctalia的设置
+        active-gradient from="#f5c2e7" to="#89b4fa" angle=45
+
+        // 非活动显示器上的聚焦环颜色。
+        //
+        // 聚焦环仅绘制在活动窗口周围，因此
+        // 你只能在其他显示器上看到这个非活动颜色。
+        inactive-color "#505050"
+
+        // 你也可以使用渐变色。它们会覆盖纯色设置。
+        // 渐变渲染方式与 CSS linear-gradient(angle, from, to) 相同。
+        // 角度 (angle) 与 linear-gradient 中的相同，且为可选参数，
+        // 默认为 180 (从上到下的渐变)。
+        // 你可以使用网上的任何 CSS 线性渐变工具来生成这些参数。
+        // 也支持更改颜色空间，查看 Wiki 获取更多信息。
+        //
+        // active-gradient from="#80c8ff" to="#c7ff7f" angle=45
+
+        // 你还可以设置相对于整个工作区视图的渐变颜色，
+        // 而不仅仅是相对于窗口本身。
+        // 要做到这一点，请设置 relative-to="workspace-view"。
+        //
+        // inactive-gradient from="#505050" to="#808080" angle=45 relative-to="workspace-view"
+    }
+
+    // 你也可以添加一个边框。它类似于聚焦环，但始终可见。
+    border {
+        // 设置与聚焦环相同。
+        // 如果你启用边框，你可能想要禁用上面的聚焦环。
+        off
+
+        width 4
+        active-color "#ffc87f"
+        inactive-color "#505050"
+
+        // 请求你注意的窗口（Urgent）周围的边框颜色。
+        urgent-color "#9b0000"
+
+        // 渐变可以使用几种不同的插值颜色空间。
+        // 例如，这是一个通过 in="oklch longer hue" 实现的柔和彩虹渐变。
+        //
+        // active-gradient from="#e5989b" to="#ffb4a2" angle=45 relative-to="workspace-view" in="oklch longer hue"
+
+        // inactive-gradient from="#505050" to="#808080" angle=45 relative-to="workspace-view"
+    }
+
+    // 你可以启用窗口阴影。
+    shadow {
+        // 取消注释下一行以启用阴影。
+        on
+
+        // 默认情况下，阴影仅在窗口 *周围* 绘制，而不在窗口 *后方* 绘制。
+        // 取消注释此设置使阴影绘制在窗口后方。
+        //
+        // 注意：niri 无法获知 CSD (客户端装饰) 窗口的圆角半径。
+        // 它只能假设窗口是直角的，这会导致 CSD 圆角内部出现阴影瑕疵（看起来像黑边）。
+        // 此设置通过在窗口背面也画上阴影来修复这些瑕疵。
+        //
+        // 不过，你可能更倾向于设置 `prefer-no-csd` 和/或 `geometry-corner-radius`。
+        // 这样，niri 将知晓圆角半径并正确绘制阴影，而无需在窗口后方绘制。
+        // 如果窗口本身绘制了阴影，这些设置也会移除客户端自带的阴影。
+        //
+        // draw-behind-window true
+
+        // 你可以更改阴影的外观。
+        // 以下值以逻辑像素为单位，并与 CSS box-shadow 属性相对应。
+
+        // Softness (柔和度) 控制阴影的模糊半径。
+        softness 30
+
+        // Spread (扩散度) 扩展阴影的大小。
+        spread 5
+
+        // Offset (偏移量) 相对于窗口移动阴影的位置。
+        offset x=0 y=5
+
+        // 你还可以更改阴影的颜色和不透明度。
+        color "#0007"
+    }
+
+    // Struts (支柱/保留区域) 缩小窗口占用的区域，类似于 layer-shell 面板（如状态栏）。
+    // 你可以将它们视为一种“外间隙”。它们以逻辑像素为单位设置。
+    // 左侧和右侧的 strut 会导致旁边的一个窗口始终保持部分可见（露出一边）。
+    // 顶部和底部的 strut 只是在 layer-shell 面板和常规间隙之外增加额外的外间隙。
+    struts {
+        //设置屏幕四周与窗口的间隙
+         left 5
+         right 5
+         top -5
+         bottom 2
+    }
+}

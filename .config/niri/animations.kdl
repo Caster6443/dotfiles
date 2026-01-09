@@ -1,0 +1,12 @@
+// 动画设置。
+// Wiki 解释了如何配置单独的动画（例如为打开、关闭、移动窗口分别设置）：
+// https://yalter.github.io/niri/Configuration:-Animations
+/-animations {
+    // 取消注释以关闭所有动画。
+    // off
+
+    // 按此系数减慢所有动画的速度。小于 1 的值反而会加速动画。
+    // （例如 3.0 表示慢放 3 倍，0.5 表示快放 2 倍）
+    // slowdown 3.0
+}
+

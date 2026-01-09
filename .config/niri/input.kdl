@@ -1,0 +1,66 @@
+// 输入设备配置。
+// 在 Wiki 上查看完整的选项列表：
+// https://yalter.github.io/niri/Configuration:-Input
+input {
+    keyboard {
+        xkb {
+	    // 你可以设置规则、模型、布局、变体和选项。
+            // 更多信息请参阅 xkeyboard-config(7)。
+
+            // 例如：
+            // layout "us,ru"
+            // options "grp:win_space_toggle,compose:ralt,ctrl:nocaps"
+	    options "caps:menu,shift:both_capslock" //caps按键映射到menu，双shift按下映射原本的caps键位
+
+	    // 如果此部分为空，niri 将从 org.freedesktop.locale1 获取 xkb 设置。
+            // 你可以使用 localectl set-x11-keymap 命令来控制这些设置。
+        }
+
+	// 启动时启用数字锁定 (NumLock)，省略此设置则禁用它。
+        numlock
+    }
+
+    // 接下来的部分包含 libinput 设置。
+    // 省略设置将禁用它们，或使其保持默认值。
+    // 这里所有被注释掉的设置仅作为示例，并非默认值。
+    touchpad {
+        off
+        tap
+        // dwt
+        // dwtp
+        // drag false
+        // drag-lock
+        natural-scroll //触摸板自然滚动
+        // accel-speed 0.2
+        // accel-profile "flat"
+        // scroll-method "two-finger"
+        // disabled-on-external-mouse
+    }
+
+    mouse {
+        // off
+        // natural-scroll
+        // accel-speed 0.2 //设置鼠标速度
+        accel-profile "flat" //关闭鼠标加速
+        // scroll-method "no-scroll"
+	 scroll-factor horizontal=2.0 vertical=1.0 //设置滚轮速度 横向 竖向
+    }
+
+    trackpoint {
+        // off
+        // natural-scroll
+        // accel-speed 0.2
+        // accel-profile "flat"
+        // scroll-method "on-button-down"
+        // scroll-button 273
+        // scroll-button-lock
+        // middle-emulation
+    }
+
+    // 取消注释此行，使鼠标光标自动瞬移到新聚焦窗口的中心。
+    // warp-mouse-to-focus
+
+    // 当鼠标移入窗口或输出时自动聚焦。
+    // 设置 max-scroll-amount="0%" 使其仅对已完全显示在屏幕上的窗口生效。
+       focus-follows-mouse //max-scroll-amount="0%"//只有当一个窗口 100% 完全 显示在屏幕内时，鼠标移动上去才会触发聚焦
+}

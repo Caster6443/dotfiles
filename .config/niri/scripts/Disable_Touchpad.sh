@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-CONFIG_FILE="$HOME/.config/niri/config.kdl"
+CONFIG_FILE="$HOME/.config/niri/input.kdl"
 
 IS_DISABLED=$(awk '/touchpad \{/,/\}/ { if ($0 ~ /^[[:space:]]*off/) print "yes" }' "$CONFIG_FILE")
 
