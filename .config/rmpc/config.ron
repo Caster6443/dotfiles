@@ -19,7 +19,7 @@
     cache_dir: Some("/tmp/rmpc/cache"),
     lyrics_dir: "~/Music",
     // 切歌时触发的脚本
-    on_song_change: ["~/.config/rmpc/scripts/notify"],
+    //on_song_change: ["~/.config/rmpc/scripts/notify"],
 
     // 封面显示设置
     album_art: (
@@ -52,6 +52,7 @@
     keybinds: (
         global: {
             "q":       Quit,
+            "u":       Update,
             "~":       ShowHelp,
             "O":       ShowOutputs,
             "I":       ShowCurrentSongInfo,

@@ -1,11 +1,11 @@
 sw_volume: 100
-audio_device_state:1:PulseAudio
+audio_device_state:1:PipeWire Sound Server
 audio_device_state:1:my_fifo
-state: play
-current: 13
-time: 120.028
+state: pause
+current: 0
+time: 68.743
 random: 0
-repeat: 0
+repeat: 1
 single: 0
 consume: 0
 crossfade: 0
@@ -13,21 +13,29 @@ mixrampdb: 0
 mixrampdelay: -1
 lastloadedplaylist: 
 playlist_begin
-0:Spotify/downloads/A-Mei Chang/我要快樂 (Deluxe Version)/05 - A-Mei Chang - 我要快樂.mp3
-1:Spotify/downloads/Anamanaguchi/Miku/01 - Anamanaguchi - Miku.mp3
-2:Spotify/downloads/David Tao/太平盛世/04 - David Tao - 就是愛妳.mp3
-3:Spotify/downloads/David Tao/陶喆同名專輯/10 - David Tao - 流沙.mp3
-4:Spotify/downloads/Evangeline Wong/離開我的依賴/01 - Evangeline Wong - 離開我的依賴.mp3
-5:Spotify/downloads/Hyunmin Cho/STELLAR BLADE ORIGINAL SOUNDTRACK/08 - Hyunmin Cho - Silent Street (Type A).mp3
-6:Spotify/downloads/Leona Lewis/Spirit/01 - Leona Lewis - Bleeding Love.mp3
-7:Spotify/downloads/ReoNa/SWEET HURT/03 - ReoNa - カナリア.mp3
-8:Spotify/downloads/sana/Hush a by little girl/04 - sana - 彼女は旅に出る.mp3
-9:Spotify/downloads/sodagreen/你在煩惱什麼/03 - sodagreen - 你被寫在我的歌裡.mp3
-10:Spotify/downloads/Stefanie Sun/是时候/07 - Stefanie Sun - 180度.mp3
-11:Spotify/downloads/TINY 7/Chose one me/03 - TINY 7 - 零距离的思念.mp3
-12:Spotify/downloads/後弦/下完這場雨/01 - 後弦 - 下完這場雨.mp3
-13:Spotify/downloads/結束バンド/結束バンド/14 - 結束バンド - 転がる岩、君に朝が降る.mp3
-14:Spotify/downloads/郑润泽/你/01 - 郑润泽 - 你.mp3
-15:Spotify/downloads/阿悄/阿悄单曲集/23 - 阿悄 - 在深秋.mp3
-16:Spotify/downloads/陈村长/爱怎么了/01 - 陈村长 - 爱怎么了.mp3
+0:list/《BLUE》.mp3
+1:list/《Catch Me If You Can》.mp3
+2:list/《I Really Want to Stay At Your House》.mp3
+3:list/《カナリア(金丝雀)》.mp3
+4:list/《一路向北》.mp3
+5:list/《下完这场雨》.mp3
+6:list/《红色高跟鞋》.mp3
+7:list/《転がる岩、君に朝が降る》.mp3
+8:list/《酣梦于彼岸深红》.mp3
+9:list/《風のたより》.mp3
+10:list/bgm_3_19.mp3
+11:list/bgm_3_83.mp3
+12:list/bgm_3_85.mp3
+13:list/bgm_3_87.mp3
+14:list/bgm_3_89.mp3
+15:list/bgm_3_91.mp3
+16:list/bgm_3_92.mp3
+17:list/bgm_3_93.mp3
+18:list/bgm_one_01.mp3
+19:list/bgm_one_12.mp3
+20:list/bgm_sp_09.mp3
+21:list/bgm2p_03.mp3
+22:list/へび.mp3
+23:list/最后一哈.mp3
+24:list/《富士山下》.mp3
 playlist_end
