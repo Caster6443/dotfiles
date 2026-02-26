@@ -4,7 +4,7 @@
 (
     draw_borders: false,
     show_song_table_header: true,
-    background_color: "black",
+    background_color: None,
     default_album_art_path: None,
     header_background_color: None,
     modal_background_color: None,
@@ -15,11 +15,11 @@
     preview_label_style: (fg: "yellow"),
     preview_metadata_group_style: (fg: "yellow", modifiers: "Bold"),
     level_styles: (
-        info: (fg: "blue", bg: "black"),
-        warn: (fg: "yellow", bg: "black"),
-        error: (fg: "red", bg: "black"),
-        debug: (fg: "light_green", bg: "black"),
-        trace: (fg: "magenta", bg: "black"),
+        info: (fg: "blue", bg: None),
+        warn: (fg: "yellow", bg: None),
+        error: (fg: "red", bg: None),
+        debug: (fg: "light_green", bg: None),
+        trace: (fg: "magenta", bg: None),
     ),
     cava: (
         bar_width: 2,
@@ -199,7 +199,7 @@
             (
                 size: "100%",
                 borders: "ALL",
-                background_color: "red",
+                background_color: None,
                 pane: Pane(TabContent),
             ),
             (

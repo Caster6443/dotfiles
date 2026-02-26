@@ -1,9 +1,9 @@
 sw_volume: 100
 audio_device_state:1:PipeWire Sound Server
 audio_device_state:1:my_fifo
-state: pause
-current: 0
-time: 68.743
+state: play
+current: 18
+time: 14.251
 random: 0
 repeat: 1
 single: 0
@@ -19,23 +19,32 @@ playlist_begin
 3:list/《カナリア(金丝雀)》.mp3
 4:list/《一路向北》.mp3
 5:list/《下完这场雨》.mp3
-6:list/《红色高跟鞋》.mp3
-7:list/《転がる岩、君に朝が降る》.mp3
-8:list/《酣梦于彼岸深红》.mp3
-9:list/《風のたより》.mp3
-10:list/bgm_3_19.mp3
-11:list/bgm_3_83.mp3
-12:list/bgm_3_85.mp3
-13:list/bgm_3_87.mp3
-14:list/bgm_3_89.mp3
-15:list/bgm_3_91.mp3
-16:list/bgm_3_92.mp3
-17:list/bgm_3_93.mp3
+6:list/《星炬不熄》.mp3
+7:list/《泪桥》ai孙燕姿 cover伍佰 [BV1pQ4y1G7gV].mp3
+8:list/《流沙》.mp3
+9:list/《清明雨上》.mp3
+10:list/《红色高跟鞋》.mp3
+11:list/《転がる岩、君に朝が降る》.mp3
+12:list/《酣梦于彼岸深红》.mp3
+13:list/《風のたより》.mp3
+14:list/【4K60FPS】宇多田光《First Love》经典现场！你会想起初恋吗？ [BV1TjmUYVE6X].mp3
+15:list/【开屏雷击】新v勇闯国家队金曲《春天的芭蕾》，嗨D花腔满天飞 [BV15vpNz5EFP].mp3
+16:list/bgm_3_19.mp3
+17:list/bgm_3_83.mp3
 18:list/bgm_one_01.mp3
 19:list/bgm_one_12.mp3
 20:list/bgm_sp_09.mp3
 21:list/bgm2p_03.mp3
-22:list/へび.mp3
-23:list/最后一哈.mp3
-24:list/《富士山下》.mp3
+22:list/Cup_of_joe.mp3
+23:list/へび.mp3
+24:list/不问天【2021拜年纪单品】 [BV1sv4y1f7Q2].mp3
+25:list/最后一哈.mp3
+26:list/日本的国宝～中岛美雪-《骑在银龙的背上》 [BV1pE411Q7TQ].mp3
+27:list/《你》.mp3
+28:list/《心墙》.mp3
+29:list/《爱情讯息》.mp3
+30:list/《爱要坦荡荡》.mp3
+31:list/《莫问归期》.mp3
+32:list/《香水有毒》.mp3
+33:list/《富士山下》.mp3
 playlist_end
