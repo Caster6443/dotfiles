@@ -1,1 +1,1 @@
-for hyprland and niri
+CachyOS(hyprland/niri)
