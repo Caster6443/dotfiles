@@ -6,11 +6,14 @@ import Quickshell.Io
 QtObject {
     id: root
 
+    readonly property string homeDir: Quickshell.env("HOME")
+
     property var data: []
     property bool isLoaded: false
 
     property Process fetcher: Process {
-        command: ["/home/caster/.config/quickshell/caelestia/utils/bin/getkeybind", "/home/caster/.config/hypr/hyprland/keybinds.conf", "/home/caster/.config/hypr/variables.conf"]
+        command: [root.homeDir + "/.config/quickshell/caelestia/utils/bin/getkeybind", root.homeDir + "/.config/hypr/hyprland/keybinds.conf", root.homeDir + "/.config/hypr/variables.conf"]
+        //command: [root.homeDir + "/.config/quickshell/caelestia/utils/bin/getkeybind", root.homeDir + "/.config/caelestia/hypr-user.conf", root.homeDir + "/.config/caelestia/hypr-vars.conf"]
         running: true
 
         stdout: StdioCollector {
@@ -18,9 +21,9 @@ QtObject {
                 try {
                     root.data = JSON.parse(this.text);
                     root.isLoaded = true;
-                    console.log("快捷键数据加载成功！");
+                    console.log("Keybinds data loaded successfully!");
                 } catch (e) {
-                    console.log("解析快捷键 JSON 失败: " + e);
+                    console.log("Failed to parse keybinds JSON: " + e);
                 }
             }
         }

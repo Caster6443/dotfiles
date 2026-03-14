@@ -8,6 +8,7 @@ import "../../config"
 
 FloatingWindow {
     id: root
+    readonly property string homeDir: Quickshell.env("HOME")
     title: "cheatsheet"
     implicitWidth: Screen.width * 0.75
     implicitHeight: Screen.height * 0.75
@@ -43,7 +44,7 @@ FloatingWindow {
 
     Process {
         id: fetchTheme
-        command: ["cat", "/home/caster/.local/state/caelestia/scheme.json"]
+        command: ["cat", root.homeDir + "/.local/state/caelestia/scheme.json"]
         running: true
 
         stdout: StdioCollector {
@@ -62,7 +63,7 @@ FloatingWindow {
 
     Process {
         id: themeWatcher
-        command: ["inotifywait", "-e", "close_write", "/home/caster/.local/state/caelestia/scheme.json"]
+        command: ["inotifywait", "-e", "close_write", root.homeDir + "/.local/state/caelestia/scheme.json"]
         running: false
 
         stdout: StdioCollector {
