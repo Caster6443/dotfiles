@@ -96,94 +96,101 @@ FloatingWindow {
             }
 
             Grid {
-                anchors.horizontalCenter: parent.horizontalCenter
-                spacing: 15
-                columns: Math.max(1, Math.floor(parent.width / 395))
+                width: parent.width
+                columns: Math.max(1, Math.floor(parent.width / 420)) 
+                columnSpacing: 40
+                rowSpacing: 35
 
                 Repeater {
                     model: Services.Keybinds.data
-
-                    delegate: Item {
-                        id: keyCard
+                    delegate: Column {
                         required property var modelData
-                        width: 380
-                        height: 36
+                        width: 400
+                        spacing: 15
+                        visible: modelData && modelData.keybinds && modelData.keybinds.length > 0
 
-                        Row {
-                            anchors.fill: parent
-                            spacing: 16
-                            anchors.verticalCenter: parent.verticalCenter
+                        Text {
+                            text: (modelData ? modelData.category : "").charAt(0).toUpperCase() + (modelData ? modelData.category : "").slice(1)
+                            font.family: Appearance.font.family.sans
+                            font.pixelSize: 22
+                            font.bold: true
+                            color: root.themeColours.primary ? ("#" + root.themeColours.primary) : "#cdd6f4"
+                        }
 
-                            Row {
-                                id: keysRow
-                                anchors.verticalCenter: parent.verticalCenter
-                                spacing: 6
+                        Column {
+                            spacing: 10
+                            
+                            Repeater {
+                                model: modelData && modelData.keybinds ? modelData.keybinds : []
+                                delegate: Row {
+                                    required property var modelData
+                                    property var kb: modelData
+                                    width: 400
+                                    spacing: 15
 
-                                property var keyArray: keyCard.modelData.key.split(/\s*\+\s*|\s+/).filter(function (i) {
-                                    return i;
-                                })
-
-                                Repeater {
-                                    model: keysRow.keyArray
-
-                                    delegate: Row {
-                                        id: keyDelegate
+                                    Row {
                                         spacing: 6
                                         anchors.verticalCenter: parent.verticalCenter
-                                        required property int index
-                                        required property var modelData
+                                        width: 220 
+                                        
+                                        Repeater {
+                                            model: kb.key ? kb.key.split(" ") : []
+                                            delegate: Row {
+                                              required property string modelData 
+                                                required property int index
+                                                spacing: 6
+                                                anchors.verticalCenter: parent.verticalCenter
 
-                                        Rectangle {
-                                            id: keycapBase
-                                            width: keyText.implicitWidth + 16
-                                            height: 28
-                                            radius: 5
-                                            color: root.themeColours.outline ? ("#" + root.themeColours.outline) : "#a6adc8"
-
-                                            Rectangle {
-                                                id: keycapTop
-                                                anchors.fill: parent
-                                                anchors.margins: 1
-                                                anchors.bottomMargin: 4
-                                                radius: 4
-                                                color: root.themeColours.surface ? ("#" + root.themeColours.surface) : "#181825"
-                                                border.width: 1
-                                                border.color: root.themeColours.outlineVariant ? ("#" + root.themeColours.outlineVariant) : "#45475a"
-
-                                                Text {
-                                                    id: keyText
-                                                    anchors.centerIn: parent
-                                                    anchors.verticalCenterOffset: -1
-                                                    text: keyDelegate.modelData.toUpperCase()
-                                                    font.family: Appearance.font.family.mono
-                                                    font.pixelSize: 12
-                                                    font.bold: true
+                                                Rectangle {
                                                     color: root.themeColours.primary ? ("#" + root.themeColours.primary) : "#cdd6f4"
+                                                    radius: 5
+                                                    width: innerBg.width + 2
+                                                    height: innerBg.height + 4 
+
+                                                    Rectangle {
+                                                        id: innerBg
+                                                        color: root.themeColours.surface ? ("#" + root.themeColours.surface) : "#1e1e2e"
+                                                        radius: 4
+                                                        width: keyText.implicitWidth + 14 
+                                                        height: keyText.implicitHeight + 8 
+                                                        anchors.horizontalCenter: parent.horizontalCenter
+                                                        anchors.top: parent.top
+                                                        anchors.topMargin: 1 
+
+                                                        Text {
+                                                            id: keyText
+                                                            text: modelData 
+                                                            anchors.centerIn: parent
+                                                            font.family: Appearance.font.family.sans
+                                                            font.pixelSize: 12
+                                                            font.bold: true
+                                                            color: root.themeColours.primary ? ("#" + root.themeColours.primary) : "#cdd6f4"
+                                                        }
+                                                    }
+                                                }
+                                                Text {
+                                                    text: "+"
+                                                    visible: index < (kb.key.split(" ").length - 1)
+                                                    anchors.verticalCenter: parent.verticalCenter
+                                                    font.pixelSize: 14
+                                                    color: root.themeColours.primary ? ("#" + root.themeColours.primary) : "#cdd6f4"
+                                                    opacity: 0.7
                                                 }
                                             }
                                         }
+                                    }
 
-                                        Text {
-                                            text: "+"
-                                            font.family: Appearance.font.family.mono
-                                            font.pixelSize: 14
-                                            font.bold: true
-                                            color: root.themeColours.onSurfaceVariant ? ("#" + root.themeColours.onSurfaceVariant) : "#a6adc8"
-                                            anchors.verticalCenter: parent.verticalCenter
-                                            visible: keyDelegate.index < (keysRow.keyArray.length - 1)
-                                        }
+                                    Text {
+                                        text: kb.desc
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        font.family: Appearance.font.family.sans
+                                        font.pixelSize: 13
+                                        color: root.themeColours.onSurface ? ("#" + root.themeColours.onSurface) : 
+                                              (root.themeColours.text ? ("#" + root.themeColours.text) : "#cdd6f4")
+                                        width: parent.width - 220 - parent.spacing
+                                        wrapMode: Text.WordWrap
                                     }
                                 }
-                            }
-
-                            Text {
-                                text: keyCard.modelData.desc
-                                font.family: Appearance.font.family.sans
-                                color: root.themeColours.onSurface ? ("#" + root.themeColours.onSurface) : "#f5e0dc"
-                                font.pixelSize: 14
-                                anchors.verticalCenter: parent.verticalCenter
-                                width: keyCard.width - keysRow.width - parent.spacing
-                                elide: Text.ElideRight
                             }
                         }
                     }
