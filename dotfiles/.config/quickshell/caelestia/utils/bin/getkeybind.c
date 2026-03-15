@@ -5,12 +5,21 @@
 #define MAX_LINE 1024
 #define MAX_LEN 512
 #define INFO_LEN 1024
+#define GROUP_NUM 4
 
 struct keybind_info {
   char command[MAX_LEN];     // store key
   char description[MAX_LEN]; // store value
 };
-struct keybind_info list[INFO_LEN];
+
+struct Category {
+  char name[GROUP_NUM];
+  struct keybind_info list[INFO_LEN];
+  int count;
+};
+
+struct Category group[GROUP_NUM] = {
+    {"app", {}, 0}, {"win", {}, 0}, {"sys", {}, 0}, {"msc", {}, 0}};
 
 struct HyprVars {
   char name[MAX_LEN];  // store "$xxx"
@@ -23,11 +32,11 @@ void get_def(struct HyprVars *dest, char *def_ptr, int count);
 int cmp_var(const void *a, const void *b);
 void get_value(struct keybind_info *dest, char *value_ptr, int count);
 void replace_ch(char *key_ptr);
-void get_key(struct keybind_info *dest, char *key_ptr, char *line, int count);
+void get_key(struct keybind_info *dest, char *key_ptr, int count);
 void translate_all_keybinds(struct keybind_info *list, int list_size,
                             struct HyprVars *var_list, int var_total);
 void wash_data(struct keybind_info *target_list, int count);
-void print_json(struct keybind_info *print_list, int count);
+void print_json(struct Category *group_array, int group_total);
 
 int main(int argc, char *argv[]) {
   int count = 0;
@@ -79,23 +88,45 @@ int main(int argc, char *argv[]) {
   while (fgets(line, sizeof(line), fp)) {
     line[strcspn(line, "\n")] = '\0';
 
-    char *value_ptr = strstr(line, "#@");
-    if (value_ptr == NULL)
+    char *marker_ptr = strstr(line, "#@");
+    if (marker_ptr == NULL)
       continue;
-    get_value(list, value_ptr, count);
+    int idx = -1;
+
+    if (strncmp(marker_ptr, "#@app", 5) == 0)
+      idx = 0;
+    else if (strncmp(marker_ptr, "#@win", 5) == 0)
+      idx = 1;
+    else if (strncmp(marker_ptr, "#@sys", 5) == 0)
+      idx = 2;
+    else if (strncmp(marker_ptr, "#@msc", 5) == 0)
+      idx = 3;
+
+    if (idx == -1)
+      continue;
+
+    struct Category *target = &group[idx];
+
+    get_value(target->list, marker_ptr + 5, target->count);
 
     char *key_ptr = strstr(line, "#@");
-    get_key(list, key_ptr, line, count);
+    *key_ptr = '\0';
+    key_ptr = strstr(line, "=");
+    key_ptr++;
+    get_key(target->list, key_ptr, target->count);
+    target->count++;
 
     count++;
     if (count >= INFO_LEN - 1)
       break;
   }
 
-  translate_all_keybinds(list, count, var_list, var_total);
+  for (int i = 0; i < GROUP_NUM; i++) {
+    translate_all_keybinds(group[i].list, group[i].count, var_list, var_total);
+    wash_data(group[i].list, group[i].count);
+  }
 
-  wash_data(list, count);
-  print_json(list, count);
+  print_json(group, GROUP_NUM);
 
   fclose(fp);
 
@@ -135,7 +166,6 @@ int cmp_var(const void *a, const void *b) {
 }
 
 void get_value(struct keybind_info *dest, char *value_ptr, int count) {
-  value_ptr += 2;
   while (isspace(*value_ptr)) {
     value_ptr++;
   }
@@ -164,10 +194,7 @@ void replace_ch(char *key_ptr) {
   *dst = '\0';
 }
 
-void get_key(struct keybind_info *dest, char *key_ptr, char *line, int count) {
-  *key_ptr = '\0';
-  key_ptr = strstr(line, "=");
-  key_ptr++;
+void get_key(struct keybind_info *dest, char *key_ptr, int count) {
   while (isspace(*key_ptr))
     key_ptr++;
   int target_commas = (*key_ptr == '$') ? 1 : 2;
@@ -252,18 +279,30 @@ void wash_data(struct keybind_info *target_list, int count) {
   }
 }
 
-void print_json(struct keybind_info *print_list, int count) {
+void print_json(struct Category *group_array, int group_total) {
   puts("[");
-  for (int i = 0; i < count; i++) {
-    puts("  {");
-    printf("    \"key\": \"%s\",\n", print_list[i].command);
-    printf("    \"desc\": \"%s\"\n", print_list[i].description);
+  int first_category = 1;
 
-    if (i < count - 1) {
-      puts("  },");
-    } else {
-      puts("  }");
+  for (int i = 0; i < group_total; i++) {
+    if (group_array[i].count == 0)
+      continue;
+
+    if (!first_category)
+      puts("  ,");
+    first_category = 0;
+
+    puts("  {");
+    printf("    \"category\": \"%s\",\n", group_array[i].name);
+    puts("    \"keybinds\": [");
+
+    for (int j = 0; j < group_array[i].count; j++) {
+      puts("      {");
+      printf("        \"key\": \"%s\",\n", group_array[i].list[j].command);
+      printf("        \"desc\": \"%s\"\n", group_array[i].list[j].description);
+      printf("      }%s\n", (j < group_array[i].count - 1) ? "," : "");
     }
+    puts("    ]");
+    printf("  }");
   }
-  puts("]");
+  puts("\n]");
 }
