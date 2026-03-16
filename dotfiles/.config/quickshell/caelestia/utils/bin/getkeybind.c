@@ -200,29 +200,26 @@ void get_key(struct keybind_info *dest, char *key_ptr, int count) {
 
   int target_commas = 2;
 
-  char temp_str[MAX_LEN];
-  strncpy(temp_str, key_ptr, MAX_LEN - 1);
-  temp_str[MAX_LEN - 1] = '\0';
+  if (*key_ptr == '$') {
+    char temp_str[MAX_LEN];
+    strncpy(temp_str, key_ptr, MAX_LEN - 1);
+    temp_str[MAX_LEN - 1] = '\0';
 
-  char *first_comma = strchr(temp_str, ',');
-  if (first_comma) {
-    char *t2 = first_comma + 1;
-    while (isspace(*t2))
-      t2++;
+    char *first_comma = strchr(temp_str, ',');
+    if (first_comma) {
+      char *t2 = first_comma + 1;
+      while (isspace(*t2))
+        t2++;
 
-    char *end = t2;
-    while (*end != '\0' && *end != ',' && !isspace((unsigned char)*end))
-      end++;
-    *end = '\0';
+      char *end = t2;
+      while (*end != '\0' && *end != ',' && !isspace((unsigned char)*end))
+        end++;
+      *end = '\0';
 
-    if (strcmp(t2, "exec") == 0 || strcmp(t2, "execr") == 0 ||
-        strcmp(t2, "global") == 0 || strcmp(t2, "killactive") == 0 ||
-        strcmp(t2, "closewindow") == 0 || strcmp(t2, "exit") == 0 ||
-        strcmp(t2, "workspace") == 0 || strcmp(t2, "togglefloating") == 0 ||
-        strcmp(t2, "fullscreen") == 0 || strcmp(t2, "togglesplit") == 0 ||
-        strcmp(t2, "pass") == 0 || strcmp(t2, "submap") == 0 ||
-        strcmp(t2, "dpms") == 0 || strcmp(t2, "movefocus") == 0) {
-      target_commas = 1;
+      if (strlen(t2) > 1 && strcmp(t2, "up") != 0 && strcmp(t2, "down") != 0 &&
+          strcmp(t2, "left") != 0 && strcmp(t2, "right") != 0) {
+        target_commas = 1;
+      }
     }
   }
 
