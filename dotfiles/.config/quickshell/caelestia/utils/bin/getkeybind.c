@@ -215,10 +215,13 @@ void get_key(struct keybind_info *dest, char *key_ptr, int count) {
       end++;
     *end = '\0';
 
-    if (strcmp(t2, "exec") == 0 || strcmp(t2, "killactive") == 0 ||
+    if (strcmp(t2, "exec") == 0 || strcmp(t2, "execr") == 0 ||
+        strcmp(t2, "global") == 0 || strcmp(t2, "killactive") == 0 ||
+        strcmp(t2, "closewindow") == 0 || strcmp(t2, "exit") == 0 ||
         strcmp(t2, "workspace") == 0 || strcmp(t2, "togglefloating") == 0 ||
         strcmp(t2, "fullscreen") == 0 || strcmp(t2, "togglesplit") == 0 ||
-        strcmp(t2, "pass") == 0 || strcmp(t2, "submap") == 0) {
+        strcmp(t2, "pass") == 0 || strcmp(t2, "submap") == 0 ||
+        strcmp(t2, "dpms") == 0 || strcmp(t2, "movefocus") == 0) {
       target_commas = 1;
     }
   }
