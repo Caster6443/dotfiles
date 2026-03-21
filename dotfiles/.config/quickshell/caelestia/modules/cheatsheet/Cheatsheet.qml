@@ -97,7 +97,7 @@ FloatingWindow {
 
             Grid {
                 width: parent.width
-                columns: Math.max(1, Math.floor(parent.width / 420)) 
+                columns: Math.max(1, Math.floor(parent.width / 420))
                 columnSpacing: 40
                 rowSpacing: 35
 
@@ -119,7 +119,7 @@ FloatingWindow {
 
                         Column {
                             spacing: 10
-                            
+
                             Repeater {
                                 model: modelData && modelData.keybinds ? modelData.keybinds : []
                                 delegate: Row {
@@ -131,12 +131,12 @@ FloatingWindow {
                                     Row {
                                         spacing: 6
                                         anchors.verticalCenter: parent.verticalCenter
-                                        width: 220 
-                                        
+                                        width: 220
+
                                         Repeater {
                                             model: kb.key ? kb.key.split(" ") : []
                                             delegate: Row {
-                                              required property string modelData 
+                                                required property string modelData
                                                 required property int index
                                                 spacing: 6
                                                 anchors.verticalCenter: parent.verticalCenter
@@ -144,22 +144,22 @@ FloatingWindow {
                                                 Rectangle {
                                                     color: root.themeColours.primary ? ("#" + root.themeColours.primary) : "#cdd6f4"
                                                     radius: 5
-                                                    width: innerBg.width + 2
-                                                    height: innerBg.height + 4 
+                                                    width: innerBg.width + 4
+                                                    height: innerBg.height + 5
 
                                                     Rectangle {
                                                         id: innerBg
                                                         color: root.themeColours.surface ? ("#" + root.themeColours.surface) : "#1e1e2e"
                                                         radius: 4
-                                                        width: keyText.implicitWidth + 14 
-                                                        height: keyText.implicitHeight + 8 
+                                                        width: keyText.implicitWidth + 14
+                                                        height: keyText.implicitHeight + 8
                                                         anchors.horizontalCenter: parent.horizontalCenter
                                                         anchors.top: parent.top
-                                                        anchors.topMargin: 1 
+                                                        anchors.topMargin: 1
 
                                                         Text {
                                                             id: keyText
-                                                            text: modelData 
+                                                            text: modelData
                                                             anchors.centerIn: parent
                                                             font.family: Appearance.font.family.sans
                                                             font.pixelSize: 12
@@ -185,8 +185,7 @@ FloatingWindow {
                                         anchors.verticalCenter: parent.verticalCenter
                                         font.family: Appearance.font.family.sans
                                         font.pixelSize: 13
-                                        color: root.themeColours.onSurface ? ("#" + root.themeColours.onSurface) : 
-                                              (root.themeColours.text ? ("#" + root.themeColours.text) : "#cdd6f4")
+                                        color: root.themeColours.onSurface ? ("#" + root.themeColours.onSurface) : (root.themeColours.text ? ("#" + root.themeColours.text) : "#cdd6f4")
                                         width: parent.width - 220 - parent.spacing
                                         wrapMode: Text.WordWrap
                                     }
