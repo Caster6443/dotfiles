@@ -230,7 +230,7 @@ Singleton {
     function _searchNetEase(title, artist, reqId, onResults) {
         Requests.resetCookies();
         const query = encodeURIComponent(`${title} ${artist}`);
-        const url = `https://music.163.com/api/search/get?s=${query}&type=1&limit=5`;
+        const url = `https://music.163.com/api/search/get?s=${query}&type=1&limit=10`;
 
         Requests.get(url, text => {
             if (reqId !== root.currentRequestId)

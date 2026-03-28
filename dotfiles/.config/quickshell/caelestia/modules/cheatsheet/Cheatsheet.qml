@@ -25,6 +25,16 @@ FloatingWindow {
         onActivated: root.visible = false
     }
 
+    Item {
+        focus: true
+        
+        onActiveFocusChanged: {
+            if (!activeFocus) {
+                root.visible = false
+            }
+        }
+    }
+
     Process {
         id: toggleWatcher
         command: ["bash", "-c", "touch /tmp/cheatsheet_toggle && inotifywait -e close_write /tmp/cheatsheet_toggle"]
