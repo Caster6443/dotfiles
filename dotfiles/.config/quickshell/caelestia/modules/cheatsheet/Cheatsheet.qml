@@ -27,12 +27,18 @@ FloatingWindow {
 
     Item {
         focus: true
-        
+
         onActiveFocusChanged: {
             if (!activeFocus) {
-                root.visible = false
+                root.visible = false;
             }
         }
+    }
+
+    Component.onCompleted: {
+        root.visible = true;
+
+        root.requestActivate();
     }
 
     Process {
