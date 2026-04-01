@@ -150,7 +150,10 @@ FloatingWindow {
                                         width: 220
 
                                         Repeater {
-                                            model: kb.key ? kb.key.split(" ") : []
+                                            id: keyRepeater
+
+                                            model: kb.key ? kb.key.split(" ").filter(k => k.trim() !== "") : []
+
                                             delegate: Row {
                                                 required property string modelData
                                                 required property int index
@@ -184,9 +187,10 @@ FloatingWindow {
                                                         }
                                                     }
                                                 }
+
                                                 Text {
                                                     text: "+"
-                                                    visible: index < (kb.key.split(" ").length - 1)
+                                                    visible: index < (keyRepeater.count - 1)
                                                     anchors.verticalCenter: parent.verticalCenter
                                                     font.pixelSize: 14
                                                     color: root.themeColours.primary ? ("#" + root.themeColours.primary) : "#cdd6f4"
