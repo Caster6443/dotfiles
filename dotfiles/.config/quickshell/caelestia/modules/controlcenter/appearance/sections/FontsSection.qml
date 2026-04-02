@@ -2,13 +2,13 @@ pragma ComponentBehavior: Bound
 
 import ".."
 import "../../components"
-import qs.components
-import qs.components.controls
-import qs.components.containers
-import qs.services
-import qs.config
 import QtQuick
 import QtQuick.Layouts
+import qs.components
+import qs.components.containers
+import qs.components.controls
+import qs.services
+import qs.config
 
 CollapsibleSection {
     id: root
@@ -20,6 +20,7 @@ CollapsibleSection {
 
     CollapsibleSection {
         id: sansFontSection
+
         title: qsTr("Sans-serif font family")
         expanded: true
         showBackground: true
@@ -28,10 +29,12 @@ CollapsibleSection {
         Loader {
             Layout.fillWidth: true
             Layout.preferredHeight: item ? Math.min(item.contentHeight, 300) : 0
+            asynchronous: true
             active: sansFontSection.expanded
 
             sourceComponent: StyledListView {
                 id: sansFontList
+
                 property alias contentHeight: sansFontList.contentHeight
 
                 clip: true
@@ -45,14 +48,14 @@ CollapsibleSection {
                 delegate: StyledRect {
                     required property string modelData
                     required property int index
+                    readonly property bool isCurrent: modelData === rootPane.fontFamilySans
 
                     width: ListView.view.width
-
-                    readonly property bool isCurrent: modelData === rootPane.fontFamilySans
                     color: Qt.alpha(Colours.tPalette.m3surfaceContainer, isCurrent ? Colours.tPalette.m3surfaceContainer.a : 0)
                     radius: Appearance.rounding.normal
                     border.width: isCurrent ? 1 : 0
                     border.color: Colours.palette.m3primary
+                    implicitHeight: fontFamilySansRow.implicitHeight + Appearance.padding.normal * 2
 
                     StateLayer {
                         function onClicked(): void {
@@ -81,6 +84,7 @@ CollapsibleSection {
                         }
 
                         Loader {
+                            asynchronous: true
                             active: isCurrent
 
                             sourceComponent: MaterialIcon {
@@ -90,8 +94,6 @@ CollapsibleSection {
                             }
                         }
                     }
-
-                    implicitHeight: fontFamilySansRow.implicitHeight + Appearance.padding.normal * 2
                 }
             }
         }
@@ -99,6 +101,7 @@ CollapsibleSection {
 
     CollapsibleSection {
         id: monoFontSection
+
         title: qsTr("Monospace font family")
         expanded: false
         showBackground: true
@@ -107,10 +110,12 @@ CollapsibleSection {
         Loader {
             Layout.fillWidth: true
             Layout.preferredHeight: item ? Math.min(item.contentHeight, 300) : 0
+            asynchronous: true
             active: monoFontSection.expanded
 
             sourceComponent: StyledListView {
                 id: monoFontList
+
                 property alias contentHeight: monoFontList.contentHeight
 
                 clip: true
@@ -124,14 +129,14 @@ CollapsibleSection {
                 delegate: StyledRect {
                     required property string modelData
                     required property int index
+                    readonly property bool isCurrent: modelData === rootPane.fontFamilyMono
 
                     width: ListView.view.width
-
-                    readonly property bool isCurrent: modelData === rootPane.fontFamilyMono
                     color: Qt.alpha(Colours.tPalette.m3surfaceContainer, isCurrent ? Colours.tPalette.m3surfaceContainer.a : 0)
                     radius: Appearance.rounding.normal
                     border.width: isCurrent ? 1 : 0
                     border.color: Colours.palette.m3primary
+                    implicitHeight: fontFamilyMonoRow.implicitHeight + Appearance.padding.normal * 2
 
                     StateLayer {
                         function onClicked(): void {
@@ -160,6 +165,7 @@ CollapsibleSection {
                         }
 
                         Loader {
+                            asynchronous: true
                             active: isCurrent
 
                             sourceComponent: MaterialIcon {
@@ -169,8 +175,6 @@ CollapsibleSection {
                             }
                         }
                     }
-
-                    implicitHeight: fontFamilyMonoRow.implicitHeight + Appearance.padding.normal * 2
                 }
             }
         }
@@ -178,6 +182,7 @@ CollapsibleSection {
 
     CollapsibleSection {
         id: materialFontSection
+
         title: qsTr("Material font family")
         expanded: false
         showBackground: true
@@ -185,12 +190,15 @@ CollapsibleSection {
 
         Loader {
             id: materialFontLoader
+
             Layout.fillWidth: true
             Layout.preferredHeight: item ? Math.min(item.contentHeight, 300) : 0
+            asynchronous: true
             active: materialFontSection.expanded
 
             sourceComponent: StyledListView {
                 id: materialFontList
+
                 property alias contentHeight: materialFontList.contentHeight
 
                 clip: true
@@ -204,14 +212,14 @@ CollapsibleSection {
                 delegate: StyledRect {
                     required property string modelData
                     required property int index
+                    readonly property bool isCurrent: modelData === rootPane.fontFamilyMaterial
 
                     width: ListView.view.width
-
-                    readonly property bool isCurrent: modelData === rootPane.fontFamilyMaterial
                     color: Qt.alpha(Colours.tPalette.m3surfaceContainer, isCurrent ? Colours.tPalette.m3surfaceContainer.a : 0)
                     radius: Appearance.rounding.normal
                     border.width: isCurrent ? 1 : 0
                     border.color: Colours.palette.m3primary
+                    implicitHeight: fontFamilyMaterialRow.implicitHeight + Appearance.padding.normal * 2
 
                     StateLayer {
                         function onClicked(): void {
@@ -240,6 +248,7 @@ CollapsibleSection {
                         }
 
                         Loader {
+                            asynchronous: true
                             active: isCurrent
 
                             sourceComponent: MaterialIcon {
@@ -249,8 +258,6 @@ CollapsibleSection {
                             }
                         }
                     }
-
-                    implicitHeight: fontFamilyMaterialRow.implicitHeight + Appearance.padding.normal * 2
                 }
             }
         }

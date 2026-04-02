@@ -1,17 +1,22 @@
+import QtQuick
+import QtQuick.Controls
+import Quickshell
+import qs.components
 import qs.components.controls
 import qs.config
+import qs.modules.bar as Bar
 import qs.modules.bar.popouts as BarPopouts
-import Quickshell
-import QtQuick
 
 CustomMouseArea {
     id: root
 
     required property ShellScreen screen
     required property BarPopouts.Wrapper popouts
-    required property PersistentProperties visibilities
+    required property DrawerVisibilities visibilities
     required property Panels panels
-    required property Item bar
+    required property Bar.BarWrapper bar
+    required property real borderThickness
+    required property bool fullscreen
 
     property point dragStart
     property bool dashboardShortcutActive
@@ -19,7 +24,7 @@ CustomMouseArea {
     property bool utilitiesShortcutActive
 
     function withinPanelHeight(panel: Item, x: real, y: real): bool {
-        const panelY = Config.border.thickness + panel.y;
+        const panelY = root.borderThickness + panel.y;
         return y >= panelY - Config.border.rounding && y <= panelY + panel.height + Config.border.rounding;
     }
 
@@ -45,13 +50,16 @@ CustomMouseArea {
     }
 
     function onWheel(event: WheelEvent): void {
+        if (fullscreen)
+            return;
         if (event.x < bar.implicitWidth) {
             bar.handleWheel(event.y, event.angleDelta);
         }
     }
 
     anchors.fill: parent
-    hoverEnabled: true
+    acceptedButtons: fullscreen ? Qt.NoButton : Qt.AllButtons
+    hoverEnabled: !fullscreen
 
     onPressed: event => dragStart = Qt.point(event.x, event.y)
     onContainsMouseChanged: {
@@ -68,7 +76,7 @@ CustomMouseArea {
             if (!utilitiesShortcutActive)
                 visibilities.utilities = false;
 
-            if (!popouts.currentName.startsWith("traymenu") || (popouts.current?.depth ?? 0) <= 1) {
+            if (!popouts.currentName.startsWith("traymenu") || ((popouts.current as StackView)?.depth ?? 0) <= 1) {
                 popouts.hasCurrent = false;
                 bar.closeTray();
             }
@@ -201,7 +209,7 @@ CustomMouseArea {
         // Show popouts on hover
         if (x < bar.implicitWidth) {
             bar.checkPopout(y);
-        } else if ((!popouts.currentName.startsWith("traymenu") || (popouts.current?.depth ?? 0) <= 1) && !inLeftPanel(panels.popouts, x, y)) {
+        } else if ((!popouts.currentName.startsWith("traymenu") || ((popouts.current as StackView)?.depth ?? 0) <= 1) && !inLeftPanel(panels.popouts, x, y)) {
             popouts.hasCurrent = false;
             bar.closeTray();
         }
@@ -209,8 +217,6 @@ CustomMouseArea {
 
     // Monitor individual visibility changes
     Connections {
-        target: root.visibilities
-
         function onLauncherChanged() {
             // If launcher is hidden, clear shortcut flags for dashboard and OSD
             if (!root.visibilities.launcher) {
@@ -270,5 +276,7 @@ CustomMouseArea {
                 root.utilitiesShortcutActive = false;
             }
         }
+
+        target: root.visibilities
     }
 }

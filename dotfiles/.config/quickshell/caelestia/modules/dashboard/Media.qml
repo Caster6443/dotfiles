@@ -1,21 +1,21 @@
 pragma ComponentBehavior: Bound
 
-import qs.components
-import qs.components.controls
-import qs.services
-import qs.utils
-import qs.config
-import Caelestia.Services
-import Quickshell
-import Quickshell.Services.Mpris
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Shapes
+import Quickshell
+import Quickshell.Services.Mpris
+import Caelestia.Services
+import qs.components
+import qs.components.controls
+import qs.services
+import qs.config
+import qs.utils
 
 Item {
     id: root
 
-    required property PersistentProperties visibilities
+    required property DrawerVisibilities visibilities
     readonly property bool needsKeyboard: lyricMenuOpen
 
     readonly property real nonAnimHeight: Math.max(cover.implicitHeight + Config.dashboard.sizes.mediaVisualiserSize * 2, lyricMenuOpen ? lyricMenu.implicitHeight : details.implicitHeight, bongocat.implicitHeight) + Appearance.padding.large * 2
@@ -80,15 +80,17 @@ Item {
 
     Timer {
         id: lyricsHideDelay
+
         interval: 300
         repeat: false
     }
 
     Connections {
-        target: lyricsHideDelay
         function onTriggered() {
             root.lyricsShowingDebounced = false;
         }
+
+        target: lyricsHideDelay
     }
 
     ServiceRef {
@@ -179,7 +181,7 @@ Item {
 
             anchors.fill: parent
 
-            source: Players.active?.trackArtUrl ?? "" // qmllint disable incompatible-type
+            source: Players.getArtUrl(Players.active)
             asynchronous: true
             fillMode: Image.PreserveAspectCrop
             sourceSize.width: width
@@ -248,6 +250,7 @@ Item {
 
         LyricsView {
             id: lyricsViewInDetails
+
             Layout.fillWidth: true
             Layout.preferredHeight: 200
         }
@@ -311,43 +314,6 @@ Item {
             implicitWidth: 280
             implicitHeight: Appearance.padding.normal * 3
 
-            background: Rectangle {
-                x: slider.leftPadding
-                y: slider.topPadding + slider.availableHeight / 2 - height / 2
-                implicitWidth: 200
-                implicitHeight: 6
-                width: slider.availableWidth
-                height: implicitHeight
-                radius: 3
-                color: Colours.palette.m3surfaceVariant
-
-                Rectangle {
-                    width: slider.visualPosition * parent.width
-                    height: parent.height
-                    color: Colours.palette.m3primary
-                    radius: 3
-                }
-            }
-
-            handle: Item {
-                x: slider.leftPadding + slider.visualPosition * (slider.availableWidth - width)
-                y: slider.topPadding + slider.availableHeight / 2 - height / 2
-                implicitWidth: 24
-                implicitHeight: 24
-
-                AnimatedImage {
-                    anchors.centerIn: parent
-                    width: 40
-                    height: 40
-
-                    source: "file:///home/caster/.config/quickshell/caelestia/assets/doroRun.gif"
-
-                    asynchronous: true
-                    fillMode: AnimatedImage.PreserveAspectFit
-                    playing: Players.active?.isPlaying ?? false
-                }
-            }
-
             onMoved: {
                 const active = Players.active;
                 if (active?.canSeek && active?.positionSupported)
@@ -362,19 +328,20 @@ Item {
             }
 
             CustomMouseArea {
-                anchors.fill: parent
-                acceptedButtons: Qt.NoButton
-
                 function onWheel(event: WheelEvent) {
                     const active = Players.active;
                     if (!active?.canSeek || !active?.positionSupported)
                         return;
+
                     event.accepted = true;
-                    const delta = event.angleDelta.y > 0 ? 10 : -10;
+                    const delta = event.angleDelta.y > 0 ? 10 : -10;    // Time 10 seconds
                     Qt.callLater(() => {
                         active.position = Math.max(0, Math.min(active.length, active.position + delta));
                     });
                 }
+
+                anchors.fill: parent
+                acceptedButtons: Qt.NoButton
             }
         }
 
@@ -414,6 +381,7 @@ Item {
 
         visible: lyricMenu.height === 0 || opacity > 0
         opacity: lyricMenu.height === 0 ? 1 : 0
+
         Behavior on opacity {
             NumberAnimation {
                 duration: Appearance.anim.durations.normal
@@ -455,6 +423,7 @@ Item {
         visible: root.lyricMenuOpen || height > 0
         height: root.lyricMenuOpen ? implicitHeight : 0
         clip: true
+
         Behavior on height {
             NumberAnimation {
                 duration: Appearance.anim.durations.normal
@@ -465,6 +434,7 @@ Item {
 
     RowLayout {
         id: playerChanger
+
         parent: !root.lyricsShowingDebounced ? details : leftSection
         Layout.alignment: Qt.AlignHCenter
         spacing: Appearance.spacing.small

@@ -11,6 +11,8 @@ import "modules/cheatsheet"
 import Quickshell
 
 ShellRoot {
+    settings.watchFiles: false
+
     Background {}
     Drawers {}
     AreaPicker {}

@@ -1,11 +1,12 @@
 pragma Singleton
 
-import qs.config
-import Caelestia.Services
-import Caelestia
-import Quickshell
-import Quickshell.Services.Pipewire
 import QtQuick
+import Quickshell
+import Quickshell.Io
+import Quickshell.Services.Pipewire
+import Caelestia
+import Caelestia.Services
+import qs.config
 
 Singleton {
     id: root
@@ -67,6 +68,15 @@ Singleton {
         Pipewire.preferredDefaultAudioSource = newSource;
     }
 
+    function cycleNextAudioOutput(): void {
+        if (sinks.length === 0)
+            return;
+
+        const currentIndex = sinks.findIndex(s => s === sink);
+        const nextIndex = (currentIndex + 1) % sinks.length;
+        setAudioSink(sinks[nextIndex]);
+    }
+
     function setStreamVolume(stream: PwNode, newVolume: real): void {
         if (stream?.ready && stream?.audio) {
             stream.audio.muted = false;
@@ -92,7 +102,7 @@ Singleton {
         if (!stream)
             return qsTr("Unknown");
         // Try application name first, then description, then name
-        return stream.applicationName || stream.description || stream.name || qsTr("Unknown Application");
+        return stream.properties["application.name"] || stream.description || stream.name || qsTr("Unknown Application");
     }
 
     onSinkChanged: {
@@ -125,8 +135,6 @@ Singleton {
     }
 
     Connections {
-        target: Pipewire.nodes
-
         function onValuesChanged(): void {
             const newSinks = [];
             const newSources = [];
@@ -147,6 +155,8 @@ Singleton {
             root.sources = newSources;
             root.streams = newStreams;
         }
+
+        target: Pipewire.nodes
     }
 
     PwObjectTracker {
@@ -161,5 +171,13 @@ Singleton {
 
     BeatTracker {
         id: beatTracker
+    }
+
+    IpcHandler {
+        function cycleOutput(): void {
+            root.cycleNextAudioOutput();
+        }
+
+        target: "audio"
     }
 }
