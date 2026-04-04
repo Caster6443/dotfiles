@@ -93,8 +93,8 @@ FloatingWindow {
 
     Rectangle {
         anchors.fill: parent
-        color: root.themeColours.surface ? ("#" + root.themeColours.surface) : '#1e1e2e'
-        opacity: 0.5
+        color: root.themeColours.crust ? ("#" + root.themeColours.crust) : '#0b0d11'
+        opacity: 0.75
         radius: 18
 
         Column {
@@ -163,18 +163,22 @@ FloatingWindow {
                                                 Rectangle {
                                                     color: root.themeColours.primary ? ("#" + root.themeColours.primary) : "#cdd6f4"
                                                     radius: 5
-                                                    width: innerBg.width + 4
-                                                    height: innerBg.height + 5
+                                                    implicitWidth: keyFace.implicitWidth + 2
+                                                    implicitHeight: keyFace.implicitHeight + 4
 
                                                     Rectangle {
-                                                        id: innerBg
-                                                        color: root.themeColours.surface ? ("#" + root.themeColours.surface) : "#1e1e2e"
-                                                        radius: 4
-                                                        width: keyText.implicitWidth + 14
-                                                        height: keyText.implicitHeight + 8
-                                                        anchors.horizontalCenter: parent.horizontalCenter
-                                                        anchors.top: parent.top
+                                                        id: keyFace
+                                                        anchors.fill: parent
                                                         anchors.topMargin: 1
+                                                        anchors.leftMargin: 1
+                                                        anchors.rightMargin: 1
+                                                        anchors.bottomMargin: 3
+
+                                                        implicitWidth: keyText.implicitWidth + 14
+                                                        implicitHeight: keyText.implicitHeight + 8
+
+                                                        color: root.themeColours.surfaceContainerLow ? ("#" + root.themeColours.surfaceContainerLow) : "#1e1e2e"
+                                                        radius: 4
 
                                                         Text {
                                                             id: keyText
@@ -187,7 +191,6 @@ FloatingWindow {
                                                         }
                                                     }
                                                 }
-
                                                 Text {
                                                     text: "+"
                                                     visible: index < (keyRepeater.count - 1)
