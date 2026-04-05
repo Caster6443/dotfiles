@@ -170,9 +170,9 @@ FloatingWindow {
                                                         id: keyFace
                                                         anchors.fill: parent
                                                         anchors.topMargin: 1
-                                                        anchors.leftMargin: 1
+                                                        anchors.leftMargin: 2
                                                         anchors.rightMargin: 1
-                                                        anchors.bottomMargin: 3
+                                                        anchors.bottomMargin: 4
 
                                                         implicitWidth: keyText.implicitWidth + 14
                                                         implicitHeight: keyText.implicitHeight + 8
