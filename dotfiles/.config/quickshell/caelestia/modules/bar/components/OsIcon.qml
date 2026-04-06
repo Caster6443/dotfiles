@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell.Io
 import qs.components
 import qs.components.effects
 import qs.services
@@ -11,13 +12,16 @@ Item {
     implicitWidth: Math.round(Appearance.font.size.large * 1.2)
     implicitHeight: Math.round(Appearance.font.size.large * 1.2)
 
+    Process {
+        id: toggleOverview
+        command: ["qs", "-c", "caelestia", "ipc", "call", "pure_overview", "toggle"]
+        running: false
+    }
+
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
-        onClicked: {
-            const visibilities = Visibilities.getForActive();
-            visibilities.launcher = !visibilities.launcher;
-        }
+        onClicked: toggleOverview.running = true
     }
 
     Loader {
