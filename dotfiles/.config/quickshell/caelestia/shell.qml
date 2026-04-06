@@ -8,6 +8,7 @@ import "modules/background"
 import "modules/areapicker"
 import "modules/lock"
 import "modules/cheatsheet"
+import "modules/overview"
 import Quickshell
 
 ShellRoot {
@@ -26,4 +27,7 @@ ShellRoot {
         lock: lock
     }
     Cheatsheet {}
+    Overview {
+        id: overviewWidget
+    }
 }
