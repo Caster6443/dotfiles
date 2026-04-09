@@ -8,26 +8,36 @@ import "../../services" as Services
 import qs.config
 import qs.components
 
-PanelWindow {
+Item {
     id: root
-    anchors {
-        left: true
-        top: true
-        bottom: true
-    }
-    margins {
-        left: Config.bar.sizes.innerWidth + Math.max(Appearance.padding.smaller, Config.border.thickness) * 2
-    }
 
-    exclusionMode: ExclusionMode.Ignore
+    required property DrawerVisibilities visibilities
 
     implicitWidth: mainContainer.implicitWidth
     implicitHeight: mainContainer.implicitHeight
-    visible: false
-    color: "transparent"
+
+    function handleKey(event) {
+        if (event.key === Qt.Key_Escape) {
+            visibilities.overview = false;
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Up || event.key === Qt.Key_Down) {
+            const step = flickable.cardHeight + flickable.cardSpacing;
+            const delta = event.key === Qt.Key_Up ? -step : step;
+            flickable.contentY = Math.max(0, Math.min(flickable.contentY + delta, flickable.contentHeight - flickable.height));
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+            const idx = Math.round(flickable.contentY / (flickable.cardHeight + flickable.cardSpacing));
+            Hyprland.dispatch(`workspace ${idx + 1}`);
+            visibilities.overview = false;
+            event.accepted = true;
+        }
+    }
 
     property string currentWallpaperPath: ""
     property var wsLayers: ({})
+    property string hoveredWindowAddress: ""
+    readonly property var windowModelRef: windowModel
+    readonly property var specialWindowModelRef: specialWindowModel
 
     Services.HyprlandData {
         id: localHyprData
@@ -37,36 +47,42 @@ PanelWindow {
         id: windowModel
     }
 
+    ListModel {
+        id: specialWindowModel
+    }
+
     function syncWindows(rawList) {
         if (!rawList)
             return;
 
-        const nextMap = new Map();
+        const normalMap = new Map();
+        const specialMap = new Map();
+
         for (const w of rawList) {
             if (!w || !w.address)
                 continue;
             const cls = (w.class || "").toLowerCase();
             const title = (w.title || "");
-            const isO = cls.includes("quickshell") || title.includes("quickshell_pure_overview");
-            if (isO)
+            if (cls.includes("quickshell") || title.includes("quickshell_pure_overview"))
                 continue;
             const wsId = w.workspace?.id ?? 0;
-            if (wsId < 1)
+            if (wsId === 0)
                 continue;
-            nextMap.set(w.address, w);
+            if (wsId > 0)
+                normalMap.set(w.address, w);
+            else
+                specialMap.set(w.address, w);
         }
 
+        // sync normal windows
         for (let i = windowModel.count - 1; i >= 0; --i) {
-            if (!nextMap.has(windowModel.get(i).m_address))
+            if (!normalMap.has(windowModel.get(i).m_address))
                 windowModel.remove(i);
         }
-
-        const indexByAddr = {};
+        const normalIdx = {};
         for (let i = 0; i < windowModel.count; ++i)
-            indexByAddr[windowModel.get(i).m_address] = i;
-
-        for (const [addr, w] of nextMap) {
-            const idx = indexByAddr[addr];
+            normalIdx[windowModel.get(i).m_address] = i;
+        for (const [addr, w] of normalMap) {
             const data = {
                 m_address: addr,
                 m_wsId: w.workspace?.id ?? 0,
@@ -79,15 +95,48 @@ PanelWindow {
                 m_title: w.title ?? "",
                 m_linearX: 20
             };
+            const idx = normalIdx[addr];
             if (idx === undefined) {
                 windowModel.append(data);
             } else {
-                for (const k in data) {
+                for (const k in data)
                     if (windowModel.get(idx)[k] !== data[k])
                         windowModel.setProperty(idx, k, data[k]);
-                }
             }
         }
+
+        // sync special windows
+        for (let i = specialWindowModel.count - 1; i >= 0; --i) {
+            if (!specialMap.has(specialWindowModel.get(i).m_address))
+                specialWindowModel.remove(i);
+        }
+        const specialIdx = {};
+        for (let i = 0; i < specialWindowModel.count; ++i)
+            specialIdx[specialWindowModel.get(i).m_address] = i;
+        for (const [addr, w] of specialMap) {
+            const data = {
+                m_address: addr,
+                m_wsId: w.workspace?.id ?? 0,
+                m_wsName: w.workspace?.name ?? "",
+                m_atX: w.at?.[0] ?? 0,
+                m_atY: w.at?.[1] ?? 0,
+                m_sizeW: w.size?.[0] ?? 0,
+                m_sizeH: w.size?.[1] ?? 0,
+                m_floating: !!w.floating,
+                m_class: w.class ?? "",
+                m_title: w.title ?? "",
+                m_linearX: 20
+            };
+            const idx = specialIdx[addr];
+            if (idx === undefined) {
+                specialWindowModel.append(data);
+            } else {
+                for (const k in data)
+                    if (specialWindowModel.get(idx)[k] !== data[k])
+                        specialWindowModel.setProperty(idx, k, data[k]);
+            }
+        }
+
         root.recomputeAllLinearX();
     }
 
@@ -112,7 +161,7 @@ PanelWindow {
         arr.sort((a, b) => a.atX - b.atX);
 
         const monW = Hyprland.focusedMonitor?.width || 1920;
-        const gap = 40; 
+        const gap = 40;
         let totalW = 0;
         for (let j = 0; j < arr.length; ++j) {
             const w = arr[j].w > 0 ? arr[j].w : monW / 2;
@@ -181,10 +230,36 @@ PanelWindow {
         const seen = {};
         for (let i = 0; i < windowModel.count; ++i) {
             const wsId = windowModel.get(i).m_wsId;
-            if (seen[wsId])
-                continue;
+            if (seen[wsId]) continue;
             seen[wsId] = true;
             root.recomputeLinearXForWs(wsId);
+        }
+        for (let i = 0; i < specialWindowModel.count; ++i) {
+            const wsId = specialWindowModel.get(i).m_wsId;
+            if (seen[wsId]) continue;
+            seen[wsId] = true;
+            root.recomputeLinearXForWsInModel(wsId, specialWindowModel);
+        }
+    }
+
+    function recomputeLinearXForWsInModel(wsId, model) {
+        const arr = [];
+        for (let i = 0; i < model.count; ++i) {
+            const it = model.get(i);
+            if (it.m_wsId !== wsId) continue;
+            arr.push({ idx: i, atX: it.m_atX, w: it.m_sizeW });
+        }
+        arr.sort((a, b) => a.atX - b.atX);
+        const monW = Hyprland.focusedMonitor?.width || 1920;
+        const gap = 40;
+        let totalW = 0;
+        for (let j = 0; j < arr.length; ++j)
+            totalW += arr[j].w > 0 ? arr[j].w : monW / 2;
+        if (arr.length > 0) totalW += (arr.length - 1) * gap;
+        let xOffset = (Math.max(monW, totalW + gap * 2) - totalW) / 2;
+        for (let j = 0; j < arr.length; ++j) {
+            model.setProperty(arr[j].idx, "m_linearX", xOffset);
+            xOffset += (arr[j].w > 0 ? arr[j].w : monW / 2) + gap;
         }
     }
 
@@ -231,20 +306,13 @@ PanelWindow {
 
     Timer {
         id: wallpaperTimer
-        interval: 1000 
+        interval: 1000
         repeat: true
-        running: root.visible
+        running: root.visibilities.overview
 
         onTriggered: {
             awwwQueryProc.running = false;
             awwwQueryProc.running = true;
-        }
-    }
-
-    IpcHandler {
-        target: "pure_overview"
-        function toggle() {
-            root.visible = !root.visible;
         }
     }
 
@@ -253,6 +321,14 @@ PanelWindow {
             localHyprData.updateAll();
             root.syncWindows(localHyprData.windowList);
             awwwQueryProc.running = true;
+            // 禁用动画直接跳到目标位置，避免闪烁
+            scrollAnim.enabled = false;
+            const activeId = Hyprland.focusedMonitor?.activeWorkspace?.id ?? 1;
+            const step = flickable.cardHeight + flickable.cardSpacing;
+            const normalTop = flickable.specialSectionHeight;
+            const targetY = normalTop + (activeId - 1) * step - (flickable.visibleHeight - flickable.cardHeight) / 2;
+            flickable.contentY = Math.max(normalTop, Math.min(targetY, flickable.contentHeight - flickable.height));
+            scrollAnim.enabled = true;
         } else {
             awwwQueryProc.running = false;
         }
@@ -262,8 +338,8 @@ PanelWindow {
         id: mainContainer
         color: "#CC11111b"
         radius: 24
-        implicitWidth: grid.implicitWidth + 60
-        implicitHeight: grid.implicitHeight + 60
+        implicitWidth: flickable.contentWidth + 60
+        implicitHeight: flickable.visibleHeight + 60
         border.color: "#313244"
         border.width: 2
         anchors {
@@ -279,17 +355,113 @@ PanelWindow {
             visible: false
         }
 
-        Grid {
-            id: grid
-            anchors.centerIn: parent
-            columns: 1
-            spacing: 25
+        Flickable {
+            id: flickable
 
-            Repeater {
-                model: 5
-                delegate: WorkspaceCard {
-                    overviewRoot: root
-                    windowModel: windowModel
+            readonly property real cardHeight: 260
+            readonly property real cardSpacing: 25
+            readonly property real visibleCards: 5
+            readonly property real visibleHeight: visibleCards * cardHeight + (visibleCards - 1) * cardSpacing
+            readonly property real separatorHeight: 40
+            readonly property real specialSectionHeight: specialColumn.implicitHeight > 0
+                ? specialColumn.implicitHeight + cardSpacing * 2 + separatorHeight
+                : 0
+
+            anchors.centerIn: parent
+            width: contentWidth
+            height: visibleHeight
+            contentWidth: mainColumn.implicitWidth
+            contentHeight: mainColumn.implicitHeight
+            clip: true
+            flickableDirection: Flickable.VerticalFlick
+
+            Behavior on contentY {
+                id: scrollAnim
+                NumberAnimation {
+                    duration: 300
+                    easing.type: Easing.OutCubic
+                }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                acceptedButtons: Qt.NoButton
+                onWheel: wheel => {
+                    const step = flickable.cardHeight + flickable.cardSpacing;
+                    const newY = flickable.contentY - wheel.angleDelta.y / 120 * step;
+                    flickable.contentY = Math.max(0, Math.min(newY, flickable.contentHeight - flickable.height));
+                }
+            }
+
+            Column {
+                id: mainColumn
+                spacing: 0
+
+                // special workspaces section — hidden above normal area, revealed by scrolling up
+                Item {
+                    id: specialBg
+                    width: specialColumn.implicitWidth || 400
+                    height: specialColumn.implicitHeight + flickable.cardSpacing * 2
+                    visible: specialColumn.implicitHeight > 0
+                    z: 10
+
+                    // area border — subtle glow to define the region without a solid background
+                    Rectangle {
+                        anchors.fill: parent
+                        anchors.margins: -12
+                        radius: 20
+                        color: "transparent"
+                        border.width: 1
+                        border.color: Qt.alpha(Colours.palette.m3onSurface, 0.15)
+                    }
+
+                    Column {
+                        id: specialColumn
+                        spacing: flickable.cardSpacing
+                        anchors.centerIn: parent
+                        z: 10
+
+                        Repeater {
+                            model: {
+                                const ids = [];
+                                const seen = {};
+                                for (let i = 0; i < specialWindowModel.count; ++i) {
+                                    const id = specialWindowModel.get(i).m_wsId;
+                                    if (!seen[id]) { seen[id] = true; ids.push(id); }
+                                }
+                                return ids;
+                            }
+                            delegate: WorkspaceCard {
+                                required property var modelData
+                                overviewRoot: root
+                                windowModel: specialWindowModel
+                                specialWsId: modelData
+                                isSpecial: true
+                            }
+                        }
+                    }
+                }
+
+                // gap between special and normal sections
+                Item {
+                    width: 1
+                    height: specialColumn.implicitHeight > 0 ? flickable.separatorHeight : 0
+                    visible: specialColumn.implicitHeight > 0
+                }
+
+                // normal workspaces
+                Column {
+                    id: normalColumn
+                    spacing: flickable.cardSpacing
+
+                    Repeater {
+                        model: 10
+                        delegate: WorkspaceCard {
+                            overviewRoot: root
+                            windowModel: windowModel
+                            isSpecial: false
+                        }
+                    }
                 }
             }
         }
@@ -297,6 +469,14 @@ PanelWindow {
 
     Repeater {
         model: windowModel
+        delegate: WindowPreview {
+            overviewRoot: root
+            orphanLayer: orphanLayer
+        }
+    }
+
+    Repeater {
+        model: specialWindowModel
         delegate: WindowPreview {
             overviewRoot: root
             orphanLayer: orphanLayer

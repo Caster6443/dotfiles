@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import Qt5Compat.GraphicalEffects
+import qs.services
 
 Rectangle {
     id: windowItem
@@ -16,6 +17,7 @@ Rectangle {
     required property real m_sizeH
     required property real m_linearX
     required property bool m_floating
+    required property string m_title
 
     required property var overviewRoot
     required property Item orphanLayer
@@ -23,10 +25,41 @@ Rectangle {
     property string windowAddress: m_address
     property int currentWsId: m_wsId
 
+    // hover magnification + push effect
+    readonly property bool isHovered: overviewRoot.hoveredWindowAddress === m_address
+
+    readonly property int wsWindowCount: {
+        let n = 0;
+        for (let i = 0; i < overviewRoot.windowModelRef.count; ++i)
+            if (overviewRoot.windowModelRef.get(i).m_wsId === m_wsId) n++;
+        return n;
+    }
+
+    readonly property real hoverScale: wsWindowCount <= 1 ? 1.06 : 1.18
+
+    readonly property real pushOffset: {
+        const hAddr = overviewRoot.hoveredWindowAddress;
+        if (!hAddr || hAddr === m_address)
+            return 0;
+        for (let i = 0; i < overviewRoot.windowModelRef.count; ++i) {
+            const it = overviewRoot.windowModelRef.get(i);
+            if (it.m_address !== hAddr || it.m_wsId !== m_wsId)
+                continue;
+            const hovX = it.m_linearX * scaleRatio;
+            const myX = m_linearX * scaleRatio;
+            const dist = myX - hovX;
+            if (Math.abs(dist) > width * 2)
+                return 0;
+            const push = 28 * Math.exp(-Math.abs(dist) / (width * 0.8));
+            return dist > 0 ? push : -push;
+        }
+        return 0;
+    }
+
     parent: (overviewRoot.wsLayers && overviewRoot.wsLayers[m_wsId]) ? overviewRoot.wsLayers[m_wsId] : (overviewRoot.anyWorkspaceLayer() ? overviewRoot.anyWorkspaceLayer() : orphanLayer)
     visible: parent !== orphanLayer
-    z: 20
-    scale: mouseArea.containsMouse ? 1.02 : 1.0
+    z: isHovered ? 30 : 20
+    scale: isHovered ? hoverScale : 1.0
     opacity: mouseArea.drag.active ? 0.9 : 1.0
 
     Behavior on x {
@@ -55,8 +88,9 @@ Rectangle {
     }
     Behavior on scale {
         NumberAnimation {
-            duration: 140
-            easing.type: Easing.OutCubic
+            duration: 200
+            easing.type: Easing.OutBack
+            easing.overshoot: 0.5
         }
     }
     Behavior on opacity {
@@ -72,7 +106,7 @@ Rectangle {
         return container && container.scaleRatio !== undefined ? container.scaleRatio : 1.0;
     }
 
-    property real targetX: m_linearX * scaleRatio
+    property real targetX: m_linearX * scaleRatio + pushOffset
 
     property real targetY: {
         const ph = parent ? parent.height : 260;
@@ -81,10 +115,12 @@ Rectangle {
     }
 
     readonly property real clampedX: {
+        if (isNaN(targetX)) return 0;
         const pw = parent ? parent.width : 0;
-        if (!pw || isNaN(targetX) || isNaN(width))
-            return targetX;
-        return Math.max(0, Math.min(targetX, pw - width));
+        if (!pw || isNaN(width)) return targetX;
+        // clamp center point, not edge — so scaled window stays visually within card
+        const half = width / 2;
+        return Math.max(half, Math.min(targetX + half, pw - half)) - half;
     }
     readonly property real clampedY: {
         const ph = parent ? parent.height : 0;
@@ -106,15 +142,38 @@ Rectangle {
     height: (m_sizeH > 0 ? m_sizeH : (Hyprland.focusedMonitor?.height || 1080)) * scaleRatio
 
     radius: 6
-    color: "#45475a"
-    border.color: mouseArea.containsMouse ? "#cba6f7" : "#b4befe"
+    color: Colours.palette.m3surfaceContainerHigh
+    border.color: mouseArea.containsMouse ? Colours.palette.m3tertiary : Colours.palette.m3primaryContainer
     border.width: 1
+
+    Rectangle {
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: titleText.implicitHeight + 6
+        radius: 5
+        color: Qt.alpha(Colours.palette.m3surface, 0.85)
+        visible: mouseArea.containsMouse && m_title !== ""
+        z: 10
+
+        Text {
+            id: titleText
+            anchors.centerIn: parent
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.margins: 6
+            text: m_title
+            color: Colours.palette.m3onSurface
+            font.pixelSize: 11
+            elide: Text.ElideRight
+        }
+    }
 
     ScreencopyView {
         id: screenView
         anchors.fill: parent
         anchors.margins: 1
-        live: true
+        live: overviewRoot.visibilities.overview
 
         layer.enabled: true
         layer.effect: OpacityMask {
@@ -126,8 +185,9 @@ Rectangle {
         }
 
         captureSource: {
+            const addr = windowAddress.toLowerCase();
             for (let tl of ToplevelManager.toplevels.values) {
-                if (`0x${tl.HyprlandToplevel?.address}` === windowAddress)
+                if (`0x${tl.HyprlandToplevel?.address}`.toLowerCase() === addr)
                     return tl;
             }
             return null;
@@ -145,8 +205,18 @@ Rectangle {
         anchors.fill: parent
         drag.target: windowItem
         hoverEnabled: true
+        acceptedButtons: Qt.LeftButton | Qt.MiddleButton
 
-        onPressed: {
+        onEntered: overviewRoot.hoveredWindowAddress = m_address
+        onExited: overviewRoot.hoveredWindowAddress = ""
+
+        onPressed: mouse => {
+            if (mouse.button === Qt.MiddleButton) {
+                mouse.accepted = true;
+                Hyprland.dispatch(`closewindow address:${windowAddress}`);
+                overviewRoot.restartSyncTimer();
+                return;
+            }
             windowItem.z = 100;
             const layer = windowItem.parent;
             const container = layer ? layer.parent : null;
@@ -154,14 +224,19 @@ Rectangle {
                 container.hasActiveDrag = true;
         }
 
-        onReleased: {
+        onReleased: mouse => {
+            if (mouse.button === Qt.MiddleButton)
+                return;
             windowItem.z = 1;
             const layer = windowItem.parent;
             const container = layer ? layer.parent : null;
             if (container)
                 container.hasActiveDrag = false;
 
-            windowItem.Drag.drop();
+            const dropResult = windowItem.Drag.drop();
+            // if drop was accepted by a WorkspaceCard (cross-workspace move), skip reorder
+            if (dropResult === Qt.MoveAction)
+                return;
 
             const activeWs = Hyprland.focusedMonitor?.activeWorkspace?.id ?? -999;
             const monX = Hyprland.focusedMonitor?.x || 0;
@@ -189,9 +264,11 @@ Rectangle {
             }
         }
 
-        onClicked: {
+        onClicked: mouse => {
+            if (mouse.button !== Qt.LeftButton)
+                return;
             Hyprland.dispatch(`focuswindow address:${windowAddress}`);
-            overviewRoot.visible = false;
+            overviewRoot.visibilities.overview = false;
         }
     }
 }

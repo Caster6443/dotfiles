@@ -9,19 +9,18 @@ import qs.utils
 Item {
     id: root
 
+    property var visibilities: null
+
     implicitWidth: Math.round(Appearance.font.size.large * 1.2)
     implicitHeight: Math.round(Appearance.font.size.large * 1.2)
-
-    Process {
-        id: toggleOverview
-        command: ["qs", "-c", "caelestia", "ipc", "call", "pure_overview", "toggle"]
-        running: false
-    }
 
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
-        onClicked: toggleOverview.running = true
+        onClicked: {
+            if (root.visibilities)
+                root.visibilities.overview = !root.visibilities.overview;
+        }
     }
 
     Loader {
