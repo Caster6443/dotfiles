@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import Quickshell.Hyprland
+import qs.services
 
 Item {
     id: workspaceContainer
@@ -9,8 +10,10 @@ Item {
     required property int index
     required property var overviewRoot
     required property ListModel windowModel
+    property bool isSpecial: false
+    property int specialWsId: -1
 
-    property int wsId: index + 1
+    property int wsId: isSpecial ? specialWsId : index + 1
     property bool hasActiveDrag: false
 
     readonly property real workspaceW: 400
@@ -29,9 +32,8 @@ Item {
             count++;
         }
         const gap = 40;
-        if (count > 0) {
+        if (count > 0)
             totalW += (count - 1) * gap;
-        }
         totalW += gap * 2;
         return Math.max(monW, totalW);
     }
@@ -47,13 +49,21 @@ Item {
         radius: 18
         clip: true
 
-        color: Hyprland.focusedMonitor?.activeWorkspace?.id === wsId ? "#313244" : "#1e1e2e"
-        border.width: Hyprland.focusedMonitor?.activeWorkspace?.id === wsId ? 2 : 1
-        border.color: Hyprland.focusedMonitor?.activeWorkspace?.id === wsId ? "#89b4fa" : "#45475a"
+        color: {
+            if (isSpecial)
+                return Qt.darker(Colours.palette.m3surfaceContainer, 1.4);
+            return Hyprland.focusedMonitor?.activeWorkspace?.id === wsId
+                ? Colours.palette.m3surfaceContainer
+                : Colours.palette.m3surface;
+        }
+        border.width: 1
+        border.color: isSpecial
+            ? Qt.alpha(Colours.palette.m3onSurface, 0.12)
+            : (Hyprland.focusedMonitor?.activeWorkspace?.id === wsId ? Colours.palette.m3primary : Colours.palette.m3outlineVariant)
 
         Image {
             anchors.fill: parent
-            source: overviewRoot.currentWallpaperPath
+            source: isSpecial ? "" : overviewRoot.currentWallpaperPath
             fillMode: Image.PreserveAspectCrop
             opacity: 0.6
         }
@@ -61,9 +71,23 @@ Item {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                Hyprland.dispatch(`workspace ${wsId}`);
-                overviewRoot.visible = false;
+                if (isSpecial)
+                    Hyprland.dispatch(`togglespecialworkspace ${workspaceContainer.wsId < 0 ? "special" : ""}`);
+                else
+                    Hyprland.dispatch(`workspace ${wsId}`);
+                overviewRoot.visibilities.overview = false;
             }
+        }
+
+        Text {
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.margins: 8
+            text: isSpecial ? "S" : wsId
+            color: isSpecial ? Colours.palette.m3onTertiaryContainer : Colours.palette.m3onSurface
+            font.pixelSize: 13
+            font.bold: true
+            z: 10
         }
 
         DropArea {
@@ -72,10 +96,13 @@ Item {
             onDropped: drop => {
                 if (drop.source && drop.source.windowAddress) {
                     if (drop.source.currentWsId !== wsId) {
-                        Hyprland.dispatch(`movetoworkspacesilent ${wsId},address:${drop.source.windowAddress}`);
+                        if (isSpecial)
+                            Hyprland.dispatch(`movetoworkspacesilent special,address:${drop.source.windowAddress}`);
+                        else
+                            Hyprland.dispatch(`movetoworkspacesilent ${wsId},address:${drop.source.windowAddress}`);
                     }
+                    drop.action = Qt.MoveAction;
                     drop.accepted = true;
-                    // 调用主 root 的计时器
                     overviewRoot.restartSyncTimer();
                 }
             }

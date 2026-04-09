@@ -11,7 +11,7 @@ Item {
     id: root
 
     required property PopoutState popouts
-    readonly property Popout currentPopout: content.children.find(c => c.shouldBeActive) ?? null
+    readonly property Item currentPopout: content.children.find(c => c.shouldBeActive) ?? null
     readonly property Item current: currentPopout?.item ?? null
 
     anchors.centerIn: parent
@@ -126,6 +126,56 @@ Item {
         Popout {
             name: "lockstatus"
             sourceComponent: LockStatus {}
+        }
+
+        Loader {
+            id: wsPreviewPopout
+
+            readonly property bool shouldBeActive: root.popouts.currentName.startsWith("workspace_")
+            readonly property int previewWsId: {
+                const n = root.popouts.currentName;
+                return n.startsWith("workspace_") ? parseInt(n.slice(10)) || 0 : 0;
+            }
+
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: parent.right
+
+            active: false
+            opacity: 0
+            scale: 0.8
+
+            states: State {
+                name: "active"
+                when: wsPreviewPopout.shouldBeActive
+                PropertyChanges {
+                    wsPreviewPopout.active: true
+                    wsPreviewPopout.opacity: 1
+                    wsPreviewPopout.scale: 1
+                }
+            }
+
+            transitions: [
+                Transition {
+                    from: ""
+                    to: "active"
+                    SequentialAnimation {
+                        PropertyAction { property: "active" }
+                        Anim { property: "opacity,scale" }
+                    }
+                },
+                Transition {
+                    from: "active"
+                    to: ""
+                    SequentialAnimation {
+                        Anim { property: "opacity,scale"; duration: Appearance.anim.durations.small }
+                        PropertyAction { property: "active" }
+                    }
+                }
+            ]
+
+            sourceComponent: WorkspacePreview {
+                wsId: wsPreviewPopout.previewWsId
+            }
         }
 
         Repeater {

@@ -73,6 +73,16 @@ ColumnLayout {
             popouts.currentName = id.toLowerCase();
             popouts.currentCenter = (ch.item as Item).mapToItem(root, 0, (ch.item as Item).implicitHeight / 2).y ?? 0;
             popouts.hasCurrent = true;
+        } else if (id === "workspaces" && !root.visibilities.overview) {
+            const wsComp = ch.item as Workspaces;
+            if (wsComp) {
+                const wsId = wsComp.wsIdAt(mapToItem(wsComp, 0, y).y);
+                if (wsId > 0) {
+                    popouts.currentName = `workspace_${wsId}`;
+                    popouts.currentCenter = Qt.binding(() => wsComp.centerYForWs(wsId, root));
+                    popouts.hasCurrent = true;
+                }
+            }
         }
     }
 
@@ -121,7 +131,9 @@ ColumnLayout {
             DelegateChoice {
                 roleValue: "logo"
                 delegate: WrappedLoader {
-                    sourceComponent: OsIcon {}
+                    sourceComponent: OsIcon {
+                        visibilities: root.visibilities
+                    }
                 }
             }
             DelegateChoice {

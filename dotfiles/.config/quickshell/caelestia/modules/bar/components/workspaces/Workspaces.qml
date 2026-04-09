@@ -17,6 +17,20 @@ StyledClippingRect {
     readonly property bool onSpecial: (Config.bar.workspaces.perMonitorWorkspaces ? Hypr.monitorFor(screen) : Hypr.focusedMonitor)?.lastIpcObject.specialWorkspace?.name !== ""
     readonly property int activeWsId: Config.bar.workspaces.perMonitorWorkspaces ? (Hypr.monitorFor(screen).activeWorkspace?.id ?? 1) : Hypr.activeWsId
 
+    function wsIdAt(localY: real): int {
+        const item = layout.childAt(layout.width / 2, localY - layout.y - Appearance.padding.small);
+        return (item && item.isWorkspace) ? item.ws : 0;
+    }
+
+    function centerYForWs(wsId: int, target: Item): real {
+        for (let i = 0; i < workspaces.count; ++i) {
+            const item = workspaces.itemAt(i);
+            if (item && item.ws === wsId)
+                return item.mapToItem(target, 0, item.implicitHeight / 2).y;
+        }
+        return 0;
+    }
+
     readonly property var occupied: {
         const occ = {};
         for (const ws of Hypr.workspaces.values)
