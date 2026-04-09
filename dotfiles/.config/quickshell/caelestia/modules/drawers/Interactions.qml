@@ -95,6 +95,16 @@ CustomMouseArea {
         const dragX = x - dragStart.x;
         const dragY = y - dragStart.y;
 
+        // Show/hide overview on drag from left edge
+        if (panels.overview.width === 0) {
+            const showOverview = pressed && dragStart.x < bar.implicitWidth + Config.border.minThickness;
+            if (showOverview && dragX > Config.sidebar.dragThreshold)
+                visibilities.overview = true;
+        } else {
+            if (pressed && inLeftPanel(panels.overview, dragStart.x, dragStart.y) && dragX < -Config.sidebar.dragThreshold)
+                visibilities.overview = false;
+        }
+
         // Show bar in non-exclusive mode on hover
         if (!visibilities.bar && Config.bar.showOnHover && x < bar.clampedWidth)
             bar.isHovered = true;

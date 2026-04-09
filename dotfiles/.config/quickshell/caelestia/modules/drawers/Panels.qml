@@ -12,6 +12,7 @@ import qs.modules.sidebar as Sidebar
 import qs.modules.utilities as Utilities
 import qs.modules.bar.popouts as BarPopouts
 import qs.modules.utilities.toasts as Toasts
+import qs.modules.overview as Overview
 
 Item {
     id: root
@@ -30,6 +31,7 @@ Item {
     readonly property alias utilities: utilities
     readonly property alias toasts: toasts
     readonly property alias sidebar: sidebar
+    readonly property alias overview: overview
 
     anchors.fill: parent
     anchors.margins: root.borderThickness
@@ -145,5 +147,15 @@ Item {
         anchors.top: notifications.bottom
         anchors.bottom: utilities.top
         anchors.right: parent.right
+    }
+
+    Overview.Wrapper {
+        id: overview
+
+        visibilities: root.visibilities
+
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
     }
 }
