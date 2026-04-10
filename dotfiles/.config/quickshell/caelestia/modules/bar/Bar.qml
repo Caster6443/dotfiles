@@ -77,10 +77,13 @@ ColumnLayout {
             const wsComp = ch.item as Workspaces;
             if (wsComp) {
                 const wsId = wsComp.wsIdAt(mapToItem(wsComp, 0, y).y);
-                if (wsId > 0) {
+                const hasWindows = wsId > 0 && Hypr.toplevels.values.some(tl => tl.workspace?.id == wsId);
+                if (hasWindows) {
                     popouts.currentName = `workspace_${wsId}`;
                     popouts.currentCenter = Qt.binding(() => wsComp.centerYForWs(wsId, root));
                     popouts.hasCurrent = true;
+                } else if (wsId > 0) {
+                    popouts.hasCurrent = false;
                 }
             }
         }
