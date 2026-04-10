@@ -100,8 +100,10 @@ Item {
                             Hyprland.dispatch(`movetoworkspacesilent special,address:${drop.source.windowAddress}`);
                         else
                             Hyprland.dispatch(`movetoworkspacesilent ${wsId},address:${drop.source.windowAddress}`);
+                        drop.action = Qt.MoveAction;
+                    } else {
+                        drop.action = Qt.CopyAction;
                     }
-                    drop.action = Qt.MoveAction;
                     drop.accepted = true;
                     overviewRoot.restartSyncTimer();
                 }
