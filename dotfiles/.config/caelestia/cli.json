@@ -1,0 +1,31 @@
+{
+  "toggles": {
+    "communication": {
+      "vesktop": {
+        "enable": true,
+        "match": [{ "class": "vesktop" }],
+        "command": ["vesktop"],
+        "move": true
+      }
+    },
+    "proxy": {
+      "clash": {
+        "enable": true,
+        "match": [{ "class": "mihomo-party" }],
+        "command": ["mihomo-party"],
+        "move": true
+      }
+    },
+    "lookingglass": {
+      "lookingglass": {
+        "enable": true,
+        "match": [{ "class": "looking-glass-client" }],
+        "command": ["looking-glass-client"],
+        "move": true
+      }
+    }
+  },
+  "wallpaper": {
+        "postHook": "awww img \"$WALLPAPER_PATH\" --transition-type random --transition-duration 2 --transition-fps 60 --transition-pos $(hyprctl cursorpos | tr -d ' ') --invert-y"
+    }
+}
