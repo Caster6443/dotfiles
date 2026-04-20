@@ -1,25 +1,22 @@
 import QtQuick
-import Quickshell.Io
+import Caelestia.Config
 import qs.components
 import qs.components.effects
 import qs.services
-import qs.config
 import qs.utils
 
 Item {
     id: root
 
-    property var visibilities: null
-
-    implicitWidth: Math.round(Appearance.font.size.large * 1.2)
-    implicitHeight: Math.round(Appearance.font.size.large * 1.2)
+    implicitWidth: Math.round(Tokens.font.size.large * 1.2)
+    implicitHeight: Math.round(Tokens.font.size.large * 1.2)
 
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         onClicked: {
-            if (root.visibilities)
-                root.visibilities.overview = !root.visibilities.overview;
+            const visibilities = Visibilities.getForActive();
+            visibilities.overview = !visibilities.overview;
         }
     }
 
@@ -33,8 +30,8 @@ Item {
         id: caelestiaLogo
 
         Logo {
-            implicitWidth: Math.round(Appearance.font.size.large * 1.6)
-            implicitHeight: Math.round(Appearance.font.size.large * 1.6)
+            implicitWidth: Math.round(Tokens.font.size.large * 1.6)
+            implicitHeight: Math.round(Tokens.font.size.large * 1.6)
         }
     }
 
@@ -43,7 +40,7 @@ Item {
 
         ColouredIcon {
             source: SysInfo.osLogo
-            implicitSize: Math.round(Appearance.font.size.large * 1.2)
+            implicitSize: Math.round(Tokens.font.size.large * 1.2)
             colour: Colours.palette.m3tertiary
         }
     }

@@ -4,26 +4,24 @@ import "./kblayout"
 import QtQuick
 import Quickshell
 import Quickshell.Services.SystemTray
+import Caelestia.Config
 import qs.components
-import qs.config
 
 Item {
     id: root
 
     required property PopoutState popouts
-    readonly property Item currentPopout: content.children.find(c => c.shouldBeActive) ?? null
+    readonly property Popout currentPopout: content.children.find(c => c.shouldBeActive) ?? null
     readonly property Item current: currentPopout?.item ?? null
 
-    anchors.centerIn: parent
-
-    implicitWidth: (currentPopout?.implicitWidth ?? 0) + Appearance.padding.large * 2
-    implicitHeight: (currentPopout?.implicitHeight ?? 0) + Appearance.padding.large * 2
+    implicitWidth: (currentPopout?.implicitWidth ?? 0) + Tokens.padding.large * 2
+    implicitHeight: (currentPopout?.implicitHeight ?? 0) + Tokens.padding.large * 2
 
     Item {
         id: content
 
         anchors.fill: parent
-        anchors.margins: Appearance.padding.large
+        anchors.margins: Tokens.padding.large
 
         Popout {
             name: "activewindow"
@@ -128,50 +126,15 @@ Item {
             sourceComponent: LockStatus {}
         }
 
-        Loader {
+        Popout {
             id: wsPreviewPopout
 
-            readonly property bool shouldBeActive: root.popouts.currentName.startsWith("workspace_")
+            name: root.popouts.currentName.startsWith("workspace_") ? root.popouts.currentName : "workspace_dummy"
+
             readonly property int previewWsId: {
                 const n = root.popouts.currentName;
                 return n.startsWith("workspace_") ? parseInt(n.slice(10)) || 0 : 0;
             }
-
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.right: parent.right
-
-            active: false
-            opacity: 0
-            scale: 0.8
-
-            states: State {
-                name: "active"
-                when: wsPreviewPopout.shouldBeActive
-                PropertyChanges {
-                    wsPreviewPopout.active: true
-                    wsPreviewPopout.opacity: 1
-                    wsPreviewPopout.scale: 1
-                }
-            }
-
-            transitions: [
-                Transition {
-                    from: ""
-                    to: "active"
-                    SequentialAnimation {
-                        PropertyAction { property: "active" }
-                        Anim { property: "opacity,scale" }
-                    }
-                },
-                Transition {
-                    from: "active"
-                    to: ""
-                    SequentialAnimation {
-                        Anim { property: "opacity,scale"; duration: Appearance.anim.durations.small }
-                        PropertyAction { property: "active" }
-                    }
-                }
-            ]
 
             sourceComponent: WorkspacePreview {
                 wsId: wsPreviewPopout.previewWsId
@@ -180,7 +143,7 @@ Item {
 
         Repeater {
             model: ScriptModel {
-                values: SystemTray.items.values.filter(i => !Config.bar.tray.hiddenIcons.includes(i.id))
+                values: SystemTray.items.values.filter(i => !GlobalConfig.bar.tray.hiddenIcons.includes(i.id))
             }
 
             Popout {
@@ -221,8 +184,7 @@ Item {
         required property string name
         readonly property bool shouldBeActive: root.popouts.currentName === name
 
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.right: parent.right
+        anchors.centerIn: parent
 
         opacity: 0
         scale: 0.8
@@ -247,7 +209,7 @@ Item {
                 SequentialAnimation {
                     Anim {
                         properties: "opacity,scale"
-                        duration: Appearance.anim.durations.small
+                        type: Anim.StandardSmall
                     }
                     PropertyAction {
                         target: popout

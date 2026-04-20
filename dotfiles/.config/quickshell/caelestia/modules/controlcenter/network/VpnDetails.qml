@@ -5,12 +5,12 @@ import "../components"
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Caelestia.Config
 import qs.components
 import qs.components.containers
 import qs.components.controls
 import qs.components.effects
 import qs.services
-import qs.config
 import qs.utils
 
 DeviceDetails {
@@ -21,7 +21,7 @@ DeviceDetails {
     readonly property bool providerEnabled: {
         if (!vpnProvider || vpnProvider.index === undefined)
             return false;
-        const provider = Config.utilities.vpn.provider[vpnProvider.index];
+        const provider = GlobalConfig.utilities.vpn.provider[vpnProvider.index];
         return provider && typeof provider === "object" && provider.enabled === true;
     }
 
@@ -37,7 +37,7 @@ DeviceDetails {
     sections: [
         Component {
             ColumnLayout {
-                spacing: Appearance.spacing.normal
+                spacing: Tokens.spacing.normal
 
                 SectionHeader {
                     title: qsTr("Connection status")
@@ -55,8 +55,8 @@ DeviceDetails {
                             const index = root.vpnProvider.index;
 
                             // Copy providers and update enabled state
-                            for (let i = 0; i < Config.utilities.vpn.provider.length; i++) {
-                                const p = Config.utilities.vpn.provider[i];
+                            for (let i = 0; i < GlobalConfig.utilities.vpn.provider.length; i++) {
+                                const p = GlobalConfig.utilities.vpn.provider[i];
                                 if (typeof p === "object") {
                                     const newProvider = {
                                         name: p.name,
@@ -72,25 +72,31 @@ DeviceDetails {
                                         newProvider.enabled = (i === index) ? false : (p.enabled !== false);
                                     }
 
+                                    if (p.connectCmd && p.connectCmd.length > 0) {
+                                        newProvider.connectCmd = p.connectCmd;
+                                    }
+                                    if (p.disconnectCmd && p.disconnectCmd.length > 0) {
+                                        newProvider.disconnectCmd = p.disconnectCmd;
+                                    }
+
                                     providers.push(newProvider);
                                 } else {
                                     providers.push(p);
                                 }
                             }
 
-                            Config.utilities.vpn.provider = providers;
-                            Config.save();
+                            GlobalConfig.utilities.vpn.provider = providers;
                         }
                     }
 
                     RowLayout {
                         Layout.fillWidth: true
-                        Layout.topMargin: Appearance.spacing.normal
-                        spacing: Appearance.spacing.normal
+                        Layout.topMargin: Tokens.spacing.normal
+                        spacing: Tokens.spacing.normal
 
                         TextButton {
                             Layout.fillWidth: true
-                            Layout.minimumHeight: Appearance.font.size.normal + Appearance.padding.normal * 2
+                            Layout.minimumHeight: Tokens.font.size.normal + Tokens.padding.normal * 2
                             visible: root.providerEnabled
                             enabled: !VPN.connecting
                             inactiveColour: Colours.palette.m3primaryContainer
@@ -109,7 +115,7 @@ DeviceDetails {
                             inactiveOnColour: Colours.palette.m3onSecondaryContainer
 
                             onClicked: {
-                                const provider = Config.utilities.vpn.provider[root.vpnProvider.index];
+                                const provider = GlobalConfig.utilities.vpn.provider[root.vpnProvider.index];
                                 editVpnDialog.editIndex = root.vpnProvider.index;
                                 editVpnDialog.providerName = root.vpnProvider.name;
                                 editVpnDialog.displayName = root.vpnProvider.displayName;
@@ -128,13 +134,12 @@ DeviceDetails {
 
                             onClicked: {
                                 const providers = [];
-                                for (let i = 0; i < Config.utilities.vpn.provider.length; i++) {
+                                for (let i = 0; i < GlobalConfig.utilities.vpn.provider.length; i++) {
                                     if (i !== root.vpnProvider.index) {
-                                        providers.push(Config.utilities.vpn.provider[i]);
+                                        providers.push(GlobalConfig.utilities.vpn.provider[i]);
                                     }
                                 }
-                                Config.utilities.vpn.provider = providers;
-                                Config.save();
+                                GlobalConfig.utilities.vpn.provider = providers;
                                 root.session.vpn.active = null;
                             }
                         }
@@ -142,7 +147,7 @@ DeviceDetails {
 
                     TextButton {
                         Layout.fillWidth: true
-                        Layout.topMargin: Appearance.spacing.normal
+                        Layout.topMargin: Tokens.spacing.normal
                         visible: root.providerEnabled && VPN.status.state === "needs-auth" && VPN.status.authUrl !== ""
                         text: qsTr("Open Login Page")
                         inactiveColour: Colours.palette.m3tertiaryContainer
@@ -155,10 +160,10 @@ DeviceDetails {
 
                     StyledText {
                         Layout.fillWidth: true
-                        Layout.topMargin: Appearance.spacing.normal
+                        Layout.topMargin: Tokens.spacing.normal
                         visible: root.providerEnabled && VPN.status.state === "needs-auth" && VPN.status.authUrl === ""
                         text: qsTr("Click 'Connect' to generate authentication URL")
-                        font.pointSize: Appearance.font.size.small
+                        font.pointSize: Tokens.font.size.small
                         color: Colours.palette.m3onSurfaceVariant
                         horizontalAlignment: Text.AlignHCenter
                         wrapMode: Text.WordWrap
@@ -168,7 +173,7 @@ DeviceDetails {
         },
         Component {
             ColumnLayout {
-                spacing: Appearance.spacing.normal
+                spacing: Tokens.spacing.normal
 
                 SectionHeader {
                     title: qsTr("Provider details")
@@ -176,7 +181,7 @@ DeviceDetails {
                 }
 
                 SectionContainer {
-                    contentSpacing: Appearance.spacing.small / 2
+                    contentSpacing: Tokens.spacing.small / 2
 
                     PropertyRow {
                         label: qsTr("Provider")
@@ -255,8 +260,8 @@ DeviceDetails {
 
         parent: Overlay.overlay
         anchors.centerIn: parent
-        width: Math.min(400, parent.width - Appearance.padding.large * 2)
-        padding: Appearance.padding.large * 1.5
+        width: Math.min(400, parent.width - Tokens.padding.large * 2)
+        padding: Tokens.padding.large * 1.5
 
         modal: true
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
@@ -269,15 +274,13 @@ DeviceDetails {
                 property: "opacity"
                 from: 0
                 to: 1
-                duration: Appearance.anim.durations.expressiveFastSpatial
-                easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
+                type: Anim.FastSpatial
             }
             Anim {
                 property: "scale"
                 from: 0.7
                 to: 1
-                duration: Appearance.anim.durations.expressiveFastSpatial
-                easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
+                type: Anim.FastSpatial
             }
         }
 
@@ -286,15 +289,13 @@ DeviceDetails {
                 property: "opacity"
                 from: 1
                 to: 0
-                duration: Appearance.anim.durations.expressiveFastSpatial
-                easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
+                type: Anim.FastSpatial
             }
             Anim {
                 property: "scale"
                 from: 1
                 to: 0.7
-                duration: Appearance.anim.durations.expressiveFastSpatial
-                easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
+                type: Anim.FastSpatial
             }
         }
 
@@ -304,7 +305,7 @@ DeviceDetails {
 
         background: StyledRect {
             color: Colours.palette.m3surfaceContainerHigh
-            radius: Appearance.rounding.large
+            radius: Tokens.rounding.large
 
             Elevation {
                 anchors.fill: parent
@@ -315,21 +316,21 @@ DeviceDetails {
         }
 
         contentItem: ColumnLayout {
-            spacing: Appearance.spacing.normal
+            spacing: Tokens.spacing.normal
 
             StyledText {
                 text: qsTr("Edit VPN Provider")
-                font.pointSize: Appearance.font.size.large
+                font.pointSize: Tokens.font.size.large
                 font.weight: 500
             }
 
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: Appearance.spacing.smaller / 2
+                spacing: Tokens.spacing.smaller / 2
 
                 StyledText {
                     text: qsTr("Display Name")
-                    font.pointSize: Appearance.font.size.small
+                    font.pointSize: Tokens.font.size.small
                     color: Colours.palette.m3onSurfaceVariant
                 }
 
@@ -337,7 +338,7 @@ DeviceDetails {
                     Layout.fillWidth: true
                     implicitHeight: 40
                     color: displayNameField.activeFocus ? Colours.layer(Colours.palette.m3surfaceContainer, 3) : Colours.layer(Colours.palette.m3surfaceContainer, 2)
-                    radius: Appearance.rounding.small
+                    radius: Tokens.rounding.small
                     border.width: 1
                     border.color: displayNameField.activeFocus ? Colours.palette.m3primary : Qt.alpha(Colours.palette.m3outline, 0.3)
 
@@ -352,7 +353,7 @@ DeviceDetails {
                         id: displayNameField
 
                         anchors.centerIn: parent
-                        width: parent.width - Appearance.padding.normal
+                        width: parent.width - Tokens.padding.normal
                         horizontalAlignment: TextInput.AlignLeft
                         text: editVpnDialog.displayName
                         onTextChanged: editVpnDialog.displayName = text
@@ -362,11 +363,11 @@ DeviceDetails {
 
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: Appearance.spacing.smaller / 2
+                spacing: Tokens.spacing.smaller / 2
 
                 StyledText {
                     text: qsTr("Interface (e.g., wg0, torguard)")
-                    font.pointSize: Appearance.font.size.small
+                    font.pointSize: Tokens.font.size.small
                     color: Colours.palette.m3onSurfaceVariant
                 }
 
@@ -374,7 +375,7 @@ DeviceDetails {
                     Layout.fillWidth: true
                     implicitHeight: 40
                     color: interfaceNameField.activeFocus ? Colours.layer(Colours.palette.m3surfaceContainer, 3) : Colours.layer(Colours.palette.m3surfaceContainer, 2)
-                    radius: Appearance.rounding.small
+                    radius: Tokens.rounding.small
                     border.width: 1
                     border.color: interfaceNameField.activeFocus ? Colours.palette.m3primary : Qt.alpha(Colours.palette.m3outline, 0.3)
 
@@ -389,7 +390,7 @@ DeviceDetails {
                         id: interfaceNameField
 
                         anchors.centerIn: parent
-                        width: parent.width - Appearance.padding.normal
+                        width: parent.width - Tokens.padding.normal
                         horizontalAlignment: TextInput.AlignLeft
                         text: editVpnDialog.interfaceName
                         onTextChanged: editVpnDialog.interfaceName = text
@@ -399,12 +400,12 @@ DeviceDetails {
 
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: Appearance.spacing.smaller / 2
+                spacing: Tokens.spacing.smaller / 2
                 visible: editVpnDialog.connectCmd.length > 0
 
                 StyledText {
                     text: qsTr("Connect Command")
-                    font.pointSize: Appearance.font.size.small
+                    font.pointSize: Tokens.font.size.small
                     color: Colours.palette.m3onSurfaceVariant
                 }
 
@@ -412,7 +413,7 @@ DeviceDetails {
                     Layout.fillWidth: true
                     implicitHeight: 40
                     color: connectCmdFieldEdit.activeFocus ? Colours.layer(Colours.palette.m3surfaceContainer, 3) : Colours.layer(Colours.palette.m3surfaceContainer, 2)
-                    radius: Appearance.rounding.small
+                    radius: Tokens.rounding.small
                     border.width: 1
                     border.color: connectCmdFieldEdit.activeFocus ? Colours.palette.m3primary : Qt.alpha(Colours.palette.m3outline, 0.3)
 
@@ -427,7 +428,7 @@ DeviceDetails {
                         id: connectCmdFieldEdit
 
                         anchors.centerIn: parent
-                        width: parent.width - Appearance.padding.normal
+                        width: parent.width - Tokens.padding.normal
                         horizontalAlignment: TextInput.AlignLeft
                         text: editVpnDialog.connectCmd
                         onTextChanged: editVpnDialog.connectCmd = text
@@ -437,12 +438,12 @@ DeviceDetails {
 
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: Appearance.spacing.smaller / 2
+                spacing: Tokens.spacing.smaller / 2
                 visible: editVpnDialog.disconnectCmd.length > 0
 
                 StyledText {
                     text: qsTr("Disconnect Command")
-                    font.pointSize: Appearance.font.size.small
+                    font.pointSize: Tokens.font.size.small
                     color: Colours.palette.m3onSurfaceVariant
                 }
 
@@ -450,7 +451,7 @@ DeviceDetails {
                     Layout.fillWidth: true
                     implicitHeight: 40
                     color: disconnectCmdFieldEdit.activeFocus ? Colours.layer(Colours.palette.m3surfaceContainer, 3) : Colours.layer(Colours.palette.m3surfaceContainer, 2)
-                    radius: Appearance.rounding.small
+                    radius: Tokens.rounding.small
                     border.width: 1
                     border.color: disconnectCmdFieldEdit.activeFocus ? Colours.palette.m3primary : Qt.alpha(Colours.palette.m3outline, 0.3)
 
@@ -465,7 +466,7 @@ DeviceDetails {
                         id: disconnectCmdFieldEdit
 
                         anchors.centerIn: parent
-                        width: parent.width - Appearance.padding.normal
+                        width: parent.width - Tokens.padding.normal
                         horizontalAlignment: TextInput.AlignLeft
                         text: editVpnDialog.disconnectCmd
                         onTextChanged: editVpnDialog.disconnectCmd = text
@@ -474,9 +475,9 @@ DeviceDetails {
             }
 
             RowLayout {
-                Layout.topMargin: Appearance.spacing.normal
+                Layout.topMargin: Tokens.spacing.normal
                 Layout.fillWidth: true
-                spacing: Appearance.spacing.normal
+                spacing: Tokens.spacing.normal
 
                 TextButton {
                     Layout.fillWidth: true
@@ -495,35 +496,44 @@ DeviceDetails {
 
                     onClicked: {
                         const providers = [];
-                        const oldProvider = Config.utilities.vpn.provider[editVpnDialog.editIndex];
+                        const oldProvider = GlobalConfig.utilities.vpn.provider[editVpnDialog.editIndex];
                         const wasEnabled = typeof oldProvider === "object" ? (oldProvider.enabled !== false) : true;
 
-                        for (let i = 0; i < Config.utilities.vpn.provider.length; i++) {
+                        for (let i = 0; i < GlobalConfig.utilities.vpn.provider.length; i++) {
                             if (i === editVpnDialog.editIndex) {
                                 const hasCommands = editVpnDialog.connectCmd.length > 0 && editVpnDialog.disconnectCmd.length > 0;
                                 const newProvider = {
                                     displayName: editVpnDialog.displayName || editVpnDialog.interfaceName,
                                     enabled: wasEnabled,
-                                    iface: editVpnDialog.interfaceName,
-                                    name: editVpnDialog.providerName,
-                                    connectCmd: hasCommands ? editVpnDialog.connectCmd.split(" ").filter(s => s.length > 0) : undefined,
-                                    disconnectCmd: hasCommands ? editVpnDialog.disconnectCmd.split(" ").filter(s => s.length > 0) : undefined
+                                    interface: editVpnDialog.interfaceName,
+                                    name: editVpnDialog.providerName
                                 };
 
-                                // Remove undefined properties
-                                if (!hasCommands) {
-                                    delete newProvider.connectCmd;
-                                    delete newProvider.disconnectCmd;
+                                if (hasCommands) {
+                                    newProvider.connectCmd = editVpnDialog.connectCmd.split(" ").filter(s => s.length > 0);
+                                    newProvider.disconnectCmd = editVpnDialog.disconnectCmd.split(" ").filter(s => s.length > 0);
                                 }
 
                                 providers.push(newProvider);
                             } else {
-                                providers.push(Config.utilities.vpn.provider[i]);
+                                const p = GlobalConfig.utilities.vpn.provider[i];
+                                const reconstructed = {
+                                    displayName: p.displayName,
+                                    enabled: p.enabled,
+                                    interface: p.interface,
+                                    name: p.name
+                                };
+                                if (p.connectCmd && p.connectCmd.length > 0) {
+                                    reconstructed.connectCmd = p.connectCmd;
+                                }
+                                if (p.disconnectCmd && p.disconnectCmd.length > 0) {
+                                    reconstructed.disconnectCmd = p.disconnectCmd;
+                                }
+                                providers.push(reconstructed);
                             }
                         }
 
-                        Config.utilities.vpn.provider = providers;
-                        Config.save();
+                        GlobalConfig.utilities.vpn.provider = providers;
                         editVpnDialog.closeWithAnimation();
                     }
                 }
