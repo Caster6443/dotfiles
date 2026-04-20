@@ -3,17 +3,19 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import qs.components
 import qs.config
+import qs.services
 
 Item {
     id: root
 
-    required property DrawerVisibilities visibilities
+    property var visibilities: Visibilities.getForActive()
 
     visible: width > 0
     implicitWidth: 0
     clip: true
 
-    onVisibleChanged: if (visible) forceActiveFocus()
+    onVisibleChanged: if (visible)
+        forceActiveFocus()
 
     Keys.onPressed: event => {
         if (content.item)
@@ -37,8 +39,7 @@ Item {
             Anim {
                 target: root
                 property: "implicitWidth"
-                duration: Appearance.anim.durations.expressiveDefaultSpatial
-                easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+                type: Anim.DefaultSpatial  // <- 调用新版的空间位移预设
             }
         },
         Transition {
@@ -48,7 +49,7 @@ Item {
             Anim {
                 target: root
                 property: "implicitWidth"
-                easing.bezierCurve: Appearance.anim.curves.emphasized
+                type: Anim.StandardSmall   // <- 收起时调用标准的小幅度退出动画
             }
         }
     ]

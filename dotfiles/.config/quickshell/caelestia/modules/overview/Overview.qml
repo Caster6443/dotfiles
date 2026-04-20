@@ -7,11 +7,18 @@ import Quickshell.Hyprland
 import "../../services" as Services
 import qs.config
 import qs.components
+import qs.services
+import QtQml
 
 Item {
     id: root
+    function closeOverview() {
+        if (visibilities) {
+            visibilities.overview = false;
+        }
+    }
 
-    required property DrawerVisibilities visibilities
+    property var visibilities: Visibilities.getForActive()
 
     implicitWidth: mainContainer.implicitWidth
     implicitHeight: mainContainer.implicitHeight
@@ -230,13 +237,15 @@ Item {
         const seen = {};
         for (let i = 0; i < windowModel.count; ++i) {
             const wsId = windowModel.get(i).m_wsId;
-            if (seen[wsId]) continue;
+            if (seen[wsId])
+                continue;
             seen[wsId] = true;
             root.recomputeLinearXForWs(wsId);
         }
         for (let i = 0; i < specialWindowModel.count; ++i) {
             const wsId = specialWindowModel.get(i).m_wsId;
-            if (seen[wsId]) continue;
+            if (seen[wsId])
+                continue;
             seen[wsId] = true;
             root.recomputeLinearXForWsInModel(wsId, specialWindowModel);
         }
@@ -246,8 +255,13 @@ Item {
         const arr = [];
         for (let i = 0; i < model.count; ++i) {
             const it = model.get(i);
-            if (it.m_wsId !== wsId) continue;
-            arr.push({ idx: i, atX: it.m_atX, w: it.m_sizeW });
+            if (it.m_wsId !== wsId)
+                continue;
+            arr.push({
+                idx: i,
+                atX: it.m_atX,
+                w: it.m_sizeW
+            });
         }
         arr.sort((a, b) => a.atX - b.atX);
         const monW = Hyprland.focusedMonitor?.width || 1920;
@@ -255,7 +269,8 @@ Item {
         let totalW = 0;
         for (let j = 0; j < arr.length; ++j)
             totalW += arr[j].w > 0 ? arr[j].w : monW / 2;
-        if (arr.length > 0) totalW += (arr.length - 1) * gap;
+        if (arr.length > 0)
+            totalW += (arr.length - 1) * gap;
         let xOffset = (Math.max(monW, totalW + gap * 2) - totalW) / 2;
         for (let j = 0; j < arr.length; ++j) {
             model.setProperty(arr[j].idx, "m_linearX", xOffset);
@@ -316,21 +331,46 @@ Item {
         }
     }
 
+    // --- 新增：等待排版和数据彻底稳定后的跳转定时器 ---
+    Timer {
+        id: jumpSettleTimer
+        interval: 80  // 黄金延迟：给特殊工作区加载和 QML 排版留出充足时间
+        onTriggered: {
+            if (!root.visible)
+                return;
+
+            // 禁用动画直接跳，避免闪烁
+            scrollAnim.enabled = false;
+
+            const activeId = Hyprland.focusedMonitor?.activeWorkspace?.id ?? 1;
+            const step = flickable.cardHeight + flickable.cardSpacing;
+            const normalTop = flickable.specialSectionHeight;
+
+            // 精确计算居中 Y 坐标
+            const targetY = normalTop + (activeId - 1) * step - (flickable.visibleHeight - flickable.cardHeight) / 2;
+
+            // 限制滚动边界
+            const maxScroll = Math.max(0, flickable.contentHeight - flickable.height);
+            flickable.contentY = Math.max(normalTop, Math.min(targetY, maxScroll));
+
+            // 下一帧再恢复动画
+            Qt.callLater(() => {
+                scrollAnim.enabled = true;
+            });
+        }
+    }
+
     onVisibleChanged: {
         if (visible) {
             localHyprData.updateAll();
             root.syncWindows(localHyprData.windowList);
             awwwQueryProc.running = true;
-            // 禁用动画直接跳到目标位置，避免闪烁
-            scrollAnim.enabled = false;
-            const activeId = Hyprland.focusedMonitor?.activeWorkspace?.id ?? 1;
-            const step = flickable.cardHeight + flickable.cardSpacing;
-            const normalTop = flickable.specialSectionHeight;
-            const targetY = normalTop + (activeId - 1) * step - (flickable.visibleHeight - flickable.cardHeight) / 2;
-            flickable.contentY = Math.max(normalTop, Math.min(targetY, flickable.contentHeight - flickable.height));
-            scrollAnim.enabled = true;
+
+            // 触发！但不立刻跳，等 80ms 画面彻底排布好再跳
+            jumpSettleTimer.restart();
         } else {
             awwwQueryProc.running = false;
+            jumpSettleTimer.stop();
         }
     }
 
@@ -352,7 +392,9 @@ Item {
         Item {
             id: orphanLayer
             anchors.fill: parent
-            visible: false
+            //visible: false
+            visible: true
+            z: -100
         }
 
         Flickable {
@@ -363,9 +405,7 @@ Item {
             readonly property real visibleCards: 5
             readonly property real visibleHeight: visibleCards * cardHeight + (visibleCards - 1) * cardSpacing
             readonly property real separatorHeight: 40
-            readonly property real specialSectionHeight: specialColumn.implicitHeight > 0
-                ? specialColumn.implicitHeight + cardSpacing * 2 + separatorHeight
-                : 0
+            readonly property real specialSectionHeight: specialColumn.implicitHeight > 0 ? specialColumn.implicitHeight + cardSpacing * 2 + separatorHeight : 0
 
             anchors.centerIn: parent
             width: contentWidth
@@ -427,7 +467,10 @@ Item {
                                 const seen = {};
                                 for (let i = 0; i < specialWindowModel.count; ++i) {
                                     const id = specialWindowModel.get(i).m_wsId;
-                                    if (!seen[id]) { seen[id] = true; ids.push(id); }
+                                    if (!seen[id]) {
+                                        seen[id] = true;
+                                        ids.push(id);
+                                    }
                                 }
                                 return ids;
                             }
@@ -467,7 +510,7 @@ Item {
         }
     }
 
-    Repeater {
+    Instantiator {
         model: windowModel
         delegate: WindowPreview {
             overviewRoot: root
@@ -475,7 +518,7 @@ Item {
         }
     }
 
-    Repeater {
+    Instantiator {
         model: specialWindowModel
         delegate: WindowPreview {
             overviewRoot: root

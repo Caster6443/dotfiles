@@ -5,6 +5,7 @@ import Quickshell.Wayland
 import Quickshell.Hyprland
 import Qt5Compat.GraphicalEffects
 import qs.services
+import qs.components
 
 Rectangle {
     id: windowItem
@@ -31,7 +32,8 @@ Rectangle {
     readonly property int wsWindowCount: {
         let n = 0;
         for (let i = 0; i < overviewRoot.windowModelRef.count; ++i)
-            if (overviewRoot.windowModelRef.get(i).m_wsId === m_wsId) n++;
+            if (overviewRoot.windowModelRef.get(i).m_wsId === m_wsId)
+                n++;
         return n;
     }
 
@@ -63,17 +65,18 @@ Rectangle {
     opacity: mouseArea.drag.active ? 0.9 : 1.0
 
     Behavior on x {
-        NumberAnimation {
-            duration: 160
-            easing.type: Easing.OutCubic
+        enabled: !mouseArea.drag.active
+        Anim {
+            type: Anim.DefaultSpatial  // <- 接入全局阻尼动画
         }
     }
     Behavior on y {
-        NumberAnimation {
-            duration: 160
-            easing.type: Easing.OutCubic
+        enabled: !mouseArea.drag.active
+        Anim {
+            type: Anim.DefaultSpatial  // <- 接入全局阻尼动画
         }
     }
+
     Behavior on width {
         NumberAnimation {
             duration: 160
@@ -115,9 +118,11 @@ Rectangle {
     }
 
     readonly property real clampedX: {
-        if (isNaN(targetX)) return 0;
+        if (isNaN(targetX))
+            return 0;
         const pw = parent ? parent.width : 0;
-        if (!pw || isNaN(width)) return targetX;
+        if (!pw || isNaN(width))
+            return targetX;
         // clamp center point, not edge — so scaled window stays visually within card
         const half = width / 2;
         return Math.max(half, Math.min(targetX + half, pw - half)) - half;
@@ -268,7 +273,8 @@ Rectangle {
             if (mouse.button !== Qt.LeftButton)
                 return;
             Hyprland.dispatch(`focuswindow address:${windowAddress}`);
-            overviewRoot.visibilities.overview = false;
+            //overviewRoot.visibilities.overview = false;
+            overviewRoot.closeOverview();
         }
     }
 }

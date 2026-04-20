@@ -1,3 +1,4 @@
+import QtQuick
 import Quickshell
 import Quickshell.Io
 import Caelestia
@@ -29,6 +30,17 @@ Scope {
                 return;
             const v = Visibilities.getForActive();
             v.launcher = v.dashboard = v.osd = v.utilities = !(v.launcher || v.dashboard || v.osd || v.utilities);
+        }
+    }
+
+    CustomShortcut {
+        name: "overview"
+        description: "Toggle overview"
+        onPressed: {
+            if (root.hasFullscreen)
+                return;
+            const visibilities = Visibilities.getForActive();
+            visibilities.overview = !visibilities.overview;
         }
     }
 
@@ -97,19 +109,6 @@ Scope {
     // qmllint disable unresolved-type
     CustomShortcut {
         // qmllint enable unresolved-type
-        name: "overview"
-        description: "Toggle overview"
-        onPressed: {
-            if (root.hasFullscreen)
-                return;
-            const visibilities = Visibilities.getForActive();
-            visibilities.overview = !visibilities.overview;
-        }
-    }
-
-    // qmllint disable unresolved-type
-    CustomShortcut {
-        // qmllint enable unresolved-type
         name: "utilities"
         description: "Toggle utilities"
         onPressed: {
@@ -128,7 +127,7 @@ Scope {
                 const visibilities = Visibilities.getForActive();
                 visibilities[drawer] = !visibilities[drawer];
             } else {
-                console.warn(`[IPC] Drawer "${drawer}" does not exist`);
+                console.warn(lc, `Drawer "${drawer}" does not exist`);
             }
         }
 
@@ -166,5 +165,12 @@ Scope {
         }
 
         target: "toaster"
+    }
+
+    LoggingCategory {
+        id: lc
+
+        name: "caelestia.qml.shortcuts"
+        defaultLogLevel: LoggingCategory.Info
     }
 }

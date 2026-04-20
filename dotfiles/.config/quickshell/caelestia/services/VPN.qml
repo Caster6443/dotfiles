@@ -4,7 +4,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Caelestia
-import qs.config
+import Caelestia.Config
 
 Singleton {
     id: root
@@ -18,14 +18,14 @@ Singleton {
         })
 
     readonly property bool connecting: connectProc.running || disconnectProc.running
-    readonly property bool enabled: Config.utilities.vpn.provider.some(p => typeof p === "object" ? (p.enabled === true) : false)
+    readonly property bool enabled: GlobalConfig.utilities.vpn.provider.some(p => typeof p === "object" ? (p.enabled === true) : false)
     readonly property var providerInput: {
-        const enabledProvider = Config.utilities.vpn.provider.find(p => typeof p === "object" ? (p.enabled === true) : false);
+        const enabledProvider = GlobalConfig.utilities.vpn.provider.find(p => typeof p === "object" ? (p.enabled === true) : false);
         return enabledProvider || "wireguard";
     }
     readonly property bool isCustomProvider: typeof providerInput === "object"
     readonly property string providerName: isCustomProvider ? (providerInput.name || "custom") : String(providerInput)
-    readonly property string interfaceName: isCustomProvider ? (providerInput.iface || "") : ""
+    readonly property string interfaceName: isCustomProvider ? (providerInput.interface || "") : ""
     readonly property var currentConfig: {
         const name = providerName;
         const iface = interfaceName;
@@ -36,7 +36,7 @@ Singleton {
             return {
                 connectCmd: custom.connectCmd || defaults.connectCmd,
                 disconnectCmd: custom.disconnectCmd || defaults.disconnectCmd,
-                interface: custom.iface || defaults.interface,
+                interface: custom.interface || defaults.interface,
                 displayName: custom.displayName || defaults.displayName
             };
         }
@@ -279,7 +279,7 @@ Singleton {
     }
 
     function emitStatusToast(statusObj: var): void {
-        if (!Config.utilities.toasts.vpnChanged)
+        if (!GlobalConfig.utilities.toasts.vpnChanged)
             return;
 
         const displayName = root.currentConfig ? (root.currentConfig.displayName || "VPN") : "VPN";
@@ -454,7 +454,7 @@ Singleton {
             onStreamFinished: {
                 const error = text.trim();
                 if (error && !error.includes("[#]")) {
-                    console.warn("VPN disconnection error:", error);
+                    console.warn(lc, "Disconnection error:", error);
                 }
             }
         }
@@ -475,5 +475,12 @@ Singleton {
 
         interval: 500
         onTriggered: root.checkStatus()
+    }
+
+    LoggingCategory {
+        id: lc
+
+        name: "caelestia.qml.services.vpn"
+        defaultLogLevel: LoggingCategory.Info
     }
 }

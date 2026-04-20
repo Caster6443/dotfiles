@@ -38,7 +38,7 @@ FloatingWindow {
     Component.onCompleted: {
         root.visible = true;
 
-        root.requestActivate();
+        //root.requestActivate();
     }
 
     Process {

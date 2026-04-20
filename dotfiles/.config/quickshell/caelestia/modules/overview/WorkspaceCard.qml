@@ -52,14 +52,10 @@ Item {
         color: {
             if (isSpecial)
                 return Qt.darker(Colours.palette.m3surfaceContainer, 1.4);
-            return Hyprland.focusedMonitor?.activeWorkspace?.id === wsId
-                ? Colours.palette.m3surfaceContainer
-                : Colours.palette.m3surface;
+            return Hyprland.focusedMonitor?.activeWorkspace?.id === wsId ? Colours.palette.m3surfaceContainer : Colours.palette.m3surface;
         }
         border.width: 1
-        border.color: isSpecial
-            ? Qt.alpha(Colours.palette.m3onSurface, 0.12)
-            : (Hyprland.focusedMonitor?.activeWorkspace?.id === wsId ? Colours.palette.m3primary : Colours.palette.m3outlineVariant)
+        border.color: isSpecial ? Qt.alpha(Colours.palette.m3onSurface, 0.12) : (Hyprland.focusedMonitor?.activeWorkspace?.id === wsId ? Colours.palette.m3primary : Colours.palette.m3outlineVariant)
 
         Image {
             anchors.fill: parent
@@ -75,7 +71,8 @@ Item {
                     Hyprland.dispatch(`togglespecialworkspace ${workspaceContainer.wsId < 0 ? "special" : ""}`);
                 else
                     Hyprland.dispatch(`workspace ${wsId}`);
-                overviewRoot.visibilities.overview = false;
+                //overviewRoot.visibilities.overview = false;
+                overviewRoot.closeOverview();
             }
         }
 
