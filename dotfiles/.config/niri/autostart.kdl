@@ -25,6 +25,7 @@ spawn-at-startup "hypridle"
 spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 //spawn-at-startup "mako"
 spawn-at-startup "fcitx5" "-d"
+spawn-at-startup "dms" "run"
 
 hotkey-overlay {
     // 取消注释此行以禁用启动时的“重要快捷键”弹窗。

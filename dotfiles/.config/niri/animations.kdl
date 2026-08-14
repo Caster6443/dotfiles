@@ -1,12 +1,75 @@
 // 动画设置。
-// Wiki 解释了如何配置单独的动画（例如为打开、关闭、移动窗口分别设置）：
-// https://yalter.github.io/niri/Configuration:-Animations
-/-animations {
-    // 取消注释以关闭所有动画。
-    // off
+// Wiki: https://niri-wm.github.io/niri/Configuration:-Animations
+//
+// niri 支持两种动画类型:
+//   Easing (缓动): duration-ms + curve，适合窗口打开/关闭
+//   Spring (弹簧): damping-ratio + stiffness + epsilon，适合手势驱动的动画
+//
+// 可用曲线: linear, ease-out-quad, ease-out-cubic, ease-out-expo, cubic-bezier
 
-    // 按此系数减慢所有动画的速度。小于 1 的值反而会加速动画。
-    // （例如 3.0 表示慢放 3 倍，0.5 表示快放 2 倍）
-    // slowdown 3.0
+animations {
+    // 全局动画速度系数。小于 1 加速，大于 1 减速。
+    slowdown 1.2
+
+    // ===== 窗口打开动画 =====
+    window-open {
+        duration-ms 250
+        curve "ease-out-expo"
+    }
+
+    // ===== 窗口关闭动画 =====
+    window-close {
+        duration-ms 200
+        curve "ease-out-quad"
+    }
+
+    // ===== 工作区切换动画 =====
+    // 切换到上下工作区时 (包括触控板手势) — 视图上下滑动
+    // stiffness 越低动画越慢、滑动行程越明显
+    workspace-switch {
+        spring damping-ratio=1.0 stiffness=400 epsilon=0.0001
+    }
+
+    // ===== 水平视图移动 =====
+    // 聚焦到屏幕外的窗口时，相机水平滚动 — 视图左右滑动
+    horizontal-view-movement {
+        spring damping-ratio=1.0 stiffness=500 epsilon=0.0001
+    }
+
+    // ===== 窗口移动动画 =====
+    // 列移动、窗口在列内移动、窗口开闭时其他窗口让位 — 窗口位置滑动
+    window-movement {
+        spring damping-ratio=1.0 stiffness=500 epsilon=0.0001
+    }
+
+    // ===== 窗口大小调整动画 =====
+    window-resize {
+        spring damping-ratio=1.0 stiffness=500 epsilon=0.0001
+    }
+
+    // ===== 配置错误通知 =====
+    config-notification-open-close {
+        spring damping-ratio=0.6 stiffness=1000 epsilon=0.001
+    }
+
+    // ===== 退出确认对话框 =====
+    exit-confirmation-open-close {
+        spring damping-ratio=0.6 stiffness=500 epsilon=0.01
+    }
+
+    // ===== 截图 UI 打开 =====
+    screenshot-ui-open {
+        duration-ms 200
+        curve "ease-out-quad"
+    }
+
+    // ===== 概览模式 (Overview) 打开/关闭 =====
+    overview-open-close {
+        spring damping-ratio=1.0 stiffness=1000 epsilon=0.0001
+    }
+
+    // ===== 最近窗口切换器关闭 =====
+    recent-windows-close {
+        spring damping-ratio=1.0 stiffness=1000 epsilon=0.001
+    }
 }
-
