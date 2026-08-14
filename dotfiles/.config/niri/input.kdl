@@ -16,15 +16,19 @@ input {
             // 你可以使用 localectl set-x11-keymap 命令来控制这些设置。
         }
 
-	// 启动时启用数字锁定 (NumLock)，省略此设置则禁用它。
+        // 启动时启用数字锁定 (NumLock)，省略此设置则禁用它。
         numlock
+
+        // 键盘重复设置
+        repeat-delay 200   // 按住按键后首次重复的延迟（毫秒），默认约 500-700
+        repeat-rate 40     // 重复速率（按键/秒），越小越快，默认约 20-30
     }
 
     // 接下来的部分包含 libinput 设置。
     // 省略设置将禁用它们，或使其保持默认值。
     // 这里所有被注释掉的设置仅作为示例，并非默认值。
     touchpad {
-        off
+        // off
         tap
         // dwt
         // dwtp
@@ -61,6 +65,8 @@ input {
     // warp-mouse-to-focus
 
     // 当鼠标移入窗口或输出时自动聚焦。
-    // 设置 max-scroll-amount="0%" 使其仅对已完全显示在屏幕上的窗口生效。
-       focus-follows-mouse //max-scroll-amount="0%"//只有当一个窗口 100% 完全 显示在屏幕内时，鼠标移动上去才会触发聚焦
+    // max-scroll-amount：允许相机移动的最大比例去展示该窗口。
+    // 0% = 只聚焦已完全在屏幕内的窗口；100% = 总能滚动视图去聚焦。
+    // 实测低于 100% 时行为不稳定，设 0% 彻底杜绝边角触发聚焦。
+       focus-follows-mouse max-scroll-amount="20%"
 }

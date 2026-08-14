@@ -3,7 +3,7 @@
 #![enable(unwrap_variant_newtypes)]
 (
     // MPD 连接地址 (需与 mpd.conf 一致)
-    address: "/tmp/socket",
+    address: "127.0.0.1:6600",
     
     // 基础参数
     volume_step: 5,
@@ -17,7 +17,7 @@
     // 外部资源路径
     theme: "def",
     cache_dir: Some("/tmp/rmpc/cache"),
-    lyrics_dir: "~/Music",
+    lyrics_dir: "/home/caster/Music",
     // 切歌时触发的脚本
     //on_song_change: ["~/.config/rmpc/scripts/notify"],
 

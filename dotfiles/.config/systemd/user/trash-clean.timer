@@ -1,0 +1,13 @@
+[Unit]
+Description=Run trash-clean monthly
+
+[Timer]
+
+# 调度规则：每月运行一次 (通常是每月1号)
+OnCalendar=monthly
+
+# 如果那时关机了，下次开机立刻补做
+Persistent=true
+
+[Install]
+WantedBy=timers.target

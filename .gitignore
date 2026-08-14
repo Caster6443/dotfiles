@@ -20,3 +20,12 @@ node_modules/
 target/
 build/
 dist/
+
+# 运行时/缓存文件（不备份）
+dotfiles/.config/mpd/database
+dotfiles/.config/mpd/pid
+dotfiles/.config/mpd/socket
+dotfiles/.config/mpd/state
+dotfiles/.config/mpd/sticker.sql
+dotfiles/.config/hypr/_binds_raw.json
+dotfiles/.config/fcitx5/conf/cached_layouts

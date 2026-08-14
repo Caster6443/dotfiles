@@ -1,12 +1,10 @@
 binds {
     //custom
-    Mod+L hotkey-overlay-title="锁屏" { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "lockScreen" "lock"; }
-    Mod+Space hotkey-overlay-title="打开noctalia控制中心" { spawn "bash" "-c" "qs -c noctalia-shell ipc call controlCenter toggle"; }
+    Mod+W hotkey-overlay-title="打开zen浏览器" { spawn "zen-browser"; }
     Mod+S hotkey-overlay-title="全屏截图并保存到剪切板" { spawn "bash" "-c" "~/.config/niri/scripts/screenshot_quick.sh"; }
     Mod+F10 hotkey-overlay-title="触控板开关" { spawn "bash" "-c" "~/.config/niri/scripts/Disable_Touchpad.sh"; }
     Mod+Shift+S hotkey-overlay-title="区域截图并编辑" { spawn "bash" "-c" "~/.config/niri/scripts/screenshot_edit.sh"; }
     Menu hotkey-overlay-title="显示快捷键说明 (映射CapsLock键)" { show-hotkey-overlay; }
-    Mod+A hotkey-overlay-title="打开noctalia应用程序菜单" { spawn "bash" "-c" "qs -c noctalia-shell ipc call launcher toggle"; }
     Mod+E hotkey-overlay-title="打开文件管理器nautilus" { spawn "env" "GSK_RENDERER=gl" "nautilus" "--new-window"; }
     Ctrl+T hotkey-overlay-title="打开kitty终端模拟器" { spawn "kitty"; }
     Shift+WheelScrollDown hotkey-overlay-title="在当前工作区横向切换到下一个聚焦窗口"     { focus-column-right; }
@@ -234,9 +232,6 @@ binds {
     // 让该列“填满剩余空间”。
     Mod+Ctrl+F { expand-column-to-available-width; }
 
-    // 将当前列居中显示。
-    Mod+C { center-column; }
-
     // 将屏幕上所有完全可见的列作为一个整体居中。
     Mod+Ctrl+C { center-visible-columns; }
 
@@ -266,7 +261,7 @@ binds {
     // 切换列的“标签页显示模式” (Tabbed Display)。
     // 处于此模式的列中，窗口将显示为垂直标签页（像浏览器标签一样前后折叠），
     // 而不是彼此上下堆叠（平分高度）。
-    Mod+W { toggle-column-tabbed-display; }
+    Alt+Space { toggle-column-tabbed-display; }
 
     // 切换键盘布局（输入法/语言）的操作。
     // 注意：如果你取消注释这些行，请确保你在上面的 xkb 选项中

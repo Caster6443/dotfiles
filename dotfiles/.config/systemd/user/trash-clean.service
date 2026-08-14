@@ -1,0 +1,6 @@
+[Unit]
+Description=清理回收站中存放超过30天的文件
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/trash-empty 30
