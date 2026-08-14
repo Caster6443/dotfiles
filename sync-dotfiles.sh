@@ -38,8 +38,6 @@ sync_file "${HOME}/.zshrc"           "dotfiles/.zshrc"
 sync_file "${HOME}/.gitconfig"       "dotfiles/.gitconfig"
 sync_file "${HOME}/.vimrc"           "dotfiles/.vimrc"
 sync_file "${HOME}/.gtkrc-2.0"       "dotfiles/.gtkrc-2.0"
-sync_file "${HOME}/startHyprland.sh" "dotfiles/startHyprland.sh"
-sync_file "${HOME}/startniri.sh"     "dotfiles/startniri.sh"
 
 # --- 桌面/窗口管理 ---
 sync_dir "${HOME}/.config/hypr"      "dotfiles/.config/hypr" _binds_raw.json
