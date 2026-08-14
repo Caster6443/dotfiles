@@ -43,7 +43,6 @@ sync_file "${HOME}/.gtkrc-2.0"       "dotfiles/.gtkrc-2.0"
 sync_dir "${HOME}/.config/hypr"      "dotfiles/.config/hypr" _binds_raw.json
 sync_dir "${HOME}/.config/niri"      "dotfiles/.config/niri"
 sync_dir "${HOME}/.config/waybar"    "dotfiles/.config/waybar"
-sync_dir "${HOME}/.config/swaylock"  "dotfiles/.config/swaylock"
 sync_dir "${HOME}/.config/caelestia" "dotfiles/.config/caelestia"
 
 # --- 终端/编辑器/常用工具 ---
@@ -54,7 +53,6 @@ sync_dir "${HOME}/.config/fish"      "dotfiles/.config/fish"
 sync_dir "${HOME}/.config/nvim"      "dotfiles/.config/nvim"
 sync_dir "${HOME}/.config/rmpc"      "dotfiles/.config/rmpc"
 sync_dir "${HOME}/.config/mpDris2"   "dotfiles/.config/mpDris2"
-sync_dir "${HOME}/.config/mpdris2"   "dotfiles/.config/mpdris2"
 sync_dir "${HOME}/.config/fastfetch" "dotfiles/.config/fastfetch"
 
 # --- 媒体（mpd 只备份配置，运行时文件不备份）---
