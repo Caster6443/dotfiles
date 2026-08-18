@@ -80,6 +80,8 @@ hl.window_rule({
 	match = { title = "^cheatsheet$" },
 	opaque = false,
 	opacity = "0.92 override",
+	-- 窗口本体从顶部滑入，内容随窗口整体移动（内容层不再自己做动画）
+	animation = "slide top",
 })
 
 -- Picture in picture (resize and move done via script)
