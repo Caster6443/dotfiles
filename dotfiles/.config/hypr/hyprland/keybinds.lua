@@ -1,13 +1,47 @@
 local vars = require("variables")
 local fn = require("hyprland.functions")
 
--- Launcher
-hl.bind("SUPER + SUPER_L", hl.dsp.global("caelestia:launcher"), { release = true, description = "程序启动器" })
--- 打断：按下 Super 组合键（键盘任意键或鼠标按键）时标记，避免松开 Super 误弹 launcher
-hl.bind("SUPER + catchall", hl.dsp.global("caelestia:launcherInterrupt"), { non_consuming = true })
+-- ============================================================
+-- Launcher（Super 打断）
+-- 设计：在 Hyprland 侧用一个状态位跟踪「Super 按住期间是否按过
+-- 其他键/鼠标」，松开 Super 时只有状态为「干净」才派发 launcher
+-- 事件。不再依赖 catchall（0.55+ Lua 下仅 submap 内可用，顶层注册
+-- 会被静默降级为普通键）和 Quickshell 侧的计数时序，因此不受事件
+-- 顺序影响。
+-- ============================================================
+local superLauncherBlocked = false
+
+-- 键盘：按住 Super 期间按下任意非 Super 键 -> 标记打断
+hl.on("input.keyboard.key", function(keycode, _, event)
+	if event ~= 1 then
+		return -- 只处理按下（0=释放, 1=按下, 2=重复）
+	end
+	if keycode == 133 or keycode == 134 then -- SUPER_L / SUPER_R
+		superLauncherBlocked = false
+	elseif hl.is_key_down(133) or hl.is_key_down(134) then
+		superLauncherBlocked = true
+	end
+end)
+
+-- 鼠标：Super + 鼠标按键/滚轮 -> 同样标记打断（保持 non_consuming，不抢原有功能）
 for _, btn in ipairs({ "mouse:272", "mouse:273", "mouse:274", "mouse:275", "mouse:276", "mouse:277" }) do
-	hl.bind("SUPER + " .. btn, hl.dsp.global("caelestia:launcherInterrupt"), { non_consuming = true })
+	hl.bind("SUPER + " .. btn, function() superLauncherBlocked = true end, { non_consuming = true })
 end
+for _, combo in ipairs({
+	"SUPER + mouse_up", "SUPER + mouse_down",
+	"CTRL + SUPER + mouse_up", "CTRL + SUPER + mouse_down",
+	"SUPER + ALT + mouse_up", "SUPER + ALT + mouse_down",
+}) do
+	hl.bind(combo, function() superLauncherBlocked = true end, { non_consuming = true })
+end
+
+-- 启动器：仅当 Super 是干净地单独按下时触发
+hl.bind("SUPER + SUPER_L", function()
+	if not superLauncherBlocked then
+		hl.dispatch(hl.dsp.global("caelestia:launcher"))
+	end
+	superLauncherBlocked = false
+end, { release = true, description = "程序启动器" })
 
 -- Overview (in-shell module, toggled via caelestia IPC)
 hl.bind(vars.kbOverview, hl.dsp.exec_cmd("qs -c caelestia ipc call overview toggle"), { description = "工作区总览" })
@@ -47,15 +81,16 @@ hl.bind("CTRL + SUPER + SHIFT + R", hl.dsp.exec_cmd("qs -c caelestia kill"), { r
 hl.bind(
 	"CTRL + SUPER + ALT + R",
 	hl.dsp.exec_cmd("qs -c caelestia kill; sleep .1; caelestia shell -d"),
-	{ release = true }
+	{ release = true, description = "重启 caelestia（强）" }
 )
 
+-- Workspaces（数字键 1-10）
 for i = 1, 10 do
 	local key = i % 10 -- 10 maps to key 0
-	hl.bind(vars.kbGoToWs .. " + " .. key, fn.wsaction("focus", "", i))
-	hl.bind(vars.kbMoveWinToWs .. " + " .. key, fn.wsaction("move", "", i))
-	hl.bind(vars.kbGoToWsGroup .. " + " .. key, fn.wsaction("focus", "group", i))
-	hl.bind(vars.kbMoveWinToWsGroup .. " + " .. key, fn.wsaction("move", "group", i))
+	hl.bind(vars.kbGoToWs .. " + " .. key, fn.wsaction("focus", "", i), { description = "切换到 1-10 号工作区" })
+	hl.bind(vars.kbMoveWinToWs .. " + " .. key, fn.wsaction("move", "", i), { description = "移动窗口到 1-10 号工作区" })
+	hl.bind(vars.kbGoToWsGroup .. " + " .. key, fn.wsaction("focus", "group", i), { description = "切换到 1-10 号工作区组" })
+	hl.bind(vars.kbMoveWinToWsGroup .. " + " .. key, fn.wsaction("move", "group", i), { description = "移动窗口到 1-10 号工作区组" })
 end
 
 -- Go to workspace -1/+1
@@ -63,16 +98,16 @@ hl.bind("SUPER + mouse_up", hl.dsp.focus({ workspace = "-1" }))
 hl.bind("SUPER + mouse_down", hl.dsp.focus({ workspace = "+1" }))
 hl.bind(vars.kbPrevWs, hl.dsp.focus({ workspace = "-1" }), { repeating = true, description = "上一个工作区" })
 hl.bind(vars.kbNextWs, hl.dsp.focus({ workspace = "+1" }), { repeating = true, description = "下一个工作区" })
-hl.bind("SUPER + Page_Up", hl.dsp.focus({ workspace = "-1" }), { repeating = true, description = "上一个工作区" })
-hl.bind("SUPER + Page_down", hl.dsp.focus({ workspace = "+1" }), { repeating = true, description = "下一个工作区" })
+hl.bind("SUPER + Page_Up", hl.dsp.focus({ workspace = "-1" }), { repeating = true })
+hl.bind("SUPER + Page_down", hl.dsp.focus({ workspace = "+1" }), { repeating = true })
 
 -- Go to workspace group -1/+1
 hl.bind("CTRL + SUPER + mouse_down", hl.dsp.focus({ workspace = "-10" }))
 hl.bind("CTRL + SUPER + mouse_up", hl.dsp.focus({ workspace = "+10" }))
 
 -- Move window to workspace -1/+1
-hl.bind("SUPER + ALT + Page_Up", hl.dsp.window.move({ workspace = "-1" }), { repeating = true })
-hl.bind("SUPER + ALT + Page_Down", hl.dsp.window.move({ workspace = "+1" }), { repeating = true })
+hl.bind("SUPER + ALT + Page_Up", hl.dsp.window.move({ workspace = "-1" }), { repeating = true, description = "移动窗口到上一个工作区" })
+hl.bind("SUPER + ALT + Page_Down", hl.dsp.window.move({ workspace = "+1" }), { repeating = true, description = "移动窗口到下一个工作区" })
 hl.bind("SUPER + ALT + mouse_down", hl.dsp.window.move({ workspace = "-1" }))
 hl.bind("SUPER + ALT + mouse_up", hl.dsp.window.move({ workspace = "+1" }))
 hl.bind("CTRL + SUPER + SHIFT + right", hl.dsp.window.move({ workspace = "+1" }), { repeating = true })
@@ -80,17 +115,17 @@ hl.bind("CTRL + SUPER + SHIFT + left", hl.dsp.window.move({ workspace = "-1" }),
 
 -- Move window to/from special workspace
 hl.bind("CTRL + SUPER + SHIFT + up", hl.dsp.window.move({ workspace = "special:special" }))
-hl.bind("CTRL + SUPER + SHIFT + down", hl.dsp.window.move({ workspace = "e+0" }))
-hl.bind("SUPER + ALT + S", hl.dsp.window.move({ workspace = "special:special" }))
+hl.bind("CTRL + SUPER + SHIFT + down", hl.dsp.window.move({ workspace = "e+0" }), { description = "移动窗口出特殊工作区" })
+hl.bind("SUPER + ALT + S", hl.dsp.window.move({ workspace = "special:special" }), { description = "移动窗口到特殊工作区" })
 
 -- Window groups
-hl.bind(vars.kbWindowGroupCycleNext, hl.dsp.window.cycle_next(), { repeating = true })
-hl.bind(vars.kbWindowGroupCyclePrev, hl.dsp.window.cycle_next(), { repeating = true })
+hl.bind(vars.kbWindowGroupCycleNext, hl.dsp.window.cycle_next(), { repeating = true, description = "切换到下一个窗口" })
+hl.bind(vars.kbWindowGroupCyclePrev, hl.dsp.window.cycle_next(), { repeating = true, description = "切换到上一个窗口" })
 hl.bind("CTRL + ALT + Tab", hl.dsp.group.next(), { repeating = true })
 hl.bind("CTRL + SHIFT + ALT + Tab", hl.dsp.group.prev(), { repeating = true })
-hl.bind(vars.kbToggleGroup, hl.dsp.group.toggle())
-hl.bind(vars.kbUngroup, hl.dsp.window.move({ out_of_group = true }))
-hl.bind("SUPER + SHIFT + Comma", hl.dsp.group.lock_active())
+hl.bind(vars.kbToggleGroup, hl.dsp.group.toggle(), { description = "切换分组" })
+hl.bind(vars.kbUngroup, hl.dsp.window.move({ out_of_group = true }), { description = "取消分组" })
+hl.bind("SUPER + SHIFT + Comma", hl.dsp.group.lock_active(), { description = "锁定/解锁分组" })
 
 -- Window actions
 hl.bind("SUPER + left", hl.dsp.focus({ direction = "left" }), { description = "聚焦左侧窗口" })
@@ -101,10 +136,10 @@ hl.bind("SUPER + SHIFT + left", hl.dsp.window.move({ direction = "left" }), { de
 hl.bind("SUPER + SHIFT + right", hl.dsp.window.move({ direction = "right" }), { description = "窗口右移" })
 hl.bind("SUPER + SHIFT + up", hl.dsp.window.move({ direction = "up" }), { description = "窗口上移" })
 hl.bind("SUPER + SHIFT + down", hl.dsp.window.move({ direction = "down" }), { description = "窗口下移" })
-hl.bind("SUPER + Minus", hl.dsp.window.resize(fn.resize_active_window(-10, 0)), { repeating = true })
-hl.bind("SUPER + Equal", hl.dsp.window.resize(fn.resize_active_window(10, 0)), { repeating = true })
-hl.bind("SUPER + SHIFT + Minus", hl.dsp.window.resize(fn.resize_active_window(0, -10)), { repeating = true })
-hl.bind("SUPER + SHIFT + Equal", hl.dsp.window.resize(fn.resize_active_window(0, 10)), { repeating = true })
+hl.bind("SUPER + Minus", hl.dsp.window.resize(fn.resize_active_window(-10, 0)), { repeating = true, description = "窗口变窄" })
+hl.bind("SUPER + Equal", hl.dsp.window.resize(fn.resize_active_window(10, 0)), { repeating = true, description = "窗口变宽" })
+hl.bind("SUPER + SHIFT + Minus", hl.dsp.window.resize(fn.resize_active_window(0, -10)), { repeating = true, description = "窗口变矮" })
+hl.bind("SUPER + SHIFT + Equal", hl.dsp.window.resize(fn.resize_active_window(0, 10)), { repeating = true, description = "窗口变高" })
 hl.bind("SUPER + ALT + left", hl.dsp.window.resize(fn.resize_active_window(-10, 0)), { repeating = true })
 hl.bind("SUPER + ALT + right", hl.dsp.window.resize(fn.resize_active_window(10, 0)), { repeating = true })
 hl.bind("SUPER + ALT + up", hl.dsp.window.resize(fn.resize_active_window(0, -10)), { repeating = true })
@@ -118,7 +153,7 @@ hl.bind("SUPER + mouse:272", hl.dsp.window.drag(), { mouse = true })
 hl.bind(vars.kbMoveWindow, hl.dsp.window.drag(), { mouse = true, description = "拖动窗口" })
 hl.bind("SUPER + mouse:273", hl.dsp.window.resize(), { mouse = true })
 hl.bind(vars.kbResizeWindow, hl.dsp.window.resize(), { mouse = true, description = "调整窗口大小" })
-hl.bind("CTRL + SUPER + Backslash", hl.dsp.window.center())
+hl.bind("CTRL + SUPER + Backslash", hl.dsp.window.center(), { description = "窗口居中" })
 hl.bind("CTRL + SUPER + ALT + Backslash", hl.dsp.window.resize(fn.resize_by_screen(55, 70)))
 hl.bind("CTRL + SUPER + ALT + Backslash", hl.dsp.window.center())
 hl.bind(vars.kbWindowPip, function()
@@ -132,7 +167,7 @@ hl.bind(vars.kbWindowPip, function()
 			hl.dispatch(x)
 		end
 	end
-end)
+end, { description = "画中画（悬浮置顶）" })
 hl.bind(vars.kbPinWindow, hl.dsp.window.pin(), { description = "固定/取消固定窗口" })
 hl.bind(vars.kbWindowFullscreen, hl.dsp.window.fullscreen({ mode = "fullscreen" }), { description = "全屏" })
 hl.bind(vars.kbWindowBorderedFullscreen, hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }), { description = "无边框全屏" })
@@ -141,7 +176,7 @@ hl.bind(vars.kbCloseWindow, hl.dsp.window.close(), { description = "关闭窗口
 
 -- Special workspace toggles
 hl.bind(vars.kbSpecialWs, hl.dsp.exec_cmd("caelestia toggle specialws"), { description = "特殊工作区" })
-hl.bind(vars.kbSystemMonitorWs, hl.dsp.exec_cmd("caelestia toggle sysmon"))
+hl.bind(vars.kbSystemMonitorWs, hl.dsp.exec_cmd("caelestia toggle sysmon"), { description = "系统监控工作区" })
 hl.bind(vars.kbMusicWs, hl.dsp.exec_cmd("caelestia toggle music"), { description = "音乐工作区" })
 hl.bind(vars.kbCommunicationWs, hl.dsp.exec_cmd("caelestia toggle communication"), { description = "通讯工作区" })
 hl.bind(vars.kbTodoWs, hl.dsp.exec_cmd("caelestia toggle todo"), { description = "待办工作区" })
@@ -158,7 +193,7 @@ hl.bind("SUPER + O", hl.dsp.exec_cmd("obsidian"), { description = "Obsidian" })
 -- Utilities
 hl.bind("Print", hl.dsp.exec_cmd("caelestia screenshot"), { locked = true, description = "截图" })
 hl.bind("SUPER + SHIFT + S", hl.dsp.global("caelestia:screenshotFreeze"), { description = "区域截图（冻结画面）" })
-hl.bind("SUPER + SHIFT + ALT + S", hl.dsp.global("caelestia:screenshot"), { description = "截图" })
+hl.bind("SUPER + SHIFT + ALT + S", hl.dsp.global("caelestia:screenshot"))
 hl.bind("SUPER + ALT + R", hl.dsp.exec_cmd("caelestia record -s"), { description = "录屏（带声音）" })
 hl.bind("CTRL + ALT + R", hl.dsp.exec_cmd("caelestia record"), { description = "录屏" })
 hl.bind("SUPER + SHIFT + ALT + R", hl.dsp.exec_cmd("caelestia record -r"), { description = "录屏（区域）" })
@@ -193,7 +228,7 @@ hl.bind("SUPER + Period", hl.dsp.exec_cmd("pkill fuzzel || caelestia emoji -p"),
 hl.bind(
 	"CTRL + SHIFT + ALT + V",
 	hl.dsp.exec_cmd("sleep 0.5s && ydotool type -d 1 '$(cliphist list | head -1 | cliphist decode)"),
-	{ locked = true }
+	{ locked = true, description = "粘贴剪贴板最后一项" }
 )
 
 -- Testing
