@@ -2,14 +2,25 @@ local vars = require("variables")
 local fn = require("hyprland.functions")
 
 -- Launcher
-hl.bind("SUPER + SUPER_L", hl.dsp.global("caelestia:launcher"), { release = true })
+hl.bind("SUPER + SUPER_L", hl.dsp.global("caelestia:launcher"), { release = true, description = "程序启动器" })
+-- 打断：按下 Super 组合键（键盘任意键或鼠标按键）时标记，避免松开 Super 误弹 launcher
+hl.bind("SUPER + catchall", hl.dsp.global("caelestia:launcherInterrupt"), { non_consuming = true })
+for _, btn in ipairs({ "mouse:272", "mouse:273", "mouse:274", "mouse:275", "mouse:276", "mouse:277" }) do
+	hl.bind("SUPER + " .. btn, hl.dsp.global("caelestia:launcherInterrupt"), { non_consuming = true })
+end
+
+-- Overview (in-shell module, toggled via caelestia IPC)
+hl.bind(vars.kbOverview, hl.dsp.exec_cmd("qs -c caelestia ipc call overview toggle"), { description = "工作区总览" })
+
+-- Cheatsheet (in-shell module, toggled via caelestia IPC)
+hl.bind(vars.kbCheatsheet, hl.dsp.exec_cmd("qs -c caelestia ipc call cheatsheet toggle"), { description = "快捷键速查" })
 
 -- Misc
-hl.bind(vars.kbSession, hl.dsp.global("caelestia:session"))
-hl.bind(vars.kbShowSidebar, hl.dsp.global("caelestia:sidebar"))
-hl.bind(vars.kbClearNotifs, hl.dsp.global("caelestia:clearNotifs"), { locked = true })
-hl.bind(vars.kbShowPanels, hl.dsp.global("caelestia:showall"))
-hl.bind(vars.kbLock, hl.dsp.global("caelestia:lock"))
+hl.bind(vars.kbSession, hl.dsp.global("caelestia:session"), { description = "会话面板" })
+hl.bind(vars.kbShowSidebar, hl.dsp.global("caelestia:sidebar"), { description = "侧边栏" })
+hl.bind(vars.kbClearNotifs, hl.dsp.global("caelestia:clearNotifs"), { locked = true, description = "清除通知" })
+hl.bind(vars.kbShowPanels, hl.dsp.global("caelestia:showall"), { description = "显示所有面板" })
+hl.bind(vars.kbLock, hl.dsp.global("caelestia:lock"), { description = "锁屏" })
 
 -- Restore lock
 hl.bind(vars.kbRestoreLock, function()
@@ -18,21 +29,21 @@ hl.bind(vars.kbRestoreLock, function()
 end)
 
 -- Brightness
-hl.bind("XF86MonBrightnessUp", hl.dsp.global("caelestia:brightnessUp"), { locked = true })
-hl.bind("XF86MonBrightnessDown", hl.dsp.global("caelestia:brightnessDown"), { locked = true })
+hl.bind("XF86MonBrightnessUp", hl.dsp.global("caelestia:brightnessUp"), { locked = true, description = "提高亮度" })
+hl.bind("XF86MonBrightnessDown", hl.dsp.global("caelestia:brightnessDown"), { locked = true, description = "降低亮度" })
 
 -- Media
-hl.bind("CTRL + SUPER + Space", hl.dsp.global("caelestia:mediaToggle"), { locked = true })
-hl.bind("XF86AudioPlay", hl.dsp.global("caelestia:mediaToggle"), { locked = true })
-hl.bind("XF86AudioPause", hl.dsp.global("caelestia:mediaToggle"), { locked = true })
-hl.bind("CTRL + SUPER + Equal", hl.dsp.global("caelestia:mediaNext"), { locked = true })
-hl.bind("XF86AudioNext", hl.dsp.global("caelestia:mediaNext"), { locked = true })
-hl.bind("CTRL + SUPER + Minus", hl.dsp.global("caelestia:mediaPrev"), { locked = true })
-hl.bind("XF86AudioPrev", hl.dsp.global("caelestia:mediaPrev"), { locked = true })
-hl.bind("XF86AudioStop", hl.dsp.global("caelestia:mediaStop"), { locked = true })
+hl.bind("CTRL + SUPER + Space", hl.dsp.global("caelestia:mediaToggle"), { locked = true, description = "播放/暂停" })
+hl.bind("XF86AudioPlay", hl.dsp.global("caelestia:mediaToggle"), { locked = true, description = "播放/暂停" })
+hl.bind("XF86AudioPause", hl.dsp.global("caelestia:mediaToggle"), { locked = true, description = "播放/暂停" })
+hl.bind("CTRL + SUPER + Equal", hl.dsp.global("caelestia:mediaNext"), { locked = true, description = "下一曲" })
+hl.bind("XF86AudioNext", hl.dsp.global("caelestia:mediaNext"), { locked = true, description = "下一曲" })
+hl.bind("CTRL + SUPER + Minus", hl.dsp.global("caelestia:mediaPrev"), { locked = true, description = "上一曲" })
+hl.bind("XF86AudioPrev", hl.dsp.global("caelestia:mediaPrev"), { locked = true, description = "上一曲" })
+hl.bind("XF86AudioStop", hl.dsp.global("caelestia:mediaStop"), { locked = true, description = "停止" })
 
 -- Kill/restart
-hl.bind("CTRL + SUPER + SHIFT + R", hl.dsp.exec_cmd("qs -c caelestia kill"), { release = true })
+hl.bind("CTRL + SUPER + SHIFT + R", hl.dsp.exec_cmd("qs -c caelestia kill"), { release = true, description = "重启 caelestia" })
 hl.bind(
 	"CTRL + SUPER + ALT + R",
 	hl.dsp.exec_cmd("qs -c caelestia kill; sleep .1; caelestia shell -d"),
@@ -50,10 +61,10 @@ end
 -- Go to workspace -1/+1
 hl.bind("SUPER + mouse_up", hl.dsp.focus({ workspace = "-1" }))
 hl.bind("SUPER + mouse_down", hl.dsp.focus({ workspace = "+1" }))
-hl.bind(vars.kbPrevWs, hl.dsp.focus({ workspace = "-1" }), { repeating = true })
-hl.bind(vars.kbNextWs, hl.dsp.focus({ workspace = "+1" }), { repeating = true })
-hl.bind("SUPER + Page_Up", hl.dsp.focus({ workspace = "-1" }), { repeating = true })
-hl.bind("SUPER + Page_down", hl.dsp.focus({ workspace = "+1" }), { repeating = true })
+hl.bind(vars.kbPrevWs, hl.dsp.focus({ workspace = "-1" }), { repeating = true, description = "上一个工作区" })
+hl.bind(vars.kbNextWs, hl.dsp.focus({ workspace = "+1" }), { repeating = true, description = "下一个工作区" })
+hl.bind("SUPER + Page_Up", hl.dsp.focus({ workspace = "-1" }), { repeating = true, description = "上一个工作区" })
+hl.bind("SUPER + Page_down", hl.dsp.focus({ workspace = "+1" }), { repeating = true, description = "下一个工作区" })
 
 -- Go to workspace group -1/+1
 hl.bind("CTRL + SUPER + mouse_down", hl.dsp.focus({ workspace = "-10" }))
@@ -82,14 +93,14 @@ hl.bind(vars.kbUngroup, hl.dsp.window.move({ out_of_group = true }))
 hl.bind("SUPER + SHIFT + Comma", hl.dsp.group.lock_active())
 
 -- Window actions
-hl.bind("SUPER + left", hl.dsp.focus({ direction = "left" }))
-hl.bind("SUPER + right", hl.dsp.focus({ direction = "right" }))
-hl.bind("SUPER + up", hl.dsp.focus({ direction = "up" }))
-hl.bind("SUPER + down", hl.dsp.focus({ direction = "down" }))
-hl.bind("SUPER + SHIFT + left", hl.dsp.window.move({ direction = "left" }))
-hl.bind("SUPER + SHIFT + right", hl.dsp.window.move({ direction = "right" }))
-hl.bind("SUPER + SHIFT + up", hl.dsp.window.move({ direction = "up" }))
-hl.bind("SUPER + SHIFT + down", hl.dsp.window.move({ direction = "down" }))
+hl.bind("SUPER + left", hl.dsp.focus({ direction = "left" }), { description = "聚焦左侧窗口" })
+hl.bind("SUPER + right", hl.dsp.focus({ direction = "right" }), { description = "聚焦右侧窗口" })
+hl.bind("SUPER + up", hl.dsp.focus({ direction = "up" }), { description = "聚焦上方窗口" })
+hl.bind("SUPER + down", hl.dsp.focus({ direction = "down" }), { description = "聚焦下方窗口" })
+hl.bind("SUPER + SHIFT + left", hl.dsp.window.move({ direction = "left" }), { description = "窗口左移" })
+hl.bind("SUPER + SHIFT + right", hl.dsp.window.move({ direction = "right" }), { description = "窗口右移" })
+hl.bind("SUPER + SHIFT + up", hl.dsp.window.move({ direction = "up" }), { description = "窗口上移" })
+hl.bind("SUPER + SHIFT + down", hl.dsp.window.move({ direction = "down" }), { description = "窗口下移" })
 hl.bind("SUPER + Minus", hl.dsp.window.resize(fn.resize_active_window(-10, 0)), { repeating = true })
 hl.bind("SUPER + Equal", hl.dsp.window.resize(fn.resize_active_window(10, 0)), { repeating = true })
 hl.bind("SUPER + SHIFT + Minus", hl.dsp.window.resize(fn.resize_active_window(0, -10)), { repeating = true })
@@ -104,9 +115,9 @@ hl.bind("SHIFT + mouse_down", hl.dsp.layout("move +col"))
 hl.bind("SHIFT + mouse_up", hl.dsp.layout("move -col"))
 
 hl.bind("SUPER + mouse:272", hl.dsp.window.drag(), { mouse = true })
-hl.bind(vars.kbMoveWindow, hl.dsp.window.drag(), { mouse = true })
+hl.bind(vars.kbMoveWindow, hl.dsp.window.drag(), { mouse = true, description = "拖动窗口" })
 hl.bind("SUPER + mouse:273", hl.dsp.window.resize(), { mouse = true })
-hl.bind(vars.kbResizeWindow, hl.dsp.window.resize(), { mouse = true })
+hl.bind(vars.kbResizeWindow, hl.dsp.window.resize(), { mouse = true, description = "调整窗口大小" })
 hl.bind("CTRL + SUPER + Backslash", hl.dsp.window.center())
 hl.bind("CTRL + SUPER + ALT + Backslash", hl.dsp.window.resize(fn.resize_by_screen(55, 70)))
 hl.bind("CTRL + SUPER + ALT + Backslash", hl.dsp.window.center())
@@ -122,41 +133,41 @@ hl.bind(vars.kbWindowPip, function()
 		end
 	end
 end)
-hl.bind(vars.kbPinWindow, hl.dsp.window.pin())
-hl.bind(vars.kbWindowFullscreen, hl.dsp.window.fullscreen({ mode = "fullscreen" }))
-hl.bind(vars.kbWindowBorderedFullscreen, hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
-hl.bind(vars.kbToggleWindowFloating, hl.dsp.window.float())
-hl.bind(vars.kbCloseWindow, hl.dsp.window.close())
+hl.bind(vars.kbPinWindow, hl.dsp.window.pin(), { description = "固定/取消固定窗口" })
+hl.bind(vars.kbWindowFullscreen, hl.dsp.window.fullscreen({ mode = "fullscreen" }), { description = "全屏" })
+hl.bind(vars.kbWindowBorderedFullscreen, hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }), { description = "无边框全屏" })
+hl.bind(vars.kbToggleWindowFloating, hl.dsp.window.float(), { description = "切换浮动" })
+hl.bind(vars.kbCloseWindow, hl.dsp.window.close(), { description = "关闭窗口" })
 
 -- Special workspace toggles
-hl.bind(vars.kbSpecialWs, hl.dsp.exec_cmd("caelestia toggle specialws"))
+hl.bind(vars.kbSpecialWs, hl.dsp.exec_cmd("caelestia toggle specialws"), { description = "特殊工作区" })
 hl.bind(vars.kbSystemMonitorWs, hl.dsp.exec_cmd("caelestia toggle sysmon"))
-hl.bind(vars.kbMusicWs, hl.dsp.exec_cmd("caelestia toggle music"))
-hl.bind(vars.kbCommunicationWs, hl.dsp.exec_cmd("caelestia toggle communication"))
-hl.bind(vars.kbTodoWs, hl.dsp.exec_cmd("caelestia toggle todo"))
-hl.bind(vars.kbProxy, hl.dsp.exec_cmd("caelestia toggle proxy"))
+hl.bind(vars.kbMusicWs, hl.dsp.exec_cmd("caelestia toggle music"), { description = "音乐工作区" })
+hl.bind(vars.kbCommunicationWs, hl.dsp.exec_cmd("caelestia toggle communication"), { description = "通讯工作区" })
+hl.bind(vars.kbTodoWs, hl.dsp.exec_cmd("caelestia toggle todo"), { description = "待办工作区" })
+hl.bind(vars.kbProxy, hl.dsp.exec_cmd("caelestia toggle proxy"), { description = "代理工作区" })
 
 -- Apps
-hl.bind(vars.kbTerminal, hl.dsp.exec_cmd(vars.terminal))
-hl.bind(vars.kbBrowser, hl.dsp.exec_cmd(vars.browser))
-hl.bind(vars.kbEditor, hl.dsp.exec_cmd(vars.editor))
-hl.bind(vars.kbFileExplorer, hl.dsp.exec_cmd(vars.fileExplorer))
+hl.bind(vars.kbTerminal, hl.dsp.exec_cmd(vars.terminal), { description = "终端" })
+hl.bind(vars.kbBrowser, hl.dsp.exec_cmd(vars.browser), { description = "浏览器" })
+hl.bind(vars.kbEditor, hl.dsp.exec_cmd(vars.editor), { description = "编辑器" })
+hl.bind(vars.kbFileExplorer, hl.dsp.exec_cmd(vars.fileExplorer), { description = "文件管理器" })
 hl.bind("CTRL + ALT + V", hl.dsp.exec_cmd(vars.audioSettings))
-hl.bind("SUPER + O", hl.dsp.exec_cmd("obsidian"))
+hl.bind("SUPER + O", hl.dsp.exec_cmd("obsidian"), { description = "Obsidian" })
 
 -- Utilities
-hl.bind("Print", hl.dsp.exec_cmd("caelestia screenshot"), { locked = true })
-hl.bind("SUPER + SHIFT + S", hl.dsp.global("caelestia:screenshotFreeze"))
-hl.bind("SUPER + SHIFT + ALT + S", hl.dsp.global("caelestia:screenshot"))
-hl.bind("SUPER + ALT + R", hl.dsp.exec_cmd("caelestia record -s"))
-hl.bind("CTRL + ALT + R", hl.dsp.exec_cmd("caelestia record"))
-hl.bind("SUPER + SHIFT + ALT + R", hl.dsp.exec_cmd("caelestia record -r"))
-hl.bind("SUPER + SHIFT + C", hl.dsp.exec_cmd("hyprpicker -a"))
+hl.bind("Print", hl.dsp.exec_cmd("caelestia screenshot"), { locked = true, description = "截图" })
+hl.bind("SUPER + SHIFT + S", hl.dsp.global("caelestia:screenshotFreeze"), { description = "区域截图（冻结画面）" })
+hl.bind("SUPER + SHIFT + ALT + S", hl.dsp.global("caelestia:screenshot"), { description = "截图" })
+hl.bind("SUPER + ALT + R", hl.dsp.exec_cmd("caelestia record -s"), { description = "录屏（带声音）" })
+hl.bind("CTRL + ALT + R", hl.dsp.exec_cmd("caelestia record"), { description = "录屏" })
+hl.bind("SUPER + SHIFT + ALT + R", hl.dsp.exec_cmd("caelestia record -r"), { description = "录屏（区域）" })
+hl.bind("SUPER + SHIFT + C", hl.dsp.exec_cmd("hyprpicker -a"), { description = "取色器" })
 
 -- Volume
 hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"), { locked = true })
-hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true })
-hl.bind("SUPER + SHIFT + M", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true })
+hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true, description = "静音" })
+hl.bind("SUPER + SHIFT + M", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true, description = "静音" })
 hl.bind(
 	"XF86AudioRaiseVolume",
 	hl.dsp.exec_cmd(
@@ -173,12 +184,12 @@ hl.bind(
 )
 
 -- Sleep
-hl.bind("SUPER + SHIFT + L", hl.dsp.exec_cmd(vars.sleepGestureCmd), { locked = true })
+hl.bind("SUPER + SHIFT + L", hl.dsp.exec_cmd(vars.sleepGestureCmd), { locked = true, description = "睡眠" })
 
 -- Clipboard and emoji picker
-hl.bind("SUPER + V", hl.dsp.exec_cmd("pkill fuzzel || caelestia clipboard"))
-hl.bind("SUPER + ALT + V", hl.dsp.exec_cmd("pkill fuzzel || caelestia clipboard -d"))
-hl.bind("SUPER + Period", hl.dsp.exec_cmd("pkill fuzzel || caelestia emoji -p"))
+hl.bind("SUPER + V", hl.dsp.exec_cmd("pkill fuzzel || caelestia clipboard"), { description = "剪贴板历史" })
+hl.bind("SUPER + ALT + V", hl.dsp.exec_cmd("pkill fuzzel || caelestia clipboard -d"), { description = "剪贴板（删除）" })
+hl.bind("SUPER + Period", hl.dsp.exec_cmd("pkill fuzzel || caelestia emoji -p"), { description = "表情选择" })
 hl.bind(
 	"CTRL + SHIFT + ALT + V",
 	hl.dsp.exec_cmd("sleep 0.5s && ydotool type -d 1 '$(cliphist list | head -1 | cliphist decode)"),
