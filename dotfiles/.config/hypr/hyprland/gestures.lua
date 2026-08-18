@@ -11,15 +11,15 @@ hl.config({
 	},
 })
 
+-- 4 指横向滑动切换工作区
 hl.gesture({ fingers = vars.workspaceSwipeFingers, direction = "horizontal", action = "workspace" })
-hl.gesture({ fingers = vars.gestureFingers, direction = "up", action = "special", workspace_name = "special" })
-hl.gesture({
-	fingers = vars.gestureFingers,
-	direction = "down",
-	action = function()
-		hl.exec_cmd("caelestia toggle specialws")
-	end,
-})
+-- 3 指左右滑动滚动窗口列（scrolling 布局原生跟手手势；自然方向：左滑 → 下一列，右滑 → 上一列）
+hl.gesture({ fingers = vars.gestureFingers, direction = "horizontal", action = "scroll_move" })
+-- 3 指上下滑动切换工作区（内置跟手动画；自然方向：上滑 → 下一个，下滑 → 上一个）
+hl.gesture({ fingers = vars.gestureFingers, direction = "vertical", action = "workspace" })
+-- 4 指上滑呼出/收起特殊工作区
+hl.gesture({ fingers = vars.gestureFingersMore, direction = "up", action = "special", workspace_name = "special" })
+-- 4 指下滑休眠
 hl.gesture({
 	fingers = vars.gestureFingersMore,
 	direction = "down",

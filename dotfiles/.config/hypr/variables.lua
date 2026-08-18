@@ -102,4 +102,10 @@ return {
 	kbShowPanels = "SUPER + K",
 	kbLock = "SUPER + L",
 	kbRestoreLock = "SUPER + ALT + L",
+
+	-- Overview (in-shell caelestia module)
+	kbOverview = "SUPER + Tab",
+
+	-- Cheatsheet (in-shell caelestia module)
+	kbCheatsheet = "SUPER + Slash",
 }

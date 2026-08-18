@@ -75,6 +75,13 @@ hl.window_rule({
 -- Steam
 hl.window_rule({ match = { class = "steam" }, rounding = 10 })
 
+-- Cheatsheet：半透明 + 模糊（放在末尾覆盖 opaque_app 规则）
+hl.window_rule({
+	match = { title = "^cheatsheet$" },
+	opaque = false,
+	opacity = "0.92 override",
+})
+
 -- Picture in picture (resize and move done via script)
 hl.window_rule({
 	match = { title = "Picture(-| )in(-| )[Pp]icture" },

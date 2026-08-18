@@ -34,9 +34,6 @@ hl.on("hyprland.start", function()
 	-- Disable touchpad while typing
 	hl.exec_cmd("ydotoold")
 
-	-- KDE Connect
-	hl.exec_cmd("kdeconnect-indicator")
-
 	-- input method
 	hl.exec_cmd("fcitx5 -d")
 
