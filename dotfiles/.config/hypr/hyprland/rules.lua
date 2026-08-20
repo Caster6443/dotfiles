@@ -43,6 +43,30 @@ hl.window_rule({ match = { class = "org.pulseaudio.pavucontrol|yad-icon-browser"
 hl.window_rule({ match = { class = "org.gnome.Settings" }, tag = "+float_80_70" })
 hl.window_rule({ match = { class = "nwg-look" }, tag = "+float_60_50" })
 
+-- 选择工作区目录对话框：浮动 + 居中 + 适中尺寸
+hl.window_rule({
+	match = { title = "^Select Workspace Directory$" },
+	float = true,
+	size = "(monitor_w*0.7) (monitor_h*0.6)",
+	center = true,
+})
+
+-- QQ聊天记录窗口（私聊/群聊，title 形如"xxx的聊天记录"）：浮动 + 居中 + 适中尺寸
+hl.window_rule({
+	match = { class = "QQ", title = ".*的聊天记录.*" },
+	float = true,
+	size = "(monitor_w*0.5) (monitor_h*0.8)",
+	center = true,
+})
+
+-- 微信查看图片和视频：浮动 + 居中 + 适中尺寸
+hl.window_rule({
+	match = { title = "^图片和视频$", class = "wechat" },
+	float = true,
+	--size = "(monitor_w*0.5) (monitor_h*0.5)",
+	center = true,
+})
+
 -- 修复虚拟系统管理器总是默认在1号工作区打开
 hl.window_rule({ match = { class = "virt-manager" }, workspace = "unset" })
 
