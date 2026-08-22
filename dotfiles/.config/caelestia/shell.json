@@ -553,8 +553,10 @@
             "enabled": false,
             "provider": [
                 {
+                    "id": "vpn-mt2w1enq-7e6ar"
                 }
-            ]
+            ],
+            "selectedProvider": "vpn-mt2w1enq-7e6ar"
         }
     }
 }
