@@ -100,10 +100,17 @@ hl.window_rule({
 hl.window_rule({ match = { class = "steam" }, rounding = 10 })
 
 -- Cheatsheet：半透明 + 模糊（放在末尾覆盖 opaque_app 规则）
+-- 重开（visible false→true）时客户端会异步请求 maximized，导致铺满工作区；
+-- 用 fullscreen_state 在 map 时清零 + size/center 强制 72% 居中兜底。
 hl.window_rule({
 	match = { title = "^cheatsheet$" },
+	float = true,
+	size = "(monitor_w*0.72) (monitor_h*0.72)",
+	center = true,
 	opaque = false,
 	opacity = "0.92 override",
+	-- 重开时客户端会异步请求 maximized，这里在 map 时强制 internal/client 全屏态都为 0
+	fullscreen_state = "0 0",
 	-- 窗口本体从顶部滑入，内容随窗口整体移动（内容层不再自己做动画）
 	animation = "slide top",
 })

@@ -197,6 +197,7 @@ hl.bind("SUPER + SHIFT + ALT + S", hl.dsp.global("caelestia:screenshot"))
 hl.bind("SUPER + ALT + R", hl.dsp.exec_cmd("caelestia record -s"), { description = "录屏（带声音）" })
 hl.bind("CTRL + ALT + R", hl.dsp.exec_cmd("caelestia record"), { description = "录屏" })
 hl.bind("SUPER + SHIFT + ALT + R", hl.dsp.exec_cmd("caelestia record -r"), { description = "录屏（区域）" })
+hl.bind("SUPER + ALT + P", hl.dsp.exec_cmd("caelestia record -p"), { description = "录屏暂停/继续" })
 hl.bind("SUPER + SHIFT + C", hl.dsp.exec_cmd("hyprpicker -a"), { description = "取色器" })
 
 -- Volume
