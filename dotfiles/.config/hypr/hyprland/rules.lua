@@ -11,7 +11,8 @@ hl.window_rule({ match = { float = true, xwayland = false }, center = true }) --
 -- Floating Applications
 hl.window_rule({
 	match = {
-		class = "guifetch|yad|zenity|wev|org.gnome.FileRoller|file-roller|blueman-manager|com.github.GradienceTeam.Gradience|feh|imv|system-config-printer|org.quickshell",
+		-- xdg-desktop-portal-gtk：GTK 门户文件/文件夹选择对话框（如 Obsidian「打开本地仓库」），任何应用弹的都该浮动
+		class = "guifetch|yad|zenity|wev|org.gnome.FileRoller|file-roller|blueman-manager|com.github.GradienceTeam.Gradience|feh|imv|system-config-printer|org.quickshell|xdg-desktop-portal-gtk",
 	},
 	tag = "+float",
 })
@@ -56,6 +57,17 @@ hl.window_rule({
 	match = { class = "QQ", title = ".*的聊天记录.*" },
 	float = true,
 	size = "(monitor_w*0.5) (monitor_h*0.8)",
+	center = true,
+})
+
+-- Obsidian 1.13+ 设置独立窗口（标题形如"设置/Settings - 库名 - Obsidian"）：浮动 + 居中
+-- class 兼容旧版 obsidian 与 1.13 起的 md.obsidian / md.Obsidian
+hl.window_rule({
+	match = {
+		class = "^(obsidian|md\\.obsidian|md\\.Obsidian|md\\.obsidian\\.Obsidian)$",
+		title = ".*(设置|Settings).*",
+	},
+	float = true,
 	center = true,
 })
 
