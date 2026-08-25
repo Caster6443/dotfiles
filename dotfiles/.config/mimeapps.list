@@ -44,6 +44,7 @@ x-scheme-handler/com.todoist=todoist.desktop
 x-scheme-handler/todoist=todoist.desktop
 application/vnd.adobe.flash.movie=com.google.Chrome.desktop
 text/markdown=nvim.desktop
+text/plain=nvim.desktop
 
 [Added Associations]
 x-scheme-handler/http=userapp-Zen-HUSNP3.desktop;zen.desktop;
@@ -71,7 +72,7 @@ application/wps-office.dotx=wps-office-wps.desktop;wps-office-prometheus.desktop
 application/wps-office.wpss=wps-office-wps.desktop;wps-office-prometheus.desktop;
 application/wps-office.wpso=wps-office-wps.desktop;wps-office-prometheus.desktop;
 application/pdf=wps-office-pdf.desktop;org.gnome.Nautilus.desktop;zen.desktop;firefox.desktop;
-text/plain=org.xfce.mousepad.desktop;
+text/plain=org.xfce.mousepad.desktop;nvim.desktop;
 application/x-shellscript=nvim.desktop;
 text/x-log=nvim.desktop;
 application/vnd.adobe.flash.movie=com.google.Chrome.desktop;
