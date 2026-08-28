@@ -79,6 +79,18 @@ hl.window_rule({
 	center = true,
 })
 
+-- Thunar 打开图片（GNOME Loupe）与视频（mpv）：浮动 + 居中
+hl.window_rule({
+	match = { class = "org.gnome.Loupe|loupe" },
+	float = true,
+	center = true,
+})
+hl.window_rule({
+	match = { class = "mpv" },
+	float = true,
+	center = true,
+})
+
 -- 修复虚拟系统管理器总是默认在1号工作区打开
 hl.window_rule({ match = { class = "virt-manager" }, workspace = "unset" })
 
