@@ -192,7 +192,8 @@ hl.bind("SUPER + O", hl.dsp.exec_cmd("obsidian"), { description = "Obsidian" })
 
 -- Utilities
 hl.bind("Print", hl.dsp.exec_cmd("caelestia screenshot"), { locked = true, description = "截图" })
-hl.bind("SUPER + SHIFT + S", hl.dsp.global("caelestia:screenshotFreeze"), { description = "区域截图（冻结画面）" })
+hl.bind("SUPER + SHIFT + S", hl.dsp.global("caelestia:screenshotFreezeClip"), { description = "区域截图并复制到剪贴板（冻结画面）" })
+hl.bind("ALT + SHIFT + S", hl.dsp.global("caelestia:screenshotFreeze"), { description = "截图并编辑" })
 hl.bind("SUPER + SHIFT + ALT + S", hl.dsp.global("caelestia:screenshot"))
 hl.bind("SUPER + PRINT", hl.dsp.global("caelestia:screenshotFreezeClip"), { description = "区域截图并复制到剪贴板（冻结画面）" })
 hl.bind("SUPER + ALT + R", hl.dsp.exec_cmd("caelestia record -s"), { description = "录屏（带声音）" })
