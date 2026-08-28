@@ -195,7 +195,6 @@ hl.bind("Print", hl.dsp.exec_cmd("caelestia screenshot"), { locked = true, descr
 hl.bind("SUPER + SHIFT + S", hl.dsp.global("caelestia:screenshotFreezeClip"), { description = "区域截图并复制到剪贴板（冻结画面）" })
 hl.bind("ALT + SHIFT + S", hl.dsp.global("caelestia:screenshotFreeze"), { description = "截图并编辑" })
 hl.bind("SUPER + SHIFT + ALT + S", hl.dsp.global("caelestia:screenshot"))
-hl.bind("SUPER + PRINT", hl.dsp.global("caelestia:screenshotFreezeClip"), { description = "区域截图并复制到剪贴板（冻结画面）" })
 hl.bind("SUPER + ALT + R", hl.dsp.exec_cmd("caelestia record -s"), { description = "录屏（带声音）" })
 hl.bind("CTRL + ALT + R", hl.dsp.exec_cmd("caelestia record"), { description = "录屏" })
 hl.bind("SUPER + SHIFT + ALT + R", hl.dsp.exec_cmd("caelestia record -r"), { description = "录屏（区域）" })
