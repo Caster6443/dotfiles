@@ -60,6 +60,13 @@ hl.window_rule({
 	center = true,
 })
 
+-- WPS 字体/字号等组件下拉框（XWayland，class 与 title 均为短名 wps/et/wpp/pdf）：
+-- 默认会被 Hyprland 当普通窗口平铺成半屏大窗，改为浮动，让它在工具栏下方正常弹出
+hl.window_rule({
+	match = { class = "^(wps|et|wpp|pdf)$", title = "^(wps|et|wpp|pdf)$" },
+	float = true,
+})
+
 -- Obsidian 1.13+ 设置独立窗口（标题形如"设置/Settings - 库名 - Obsidian"）：浮动 + 居中
 -- class 兼容旧版 obsidian 与 1.13 起的 md.obsidian / md.Obsidian
 hl.window_rule({
