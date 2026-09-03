@@ -43,14 +43,8 @@ hl.bind("SUPER + SUPER_L", function()
 	superLauncherBlocked = false
 end, { release = true, description = "程序启动器" })
 
--- Overview (in-shell module, toggled via caelestia IPC)
-hl.bind(vars.kbOverview, hl.dsp.exec_cmd("qs -c caelestia ipc call overview toggle"), { description = "工作区总览" })
-
 -- Cheatsheet (in-shell module, toggled via caelestia IPC)
 hl.bind(vars.kbCheatsheet, hl.dsp.exec_cmd("qs -c caelestia ipc call cheatsheet toggle"), { description = "快捷键速查" })
-
--- Spotlight (试验模块, toggled via caelestia IPC)
-hl.bind("SUPER + Space", hl.dsp.exec_cmd("qs -c caelestia ipc call spotlight toggle"), { description = "Spotlight 启动器（试验）" })
 
 -- Misc
 hl.bind(vars.kbSession, hl.dsp.global("caelestia:session"), { description = "会话面板" })
