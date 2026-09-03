@@ -49,6 +49,9 @@ hl.bind(vars.kbOverview, hl.dsp.exec_cmd("qs -c caelestia ipc call overview togg
 -- Cheatsheet (in-shell module, toggled via caelestia IPC)
 hl.bind(vars.kbCheatsheet, hl.dsp.exec_cmd("qs -c caelestia ipc call cheatsheet toggle"), { description = "快捷键速查" })
 
+-- Spotlight (试验模块, toggled via caelestia IPC)
+hl.bind("SUPER + Space", hl.dsp.exec_cmd("qs -c caelestia ipc call spotlight toggle"), { description = "Spotlight 启动器（试验）" })
+
 -- Misc
 hl.bind(vars.kbSession, hl.dsp.global("caelestia:session"), { description = "会话面板" })
 hl.bind(vars.kbShowSidebar, hl.dsp.global("caelestia:sidebar"), { description = "侧边栏" })

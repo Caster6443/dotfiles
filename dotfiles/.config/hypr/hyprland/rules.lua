@@ -146,6 +146,18 @@ hl.window_rule({
 	animation = "slide top",
 })
 
+-- Spotlight（试验）：居中悬浮聚合启动器（title=^spotlight$，规则同 cheatsheet）
+hl.window_rule({
+	match = { title = "^spotlight$" },
+	float = true,
+	size = "(monitor_w*0.38) (monitor_h*0.58)",
+	center = true,
+	opaque = false,
+	opacity = "0.94 override",
+	fullscreen_state = "0 0",
+	animation = "popin 85%",
+})
+
 -- Picture in picture (resize and move done via script)
 hl.window_rule({
 	match = { title = "Picture(-| )in(-| )[Pp]icture" },
