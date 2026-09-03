@@ -16,11 +16,6 @@ environment {
     QT_QPA_PLATFORMTHEME "qt6ct"
 }
 
-layer-rule {
-    match namespace="dms:blurwallpaper"
-    place-within-backdrop true
-}
-
 // 你可以更改屏幕截图的保存路径。
 // 开头的 ~ 将被展开为用户主目录 (/home/你的用户名)。
 // 路径格式遵循 strftime(3) 标准，以自动填入截图的日期和时间。
@@ -35,11 +30,3 @@ include "./outputs.kdl"
 include "./window_rules.kdl"
 include "./autostart.kdl"
 include "./binds.kdl"
-include "./noctalia.kdl"
-
-include "dms/windowrules.kdl"
-include "dms/binds.kdl"
-
-include "dms/cursor.kdl"
-
-include "dms/outputs.kdl"

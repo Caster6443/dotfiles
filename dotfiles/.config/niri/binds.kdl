@@ -1,5 +1,9 @@
 binds {
     //custom
+    // Noctalia v5 IPC 快捷键
+    Mod+A hotkey-overlay-title="打开启动器" { spawn-sh "noctalia msg panel-toggle launcher"; }
+    Mod+D hotkey-overlay-title="打开控制中心" { spawn-sh "noctalia msg panel-toggle control-center"; }
+    Mod+Shift+D hotkey-overlay-title="打开设置" { spawn-sh "noctalia msg settings-toggle"; }
     Mod+W hotkey-overlay-title="打开zen浏览器" { spawn "zen-browser"; }
     Mod+S hotkey-overlay-title="全屏截图并保存到剪切板" { spawn "bash" "-c" "~/.config/niri/scripts/screenshot_quick.sh"; }
     Mod+F10 hotkey-overlay-title="触控板开关" { spawn "bash" "-c" "~/.config/niri/scripts/Disable_Touchpad.sh"; }
