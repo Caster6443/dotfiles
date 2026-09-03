@@ -111,16 +111,6 @@
             "workspaces": true
         },
         "showOnHover": true,
-        "status": {
-            "showAudio": true,
-            "showBattery": true,
-            "showBluetooth": true,
-            "showKbLayout": false,
-            "showLockStatus": true,
-            "showMicrophone": false,
-            "showNetwork": true,
-            "showWifi": true
-        },
         "statusIcons": [
             {
                 "enabled": true,
@@ -482,7 +472,7 @@
         "audioIncrement": 0.1,
         "brightnessIncrement": 0.1,
         "defaultPlayer": "Spotify",
-        "gpuType": "",
+        "gpuType": "Auto",
         "lyricsBackend": "Auto",
         "maxVolume": 1,
         "playerAliases": [

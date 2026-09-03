@@ -1,7 +1,0 @@
-binds {
-    Alt+space { toggle-column-tabbed-display; }
-    Super+Shift+C { center-column; }
-    Super+C hotkey-overlay-title="打开vscode" { spawn "code"; }
-    Super+P hotkey-overlay-title="打开clash-party" { spawn "mihomo-party"; }
-    Super+W { spawn "zen-browser"; }
-}

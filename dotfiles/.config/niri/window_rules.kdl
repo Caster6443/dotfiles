@@ -73,6 +73,14 @@ window-rule {
     //clip-to-geometry true //强制裁剪内容 (把溢出的直角切掉)
 }
 
+// Noctalia v5 设置窗口：浮动打开，固定尺寸
+window-rule {
+    match app-id="dev.noctalia.Noctalia"
+    open-floating true
+    default-column-width { fixed 1080; }
+    default-window-height { fixed 920; }
+}
+
 // Noctalia
 // 将概览 (Overview) 的壁纸放置在背景层 (Backdrop) 上。
 layer-rule {

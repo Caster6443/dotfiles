@@ -13,8 +13,8 @@ spawn-at-startup "wl-paste" "--type" "image" "--watch" "cliphist" "store"
 // 强制同步环境变量到 DBus/Systemd 会话
 // 这能修复 Nautilus、Loupe 等通过 DBus 启动的应用没有中文、不吃主题的问题
 spawn-at-startup "dbus-update-activation-environment" "--systemd" "LANG" "LC_MESSAGES" "GSK_RENDERER" "XMODIFIERS" "GTK_IM_MODULE" "QT_IM_MODULE" "QT_QPA_PLATFORMTHEME"
-//启动noctalia-shell
-spawn-at-startup "qs" "-c" "noctalia-shell"
+//启动noctalia v5 shell（C++ 原生，替代 v4 Quickshell 版）
+spawn-at-startup "noctalia"
 //解决蓝牙/USB耳机连接时，输出设备不自动切换的问题
 spawn-at-startup "pactl" "load-module" "module-switch-on-connect"
 
@@ -25,7 +25,6 @@ spawn-at-startup "hypridle"
 spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 //spawn-at-startup "mako"
 spawn-at-startup "fcitx5" "-d"
-spawn-at-startup "dms" "run"
 
 hotkey-overlay {
     // 取消注释此行以禁用启动时的“重要快捷键”弹窗。
