@@ -6,3 +6,9 @@
 [user]
 	name = caster6443
 	email = 2732324758@qq.com
+[credential "https://github.com"]
+	helper = 
+	helper = !/home/caster/.local/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/home/caster/.local/bin/gh auth git-credential
