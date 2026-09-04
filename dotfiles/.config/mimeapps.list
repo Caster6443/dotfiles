@@ -45,6 +45,10 @@ x-scheme-handler/todoist=todoist.desktop
 application/vnd.adobe.flash.movie=com.google.Chrome.desktop
 text/markdown=nvim.desktop
 text/plain=nvim.desktop
+x-scheme-handler/mailto=userapp-Thunderbird-51E0U3.desktop
+x-scheme-handler/mid=userapp-Thunderbird-51E0U3.desktop
+message/rfc822=userapp-Thunderbird-51E0U3.desktop
+x-scheme-handler/net.thunderbird=userapp-Thunderbird-R111U3.desktop
 
 [Added Associations]
 x-scheme-handler/http=userapp-Zen-HUSNP3.desktop;zen.desktop;
@@ -77,3 +81,7 @@ application/x-shellscript=nvim.desktop;
 text/x-log=nvim.desktop;
 application/vnd.adobe.flash.movie=com.google.Chrome.desktop;
 text/markdown=nvim.desktop;
+x-scheme-handler/mailto=userapp-Thunderbird-51E0U3.desktop;
+x-scheme-handler/mid=userapp-Thunderbird-51E0U3.desktop;
+message/rfc822=userapp-Thunderbird-51E0U3.desktop;
+x-scheme-handler/net.thunderbird=userapp-Thunderbird-R111U3.desktop;
