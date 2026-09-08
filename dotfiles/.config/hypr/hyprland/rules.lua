@@ -52,6 +52,12 @@ hl.window_rule({
 	center = true,
 })
 
+-- Thunar 重命名对话框（class 与主窗口同为 thunar，title 形如「重命名 “文件名”」/「Rename "..."」）：浮动
+hl.window_rule({
+	match = { class = "thunar", title = "^(重命名|Rename) .*" },
+	float = true,
+})
+
 -- QQ聊天记录窗口（私聊/群聊，title 形如"xxx的聊天记录"）：浮动 + 居中 + 适中尺寸
 hl.window_rule({
 	match = { class = "QQ", title = ".*的聊天记录.*" },
