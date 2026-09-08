@@ -92,6 +92,12 @@ hl.window_rule({
 	center = true,
 })
 
+-- 微信聊天记录窗口（私聊/群聊，title 形如"xxx的聊天记录"，class 与主窗口同为 wechat）：浮动
+hl.window_rule({
+	match = { class = "wechat", title = ".*的聊天记录.*" },
+	float = true,
+})
+
 -- Thunar 打开图片（GNOME Loupe）与视频（mpv）：浮动 + 居中
 hl.window_rule({
 	match = { class = "org.gnome.Loupe|loupe" },

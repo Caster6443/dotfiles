@@ -196,6 +196,7 @@ hl.bind("CTRL + ALT + R", hl.dsp.exec_cmd("caelestia record"), { description = "
 hl.bind("SUPER + SHIFT + ALT + R", hl.dsp.exec_cmd("caelestia record -r"), { description = "录屏（区域）" })
 hl.bind("SUPER + ALT + P", hl.dsp.exec_cmd("caelestia record -p"), { description = "录屏暂停/继续" })
 hl.bind("SUPER + SHIFT + C", hl.dsp.exec_cmd("hyprpicker -a"), { description = "取色器" })
+hl.bind("ALT + L", hl.dsp.exec_cmd("wayscrollshot"), { description = "长截图" })
 
 -- Volume
 hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"), { locked = true })
