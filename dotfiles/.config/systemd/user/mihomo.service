@@ -1,0 +1,18 @@
+[Unit]
+Description=mihomo TUN proxy (headless, 订阅走 proxy-providers)
+Documentation=https://wiki.metacubex.one/
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# 内核用 mihomo-party 自带的 sidecar（setuid root，天然具备建 TUN 的权限，无需 setcap）
+ExecStart=/opt/clash-party/resources/sidecar/mihomo -d %h/.config/mihomo
+# setuid 二进制需要允许提权
+NoNewPrivileges=no
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65535
+
+[Install]
+WantedBy=default.target

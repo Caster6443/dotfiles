@@ -584,7 +584,7 @@
                 "id": "dnd"
             },
             {
-                "enabled": false,
+                "enabled": true,
                 "id": "vpn"
             }
         ],
@@ -606,10 +606,25 @@
             "enabled": false,
             "provider": [
                 {
-                    "id": "vpn-mt2w1enq-7e6ar"
+                    "connectCmd": [
+                        "systemctl",
+                        "--user",
+                        "start",
+                        "mihomo.service"
+                    ],
+                    "disconnectCmd": [
+                        "systemctl",
+                        "--user",
+                        "stop",
+                        "mihomo.service"
+                    ],
+                    "displayName": "Mihomo TUN",
+                    "id": "mihomo-tun",
+                    "interface": "Mihomo",
+                    "name": "mihomo"
                 }
             ],
-            "selectedProvider": "vpn-mt2w1enq-7e6ar"
+            "selectedProvider": "mihomo-tun"
         }
     }
 }
