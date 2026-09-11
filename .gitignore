@@ -29,3 +29,5 @@ dotfiles/.config/mpd/state
 dotfiles/.config/mpd/sticker.sql
 dotfiles/.config/hypr/_binds_raw.json
 dotfiles/.config/fcitx5/conf/cached_layouts
+# 凭据：caelestia aichat 的 API key（2026-09-11 误入公开仓库）
+dotfiles/.config/caelestia/aichat.json

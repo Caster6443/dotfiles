@@ -43,7 +43,8 @@ sync_file "${HOME}/.gtkrc-2.0"       "dotfiles/.gtkrc-2.0"
 sync_dir "${HOME}/.config/hypr"      "dotfiles/.config/hypr" _binds_raw.json
 sync_dir "${HOME}/.config/niri"      "dotfiles/.config/niri"
 sync_dir "${HOME}/.config/waybar"    "dotfiles/.config/waybar"
-sync_dir "${HOME}/.config/caelestia" "dotfiles/.config/caelestia"
+# aichat.json 内含 API key（600 权限），绝不入库：2026-09-11 曾误同步进公开仓库导致 key 泄露
+sync_dir "${HOME}/.config/caelestia" "dotfiles/.config/caelestia" aichat.json
 
 # --- 终端/编辑器/常用工具 ---
 sync_dir "${HOME}/.config/kitty"     "dotfiles/.config/kitty"
