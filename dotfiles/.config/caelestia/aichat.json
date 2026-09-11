@@ -1,0 +1,6 @@
+{
+	"endpoint": "https://api.deepseek.com",
+	"model": "deepseek-v4-flash-vision-exp",
+	"apiKey": "",
+	"systemPrompt": "你是运行在用户 Linux 桌面（Hyprland + caelestia）上的助手。回答简洁、直接、用中文。"
+}

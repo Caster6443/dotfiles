@@ -35,6 +35,41 @@ sync_dir() {
 
 # --- 家目录散件 ---
 sync_file "${HOME}/.zshrc"           "dotfiles/.zshrc"
+
+# aichat.json：只备份非敏感项，apiKey 一律抹成空串写进仓库（运行配置原文件不动）。
+# 换机后从仓库恢复时，key 需要重新在面板 ⚙ 里填一次。
+sync_aichat_config() {
+  local src="${HOME}/.config/caelestia/aichat.json"
+  local dst="dotfiles/.config/caelestia/aichat.json"
+  if [[ ! -f "$src" ]]; then
+    log "跳过(源缺失): $src"
+    return 0
+  fi
+  mkdir -p "$(dirname "$dst")"
+  if python3 - "$src" "$dst" <<'PY'
+import json
+import os
+import sys
+
+src, dst = sys.argv[1], sys.argv[2]
+with open(src, encoding="utf-8") as f:
+    cfg = json.load(f)
+if not isinstance(cfg, dict):
+    raise SystemExit("aichat.json 顶层不是对象，拒绝写入")
+cfg["apiKey"] = ""
+tmp = dst + ".tmp"
+with open(tmp, "w", encoding="utf-8") as f:
+    json.dump(cfg, f, indent="\t", ensure_ascii=False)
+    f.write("\n")
+os.chmod(tmp, 0o644)
+os.replace(tmp, dst)
+PY
+  then
+    log "同步(apiKey 已抹空): $dst"
+  else
+    log "!! aichat.json 处理失败，已跳过（不会原样同步）"
+  fi
+}
 sync_file "${HOME}/.gitconfig"       "dotfiles/.gitconfig"
 sync_file "${HOME}/.vimrc"           "dotfiles/.vimrc"
 sync_file "${HOME}/.gtkrc-2.0"       "dotfiles/.gtkrc-2.0"
@@ -43,8 +78,10 @@ sync_file "${HOME}/.gtkrc-2.0"       "dotfiles/.gtkrc-2.0"
 sync_dir "${HOME}/.config/hypr"      "dotfiles/.config/hypr" _binds_raw.json
 sync_dir "${HOME}/.config/niri"      "dotfiles/.config/niri"
 sync_dir "${HOME}/.config/waybar"    "dotfiles/.config/waybar"
-# aichat.json 内含 API key（600 权限），绝不入库：2026-09-11 曾误同步进公开仓库导致 key 泄露
+# aichat.json 内含 API key（600 权限），**原样绝不入库**：2026-09-11 曾误同步进公开仓库导致 key 泄露。
+# 这里先整体 exclude 挡住原文件，紧接着用 sync_aichat_config 写入"apiKey 已抹空"的副本。
 sync_dir "${HOME}/.config/caelestia" "dotfiles/.config/caelestia" aichat.json
+sync_aichat_config
 
 # --- 终端/编辑器/常用工具 ---
 sync_dir "${HOME}/.config/kitty"     "dotfiles/.config/kitty"
