@@ -70,16 +70,36 @@ sync_file "${HOME}/.config/monitors.xml"     "dotfiles/.config/monitors.xml"
 sync_file "${HOME}/.config/user-dirs.dirs"   "dotfiles/.config/user-dirs.dirs"
 
 # --- 提交 ---
+# 推送前凭据自检（2026-09-11 aichat.json API key 泄露事故后添加）：
+# 扫描本次「新增」行里是否出现 key/私钥特征，命中就中止提交与推送，等人工处理。
+# 这是兜底：正常做法是把含凭据的文件加进上面 sync_dir 的 --exclude 和 .gitignore。
+SECRET_PATTERN='sk-[A-Za-z0-9_-]{16,}|ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16}|BEGIN [A-Z ]*PRIVATE KEY|"(apiKey|api_key|apikey|secret|token|password|passwd)"[[:space:]]*:[[:space:]]*"[^"]{16,}"'
+staged_secret_hits() {
+  git diff --cached -U0 -- dotfiles/ .gitignore sync-dotfiles.sh |
+    grep -E '^\+' | grep -vE '^\+\+\+' | grep -nEi -- "$SECRET_PATTERN"
+}
+SECRET_BLOCK=0
+
 if [[ -n "$(git status --porcelain -- dotfiles/ .gitignore sync-dotfiles.sh)" ]]; then
   git add -A dotfiles/ .gitignore sync-dotfiles.sh
-  git commit -m "sync: $(date '+%F %T') dotfiles 自动同步" --quiet || true
-  log "已提交"
+  hits="$(staged_secret_hits || true)"
+  if [[ -n "$hits" ]]; then
+    SECRET_BLOCK=1
+    log "!! 凭据自检命中，已中止本次提交与推送："
+    printf '%s\n' "$hits"
+    log "   处理：确认该文件不含密钥；若确实是凭据文件，给它加 --exclude（sync_dir 第 3 个参数）并在 .gitignore 兜一条，然后重跑本脚本。"
+  else
+    git commit -m "sync: $(date '+%F %T') dotfiles 自动同步" --quiet || true
+    log "已提交"
+  fi
 else
   log "无变更"
 fi
 
 # --- 推送（失败不阻塞，下次自动重试）---
-if git remote get-url origin >/dev/null 2>&1; then
+if [[ "$SECRET_BLOCK" -eq 1 ]]; then
+  log "因凭据自检命中，本次不推送"
+elif git remote get-url origin >/dev/null 2>&1; then
   if timeout 60 git push origin main 2>&1; then
     log "已推送到 origin/main"
   else
