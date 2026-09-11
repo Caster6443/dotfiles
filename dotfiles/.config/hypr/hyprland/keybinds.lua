@@ -46,6 +46,9 @@ end, { release = true, description = "程序启动器" })
 -- Cheatsheet (in-shell module, toggled via caelestia IPC)
 hl.bind(vars.kbCheatsheet, hl.dsp.exec_cmd("qs -c caelestia ipc call cheatsheet toggle"), { description = "快捷键速查" })
 
+-- AI 对话（fork 外挂模块 aichat，贴左侧栏的面板）
+hl.bind(vars.kbAiChat, hl.dsp.exec_cmd("qs -c caelestia ipc call aichat toggle"), { description = "AI 对话" })
+
 -- Misc
 hl.bind(vars.kbSession, hl.dsp.global("caelestia:session"), { description = "会话面板" })
 hl.bind(vars.kbShowSidebar, hl.dsp.global("caelestia:sidebar"), { description = "侧边栏" })

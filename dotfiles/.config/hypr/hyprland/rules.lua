@@ -58,6 +58,7 @@ hl.window_rule({
 	float = true,
 })
 
+
 -- QQ聊天记录窗口（私聊/群聊，title 形如"xxx的聊天记录"）：浮动 + 居中 + 适中尺寸
 hl.window_rule({
 	match = { class = "QQ", title = ".*的聊天记录.*" },
