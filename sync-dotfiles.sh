@@ -97,6 +97,13 @@ sync_dir "${HOME}/.config/fastfetch" "dotfiles/.config/fastfetch"
 sync_file "${HOME}/.config/mpd/mpd.conf" "dotfiles/.config/mpd/mpd.conf"
 
 # --- 系统级用户配置 ---
+
+# GPU 直通辅助脚本（2026-09-13 从 .config/hypr/scripts/ 迁到通用位置）
+# 由 /etc/libvirt/hooks/qemu 以绝对路径调用，与合成器无关，故不入 hypr 目录
+sync_file "${HOME}/.local/bin/detach_nvidia.sh"    "dotfiles/.local/bin/detach_nvidia.sh"
+sync_file "${HOME}/.local/bin/bind_nvidia.sh"      "dotfiles/.local/bin/bind_nvidia.sh"
+sync_file "${HOME}/.local/bin/enable_hugepages.sh" "dotfiles/.local/bin/enable_hugepages.sh"
+
 sync_dir "${HOME}/.config/systemd/user"      "dotfiles/.config/systemd/user"
 sync_dir "${HOME}/.config/gtk-3.0"           "dotfiles/.config/gtk-3.0"
 sync_dir "${HOME}/.config/gtk-4.0"           "dotfiles/.config/gtk-4.0"
