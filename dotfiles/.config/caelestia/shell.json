@@ -603,7 +603,7 @@
             "vpnChanged": true
         },
         "vpn": {
-            "enabled": true,
+            "enabled": false,
             "provider": [
                 {
                     "connectCmd": [
