@@ -5,15 +5,22 @@ binds {
     Mod+D hotkey-overlay-title="打开控制中心" { spawn-sh "noctalia msg panel-toggle control-center"; }
     Mod+Shift+D hotkey-overlay-title="打开设置" { spawn-sh "noctalia msg settings-toggle"; }
     Mod+W hotkey-overlay-title="打开zen浏览器" { spawn "zen-browser"; }
-    Mod+S hotkey-overlay-title="全屏截图并保存到剪切板" { spawn "bash" "-c" "~/.config/niri/scripts/screenshot_quick.sh"; }
     Mod+F10 hotkey-overlay-title="触控板开关" { spawn "bash" "-c" "~/.config/niri/scripts/Disable_Touchpad.sh"; }
-    Mod+Shift+S hotkey-overlay-title="区域截图并编辑" { spawn "bash" "-c" "~/.config/niri/scripts/screenshot_edit.sh"; }
+    // 区域截图（冻结画面）：键位与效果与 Hyprland 一一对应，依据是它自己的配置与实现：
+    //   ~/.config/hypr/hyprland/keybinds.lua:195  SUPER+SHIFT+S -> caelestia:screenshotFreezeClip
+    //   modules/areapicker/Picker.qml save()      clipboardOnly=true -> wl-copy --type image/png（只进剪贴板）
+    //   ~/.config/hypr/hyprland/keybinds.lua:196  ALT+SHIFT+S   -> caelestia:screenshotFreeze
+    //   modules/areapicker/Picker.qml save()      clipboardOnly=false -> swappy -f（编辑）
+    Mod+Shift+S hotkey-overlay-title="区域截图并复制到剪贴板（冻结画面）" { spawn "bash" "-c" "~/.config/niri/scripts/screenshot_region_clip.sh"; }
+    Alt+Shift+S hotkey-overlay-title="区域截图并编辑（冻结画面）" { spawn "bash" "-c" "~/.config/niri/scripts/screenshot_region_edit.sh"; }
     Menu hotkey-overlay-title="显示快捷键说明 (映射CapsLock键)" { show-hotkey-overlay; }
-    Mod+E hotkey-overlay-title="打开文件管理器nautilus" { spawn "env" "GSK_RENDERER=gl" "nautilus" "--new-window"; }
+    Mod+E hotkey-overlay-title="打开文件管理器nautilus" { spawn "env" "GSK_RENDERER=opengl" "nautilus" "--new-window"; }
     Ctrl+T hotkey-overlay-title="打开kitty终端模拟器" { spawn "kitty"; }
     Shift+WheelScrollDown hotkey-overlay-title="在当前工作区横向切换到下一个聚焦窗口"     { focus-column-right; }
     Shift+WheelScrollUp hotkey-overlay-title="在当前工作区横向切换到上一个聚焦窗口"       { focus-column-left; }
-    Mod+X hotkey-overlay-title="打开剪切板历史" {
+    // 旧的 cliphist + fuzzel 流程（明文历史，仍在 ~/.cache/cliphist/）；
+    // 保留为备用通道，主通道见下面的 Mod+V（noctalia 面板，加密历史 + 图片预览 + 自动粘贴）。
+    Mod+X hotkey-overlay-title="剪切板历史（cliphist+fuzzel，备用）" {
         spawn-sh "cliphist list | fuzzel -d | cliphist decode | wl-copy"
     }
 
@@ -33,7 +40,6 @@ binds {
     //Mod+Shift+Slash { show-hotkey-overlay; }
 
     // 建议的运行程序的绑定：终端、应用启动器、屏幕锁。
-    //Super+Alt+L hotkey-overlay-title="锁定屏幕: swaylock" { spawn "swaylock"; }
 
     // 使用 spawn-sh 来运行 Shell 命令。如果你需要管道符、多条命令组合等，请用这个。
     // 注意：整个命令作为单个参数传入。它会被原样传递给 `sh -c` 执行。
@@ -57,7 +63,10 @@ binds {
     // 打开/关闭概览：这是工作区和窗口的缩小视图（鸟瞰图）。
     // 你也可以将鼠标移到左上角的热角 (Hot Corner)，
     // 或者在触控板上使用四指上滑来触发。
-    Mod+O repeat=false { toggle-overview; }
+    // 2026-09-14 对齐 Hyprland 习惯：概览改用 Mod+Tab（Hyprland: SUPER+Tab），
+    // 原 Mod+O（niri 默认）让给 Obsidian（Hyprland: SUPER+O），见文件末尾「Hyprland 习惯同步」。
+    Mod+Tab repeat=false hotkey-overlay-title="打开/关闭概览" { toggle-overview; }
+    //Mod+O repeat=false { toggle-overview; }
 
     Mod+Q hotkey-overlay-title="关闭当前聚焦窗口" repeat=false { close-window; }
 
@@ -257,7 +266,10 @@ binds {
 
     // 将当前聚焦的窗口在“悬浮”和“平铺”布局之间移动。
     // (即：把窗口变成像 Windows 那样可以随意拖动的，或者变回平铺卡片)
-    Mod+V       { toggle-window-floating; }
+    // 2026-09-14 对齐 Hyprland 习惯：改用 Mod+Alt+Space（Hyprland: SUPER+ALT+space），
+    // 原 Mod+V 让给剪贴板历史（Hyprland: SUPER+V）。
+    Mod+Alt+Space { toggle-window-floating; }
+    //Mod+V       { toggle-window-floating; }
     // 在悬浮层和平铺层之间切换焦点。
     // (例如：你有一个悬浮的视频窗口挡住了平铺的终端，按这个键可以把操作焦点切回底下的终端)
     Mod+Shift+V { switch-focus-between-floating-and-tiling; }
@@ -276,7 +288,10 @@ binds {
     // Mod+Shift+Space { switch-layout "prev"; }
 
     // 截图快捷键
-    Print { screenshot; }       // 交互式截图（通常是让你选区域）
+    // Print 对齐 Hyprland（那边 Print = caelestia screenshot = 聚焦显示器全屏截图 -> 剪贴板 + 落盘 + 通知可编辑）；
+    // niri 自带的截图 UI 仍保留在下面的 Ctrl+Print / Alt+Print 上。
+    Print { spawn "bash" "-c" "~/.config/niri/scripts/screenshot_full.sh"; }
+    //Print { screenshot; }       // 旧的 niri 自带截图 UI（选区域/存盘按 screenshot-path）
     Ctrl+Print { screenshot-screen; } // 截取整个屏幕
     Alt+Print { screenshot-window; }  // 截取当前活动窗口
 
@@ -292,9 +307,72 @@ binds {
 
     // 退出动作会显示一个确认对话框，以避免意外退出。
     Mod+Shift+E { quit; }
-    Ctrl+Alt+Delete { quit; }
+    // 2026-09-14 对齐 Hyprland 习惯：Ctrl+Alt+Delete 改为唤出会话面板
+    // （Hyprland: kbSession = CTRL+ALT+Delete）；退出动作仍保留在 Mod+Shift+E。
+    Ctrl+Alt+Delete hotkey-overlay-title="会话面板" { spawn-sh "noctalia msg panel-toggle session"; }
 
     // 关闭显示器电源。要重新打开它们，进行任何输入即可，
     // 比如移动鼠标或按任意键。
     Mod+Shift+P { power-off-monitors; }
+
+    // ══════════════════════════════════════════════════════════════════
+    // Hyprland 习惯同步（2026-09-14）
+    // 来源：~/.config/hypr/variables.lua + ~/.config/hypr/hyprland/keybinds.lua
+    // Hyprland 侧外壳是 caelestia，niri 侧是 noctalia —— IPC 名称按对应关系替换。
+    // 与 niri 既有绑定冲突的项写在下方注释里，改动点见每行末尾的「原…」标注。
+    // ══════════════════════════════════════════════════════════════════
+
+    // ── 应用（Hyprland: kbEditor / SUPER+O / CTRL+ALT+V）──
+    Mod+C hotkey-overlay-title="VS Code" { spawn "code"; }
+    Mod+O hotkey-overlay-title="Obsidian" { spawn "obsidian"; }
+    Ctrl+Alt+V hotkey-overlay-title="音量控制 (pavucontrol)" { spawn "pavucontrol"; }
+
+    // ── 会话与外壳（Hyprland: kbLock / kbClearNotifs / kbCheatsheet / 重启 caelestia）──
+    Mod+L hotkey-overlay-title="锁屏" { spawn-sh "noctalia msg session lock"; }
+    Ctrl+Alt+C hotkey-overlay-title="清除通知" { spawn-sh "noctalia msg notification-clear-active"; }
+    Mod+Slash hotkey-overlay-title="快捷键说明" { show-hotkey-overlay; }
+    Mod+Ctrl+Shift+R hotkey-overlay-title="重启 noctalia" { spawn-sh "pkill -x noctalia; sleep 0.3; noctalia -d"; }
+
+    // ── 剪贴板与工具（Hyprland: SUPER+V / CTRL+SHIFT+ALT+V / SUPER+SHIFT+C / ALT+L）──
+    // 剪切板：用 noctalia 自己的面板（加密历史、图片预览、搜索、pin；选中条目后由它注入 Ctrl+V /
+    // Ctrl+Shift+V 完成粘贴 —— niri 支持 zwp_virtual_keyboard_manager_v1，所以自动粘贴可用）。
+    Mod+V hotkey-overlay-title="剪切板面板" { spawn "noctalia" "msg" "panel-toggle" "clipboard"; }
+    // 「把最后一项剪切板内容敲出来」：用于不吃 Ctrl+V 的场景（远程桌面、部分 X11/VNC 应用）。
+    // 数据源改成 noctalia 的历史（`clipboard-text` 打印最近一条文本内容），与 Mod+V 面板保持一致；仍走 ydotool。
+    Mod+Ctrl+Shift+V hotkey-overlay-title="键入剪切板最后一项 (ydotool)" { spawn-sh "sleep 0.3; ydotool type -d 1 \"$(noctalia msg clipboard-text)\""; }
+    Mod+Shift+C hotkey-overlay-title="取色器" { spawn "hyprpicker" "-a"; }
+    Alt+L hotkey-overlay-title="长截图 (wayscrollshot)" { spawn "wayscrollshot"; }
+
+    // ── 窗口：Hyprland 的「分组内循环」→ niri 的「同列内上下窗口」（Hyprland: ALT+TAB / SHIFT+ALT+TAB）──
+    Alt+Tab hotkey-overlay-title="下一个窗口（同列/分页）" { focus-window-down; }
+    Shift+Alt+Tab hotkey-overlay-title="上一个窗口（同列/分页）" { focus-window-up; }
+
+    // ── 工作区：Mod+0 = 第 10 个工作区；Mod+Alt+数字 = 把当前列移过去 ──
+    //    （Hyprland: kbGoToWs = SUPER+数字，kbMoveWinToWs = SUPER+ALT+数字）
+    //    注：niri 是动态工作区，编号属于「尽力而为」语义。
+    Mod+0 { focus-workspace 10; }
+    Mod+Alt+0 { move-column-to-workspace 10; }
+    Mod+Alt+1 { move-column-to-workspace 1; }
+    Mod+Alt+2 { move-column-to-workspace 2; }
+    Mod+Alt+3 { move-column-to-workspace 3; }
+    Mod+Alt+4 { move-column-to-workspace 4; }
+    Mod+Alt+5 { move-column-to-workspace 5; }
+    Mod+Alt+6 { move-column-to-workspace 6; }
+    Mod+Alt+7 { move-column-to-workspace 7; }
+    Mod+Alt+8 { move-column-to-workspace 8; }
+    Mod+Alt+9 { move-column-to-workspace 9; }
+    //    （Hyprland: kbPrevWs/kbNextWs = CTRL+SUPER+Left/Right）
+    Mod+Ctrl+Left hotkey-overlay-title="上一个工作区" { focus-workspace-up; }
+    Mod+Ctrl+Right hotkey-overlay-title="下一个工作区" { focus-workspace-down; }
+
+    // ── 媒体键（Hyprland 走 caelestia IPC + OSD，这里对应 noctalia）──
+    //    原先 niri 侧只绑了音量/亮度键，媒体键是空的。
+    Mod+Ctrl+Space allow-when-locked=true hotkey-overlay-title="播放/暂停" { spawn-sh "noctalia msg media toggle"; }
+    XF86AudioPlay  allow-when-locked=true { spawn-sh "noctalia msg media toggle"; }
+    XF86AudioPause allow-when-locked=true { spawn-sh "noctalia msg media toggle"; }
+    XF86AudioNext  allow-when-locked=true { spawn-sh "noctalia msg media next"; }
+    XF86AudioPrev  allow-when-locked=true { spawn-sh "noctalia msg media previous"; }
+    XF86AudioStop  allow-when-locked=true { spawn-sh "noctalia msg media stop"; }
+    Mod+Ctrl+Equal allow-when-locked=true hotkey-overlay-title="下一曲" { spawn-sh "noctalia msg media next"; }
+    Mod+Ctrl+Minus allow-when-locked=true hotkey-overlay-title="上一曲" { spawn-sh "noctalia msg media previous"; }
 }

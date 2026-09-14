@@ -30,7 +30,7 @@ input {
     touchpad {
         // off
         tap
-        // dwt
+        dwt //打字时禁用触摸板：对齐 Hyprland 侧 touchpadDisableTyping = true（2026-09-14 显式开启）
         // dwtp
         // drag false
         // drag-lock

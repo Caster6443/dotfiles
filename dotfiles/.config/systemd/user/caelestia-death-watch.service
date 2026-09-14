@@ -1,0 +1,25 @@
+[Unit]
+Description=caelestia shell 无痕退出现场记录器（轮询 pid，死亡时落盘快照）
+Documentation=file:///home/caster/Documents/codex操作记录/2026-09-12_1916_caelestia-shell两次无痕退出排查.md
+
+[Service]
+Type=simple
+ExecStart=/home/caster/.local/bin/caelestia-death-watch.sh 1
+Restart=always
+RestartSec=5
+
+# 尽量不影响桌面：最低调度优先级 + 限内存
+Nice=19
+IOSchedulingClass=idle
+CPUWeight=10
+MemoryHigh=64M
+MemoryMax=128M
+
+# 会话环境（uwsm 已 import 到 user manager），hyprctl 快照需要
+PassEnvironment=WAYLAND_DISPLAY HYPRLAND_INSTANCE_SIGNATURE XDG_RUNTIME_DIR DBUS_SESSION_BUS_ADDRESS XDG_CURRENT_DESKTOP
+
+StandardOutput=append:/home/caster/.cache/caelestia-deaths/watch.log
+StandardError=append:/home/caster/.cache/caelestia-deaths/watch.log
+
+[Install]
+WantedBy=default.target

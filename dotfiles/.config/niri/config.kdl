@@ -6,8 +6,11 @@ environment {
     ELECTRON_OZONE_PLATFORM_HINT "auto"
     //LANG "zh_CN.UTF-8"
     LC_MESSAGES "zh_CN.UTF-8"
-    //修复 GTK4 应用 (Nautilus, 设置等) 在 N 卡下的卡顿问题
-    GSK_RENDERER "gl"
+    // 修复 GTK4 应用 (Nautilus, 设置等) 在混合显卡机器上被 Vulkan 后端唤醒独显导致的卡顿。
+    // 2026-09-14 修正：原先写 "gl"；GTK 4.18 起旧 GL 渲染器已移除，本机 GTK 4.22.4 对 "gl"
+    // 会打 "will cause a warning and use the new OpenGL renderer" 的警告，规范名是 "opengl"
+    // （与 ~/.config/environment.d/gsk-renderer.conf 保持一致）。
+    GSK_RENDERER "opengl"
     //确保 XWayland 应用能使用 Fcitx5 输入中文
     XMODIFIERS "@im=fcitx"
     //GTK_IM_MODULE "fcitx"
@@ -35,10 +38,34 @@ screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 // 你也可以将其设置为 null 以禁用将截图保存到磁盘（只复制到剪贴板）。
 // screenshot-path null
 
-include "./animations.kdl"
-include "./input.kdl"
-include "./layout.kdl"
-include "./outputs.kdl"
-include "./window_rules.kdl"
-include "./autostart.kdl"
-include "./binds.kdl"
+// ══════════════════════════════════════════════════════════════════════
+// 模块化配置（2026-09-14 重构）
+//
+// 布局与 Hyprland 侧同构：
+//   ~/.config/hypr/hyprland.lua        主文件（顶层设置 + require 列表）
+//   ~/.config/hypr/hyprland/*.lua      模块
+//   ~/.config/hypr/scripts/*           脚本
+//        ↕ 一一对应
+//   ~/.config/niri/config.kdl          主文件（environment/debug/screenshot-path + include 列表）
+//   ~/.config/niri/config.d/*.kdl      模块
+//   ~/.config/niri/scripts/*           脚本
+//
+// 注意：niri 的 include 只接受具体路径，**不支持通配符**（26.04 用 `niri validate` 实测
+// `include "./config.d/*.kdl"` 会报 "No such file or directory"），所以新增模块要在这里补一行。
+// 校验命令：niri validate -c ~/.config/niri/config.kdl
+// ══════════════════════════════════════════════════════════════════════
+
+// 输入设备（键盘/触摸板/鼠标）
+include "./config.d/input.kdl"
+// 显示器
+include "./config.d/outputs.kdl"
+// 布局、间隙、聚焦环、阴影、圆角
+include "./config.d/layout.kdl"
+// 动画
+include "./config.d/animations.kdl"
+// 窗口规则 / 图层规则
+include "./config.d/window_rules.kdl"
+// 快捷键
+include "./config.d/binds.kdl"
+// 开机自启进程
+include "./config.d/autostart.kdl"

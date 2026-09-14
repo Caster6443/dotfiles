@@ -18,12 +18,21 @@ spawn-at-startup "noctalia"
 //解决蓝牙/USB耳机连接时，输出设备不自动切换的问题
 spawn-at-startup "pactl" "load-module" "module-switch-on-connect"
 
+//蓝牙/USB耳机的媒体键（AVRCP）转发给 MPRIS —— 对应 Hyprland 侧 execs.lua 的 mpris-proxy
+spawn-at-startup "mpris-proxy"
+//剪贴板「键入最后一项」快捷键（Mod+Ctrl+Shift+V）依赖 ydotool 的守护进程
+spawn-at-startup "ydotoold"
+//清理 30 天前的回收站 —— 对应 Hyprland 侧 execs.lua 的 trash-empty 30
+spawn-at-startup "trash-empty" "30"
+
 //休眠监听功能
-spawn-at-startup "hypridle"
-// This line starts waybar, a commonly used bar for Wayland compositors.
-//spawn-at-startup "waybar" "-c" "/home/Caster/.config/waybar/config-niri.jsonc"
+//2026-09-14 修正：本机并没有装 hypridle（`pacman -Q hypridle` 无此包，/usr/bin 下也没有），
+//这一行一直在静默失败，等于 niri 会话没有自动锁屏/息屏/挂起。
+//要恢复空闲行为，二选一（决定后再取消下面注释或换写法）：
+//  1) 安装 hypridle 并写 ~/.config/hypr/hypridle.conf；
+//  2) 改用 noctalia 自带的 idle 行为与锁屏（noctalia 设置里有 Idle 段）。
+//spawn-at-startup "hypridle"
 spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
-//spawn-at-startup "mako"
 spawn-at-startup "fcitx5" "-d"
 
 hotkey-overlay {

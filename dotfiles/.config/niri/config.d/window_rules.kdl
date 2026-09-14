@@ -1,0 +1,285 @@
+// ══════════════════════════════════════════════════════════════════════
+// 窗口规则 / 图层规则
+// 2026-09-14：从 Hyprland 侧 ~/.config/hypr/hyprland/rules.lua 移植 + 原有 niri 规则合并
+// ══════════════════════════════════════════════════════════════════════
+//
+// ⚠ 头号语法差异（移植时唯一会静默踩坑的地方）：
+//   Hyprland 的 class / title 是 RE2 **整串匹配**（FullMatch）；niri 的 match 是 **子串匹配**。
+//   所以每一条从 Hyprland 搬过来的 ID/标题正则都要自己补锚点：
+//     Hyprland  class = "^(wps|et|wpp|pdf)$"   →   niri  app-id=r#"^(wps|et|wpp|pdf)$"#
+//     Hyprland  title = ".* Properties"        →   niri  title=r#" Properties$"#
+//     Hyprland  title = "Library"（等价整串）  →   niri  title=r#"^Library$"#（不补 ^$ 会命中一堆窗口）
+//   另一处：Hyprland 用 class（XWayland 的 WM_CLASS）、initial_title 等键；niri 只有 app-id 与 title。
+//   还有一点：一条 `match a b` 内部是 **AND**，多条 `match` 之间是 **OR**（见下方 portal 规则）。
+//
+// 键名对照（本次用到的）：
+//   float = true                → open-floating true
+//   size = "(monitor_w*0.7) (monitor_h*0.6)"
+//                               → default-column-width { proportion 0.7; } + default-window-height { proportion 0.6; }
+//   rounding = N                → geometry-corner-radius N
+//   no_initial_focus = true     → open-focused false
+//   workspace = "special:music" → open-on-workspace "music"（niri 无特殊工作区，用具名工作区代替）
+//   move = "..."                → default-floating-position x=.. y=.. relative-to="top-left|top-right|bottom-left|bottom-right"
+//   tag = "+x" 或 match { tag } → niri 没有 tag 机制，只能把 tag 规则展开成具名规则
+//
+// 未移植（niri 没有对应能力，原因逐个写在文件末尾）
+
+// 取消注释此行以请求客户端尽可能省略其客户端装饰 (CSD，即软件自带的标题栏/边框)。
+// 如果客户端明确要求必须使用 CSD，该请求将被尊重（不会强行去除）。
+// 此外，客户端将被通知它们正处于平铺状态，这通常会移除软件自带的圆角。
+// 此选项还将修复边框/聚焦环在某些半透明窗口 *后面* 绘制（导致看不清）的问题。
+// 启用或禁用此选项后，你需要重启应用程序才能生效。
+prefer-no-csd //似乎和窗口自定义美化配置是否生效有关
+
+// ── 全局圆角与裁剪（没有 match 段 = 对所有窗口生效；数值与 noctalia 主题对齐）──
+// 注意：这条在最前面，后面的同属性规则会覆盖它（niri 的规则按书写顺序生效，后面的优先）。
+window-rule {
+    // 设置圆角
+    geometry-corner-radius 20
+
+    // 将窗口内容裁剪至圆角边界内。
+    // 有些程序比较“顽固”，即使设置了圆角，它的画面内容可能还是直角的，会从圆角边框
+    // 里“溢出来”或者是露出一小白尖。这个设置就是强制把溢出的直角切掉，保证圆角完美。
+    clip-to-geometry true
+}
+
+// ── Steam 通知 toast（原有 niri 规则）──
+window-rule {
+    match app-id="steam" title="^notificationtoasts_.*_desktop$"
+    open-floating true
+    default-floating-position x=10 y=10 relative-to="bottom-right"
+}
+
+// Steam 本体圆角（Hyprland: match class="steam", rounding=10）
+window-rule {
+    match app-id=r#"^steam$"#
+    geometry-corner-radius 10
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// 一、浮动窗口：按 app-id 判定
+// ══════════════════════════════════════════════════════════════════════
+// Hyprland 原文是 tag="+float" + 一条 match tag 的规则；niri 无 tag，直接合并成一条。
+// 其中 xdg-desktop-portal-gtk 是 GTK 门户的文件/文件夹选择对话框（如 Obsidian「打开本地仓库」），
+// 任何应用弹出来的都该浮动。
+window-rule {
+    match app-id=r#"^(guifetch|yad|zenity|wev|org\.gnome\.FileRoller|file-roller|blueman-manager|com\.github\.GradienceTeam\.Gradience|feh|imv|system-config-printer|org\.quickshell|xdg-desktop-portal-gtk)$"#
+    open-floating true
+}
+
+// WPS 字体/字号等组件下拉框（XWayland，class 与 title 均为短名 wps/et/wpp/pdf）：
+// 默认会被当普通窗口平铺成半屏大窗，改为浮动，让它在工具栏下方正常弹出。
+window-rule {
+    match app-id=r#"^(wps|et|wpp|pdf)$"# title=r#"^(wps|et|wpp|pdf)$"#
+    open-floating true
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// 二、浮动窗口：按标题判定（对话框类）
+// ══════════════════════════════════════════════════════════════════════
+window-rule {
+    match title=r#"^((Select|Open)( a)? (File|Folder)(s)?|File (Operation|Upload)( Progress)?|Export Image as PNG|GIMP Crash Debug|Save As|Library)$"#
+    open-floating true
+}
+window-rule {
+    match title=r#" Properties$"# // Hyprland: ".* Properties"
+    open-floating true
+}
+
+// Steam / ATLauncher / PandoraLauncher 的控制台与好友列表窗口
+window-rule {
+    match app-id="^steam$" title="^Friends List$"
+    open-floating true
+}
+window-rule {
+    match app-id="^com-atlauncher-App$" title="^ATLauncher Console$"
+    open-floating true
+}
+window-rule {
+    match app-id="^PandoraLauncher$" title="^Minecraft Game Output$"
+    open-floating true
+}
+
+// Thunar 重命名对话框（class 与主窗口同为 thunar，title 形如「重命名 “文件名”」/「Rename "..."」）
+window-rule {
+    match app-id="^thunar$" title=r#"^(重命名|Rename) .*$"#
+    open-floating true
+}
+
+// QQ 聊天记录窗口（私聊/群聊，title 形如 "xxx的聊天记录"）：浮动 + 适中尺寸
+window-rule {
+    match app-id="^QQ$" title="的聊天记录"
+    open-floating true
+    default-column-width { proportion 0.5; }
+    default-window-height { proportion 0.8; }
+}
+// QQ 图片查看器（Hyprland 还带 animation="popin"，niri 无逐窗动画）
+window-rule {
+    match title="^图片查看器$"
+    open-floating true
+}
+
+// Obsidian 1.13+ 的独立设置窗口（title 形如「设置/Settings - 库名 - Obsidian」）
+// app-id 兼容旧版 obsidian 与 1.13 起的 md.obsidian / md.Obsidian
+window-rule {
+    match app-id=r#"^(obsidian|md\.obsidian|md\.Obsidian|md\.obsidian\.Obsidian)$"# title="(设置|Settings)"
+    open-floating true
+}
+
+// 微信：查看图片和视频 / 聊天记录窗口
+window-rule {
+    match app-id="^wechat$" title="^图片和视频$"
+    open-floating true
+}
+window-rule {
+    match app-id="^wechat$" title="的聊天记录"
+    open-floating true
+}
+
+// Thunar 打开的图片（GNOME Loupe）与视频（mpv）
+window-rule {
+    match app-id=r#"^(org\.gnome\.Loupe|loupe)$"#
+    open-floating true
+}
+window-rule {
+    match app-id="^mpv$"
+    open-floating true
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// 三、带固定尺寸的浮动窗口（Hyprland 用 tag float_70_60 / 80_70 / 60_50 分组）
+// ══════════════════════════════════════════════════════════════════════
+window-rule {
+    match app-id="^foot$" title="^nmtui$"
+    open-floating true
+    default-column-width { proportion 0.7; }
+    default-window-height { proportion 0.6; }
+}
+window-rule {
+    match app-id=r#"^(org\.pulseaudio\.pavucontrol|yad-icon-browser)$"#
+    open-floating true
+    default-column-width { proportion 0.7; }
+    default-window-height { proportion 0.6; }
+}
+window-rule {
+    match app-id="^org.gnome.Settings$"
+    open-floating true
+    default-column-width { proportion 0.8; }
+    default-window-height { proportion 0.7; }
+}
+window-rule {
+    match app-id="^nwg-look$"
+    open-floating true
+    default-column-width { proportion 0.6; }
+    default-window-height { proportion 0.5; }
+}
+// 选择工作区目录对话框
+window-rule {
+    match title="^Select Workspace Directory$"
+    open-floating true
+    default-column-width { proportion 0.7; }
+    default-window-height { proportion 0.6; }
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// 四、画中画 / 无焦点窗口 / XWayland 弹出框
+// ══════════════════════════════════════════════════════════════════════
+
+// 浏览器画中画（Firefox / Zen / Chromium）：浮动 + 贴右下角。
+// Hyprland 还有 pin=true 与 keep_aspect_ratio=true —— niri 没有置顶与固定宽高比，未移植。
+window-rule {
+    match title=r#"^Picture(-| )in(-| )[Pp]icture$"#
+    open-floating true
+    default-floating-position x=20 y=20 relative-to="bottom-right"
+}
+
+// ueberzugpp 的预览窗口不该抢焦点（Hyprland: no_initial_focus=true）
+window-rule {
+    match app-id=r#"^ueberzugpp_.*$"#
+    open-floating true
+    open-focused false
+}
+
+// XWayland 的临时弹出框（Hyprland 是 match xwayland=true + title win[0-9]+，niri 没有 xwayland 匹配键）
+window-rule {
+    match title=r#"^win[0-9]+$"#
+    geometry-corner-radius 10
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// 五、Hyprland 特殊工作区 → niri 具名工作区
+// ══════════════════════════════════════════════════════════════════════
+// niri 没有 special workspace（没有「浮在普通工作区之上、一键弹出」的那层），
+// 所以这里改成把窗口直接放到达具名工作区：首次出现时 niri 会创建该工作区，
+// 之后可用 `niri msg action focus-workspace <名字>` 过去（要不要做「来回切换」的快捷键见文末）。
+window-rule {
+    match app-id="^btop$"
+    open-on-workspace "sysmon"
+}
+window-rule {
+    match app-id=r#"^(feishin|Spotify|Supersonic|Cider|com\.github\.th_ch\.youtube_music|Plexamp|com-maxrave-simpmusic-MainKt)$"#
+    open-on-workspace "music"
+}
+window-rule {
+    match app-id=r#"^(discord|equibop|vesktop|whatsapp)$"#
+    open-on-workspace "communication"
+}
+window-rule {
+    match app-id="^Todoist$"
+    open-on-workspace "todo"
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// 六、noctalia / 其他本机规则（原有内容）
+// ══════════════════════════════════════════════════════════════════════
+
+// Noctalia v5 设置窗口：浮动打开，固定尺寸
+window-rule {
+    match app-id="dev.noctalia.Noctalia"
+    open-floating true
+    default-column-width { fixed 1080; }
+    default-window-height { fixed 920; }
+}
+
+// 将概览 (Overview) 的壁纸放置在背景层 (Backdrop) 上。
+layer-rule {
+    match namespace="^noctalia-overview*"
+    place-within-backdrop true
+}
+
+// 允许来自 Noctalia 的通知操作和窗口激活（自动弹出/获取焦点）：
+// 具体就是 noctalia 弹出通知时，点击通知会自动聚焦到对应程序
+debug {
+    honor-xdg-activation-with-invalid-serial
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// 未移植的 Hyprland 规则及原因（保留备查，需要时另找实现）
+// ══════════════════════════════════════════════════════════════════════
+//
+// 1. `match { fullscreen = false }, opacity = 0.95 override`（全局窗口 95% 不透明）
+//    niri 确实有 `opacity` 规则，但 niri **没有模糊**；全局半透明会直接透出壁纸，
+//    观感与 Hyprland（模糊衬底）差别很大，故不做。想要的话加一条 `window-rule { opacity 0.95 }` 即可。
+// 2. `match { float = true, xwayland = false }, center = true`（所有浮动窗口居中）
+//    niri 没有 center 规则，浮动窗口初始位置只能通过 default-floating-position 指定四角锚点或绝对坐标。
+// 3. `opaque = true`（不透明应用清单：终端/图像查看器/创意软件/游戏）
+//    Hyprland 是为了抵消全局透明度；niri 侧没有全局透明度，因此不需要。
+// 4. `immediate = true` + `idle_inhibit = "always"`（游戏：允许撕裂 + 禁止息屏）
+//    niri 不支持逐窗 tearing；也没有逐窗 idle 抑制规则（应用可自行申请 idle-inhibit）。
+// 5. `pin = true`（画中画置顶）、`keep_aspect_ratio = true`：niri 无对应能力。
+// 6. `workspace = "unset"`（virt-manager 不再被丢到 1 号工作区）：niri 无对应语义。
+// 7. `fullscreen_state = "0 0"`、`animation = "slide top"/"popin"`（cheatsheet / QQ 图片查看器）：
+//    niri 没有逐窗动画与全屏态覆盖；caelestia 的 cheatsheet 窗口在 niri 侧也不存在
+//    （niri 的快捷键浮层是合成器自己画的，见 Mod+Slash）。
+// 8. `no_blur` / `blur` / `no_shadow` / `no_dim`：niri 不做模糊/变暗，阴影只有全局开关。
+// 9. layer-rule 的 `animation = "fade"/"popin 80%"`、`blur = true`（hyprpicker、slurp、wlogout、fuzzel 等）：
+//    niri 的 layer-rule 只支持 place-within-backdrop / baba-is-float / block-out-from，没有图层动画。
+// 10. workspace_rule 的 `gaps_out`（单窗口工作区加大外间隙）：niri 没有工作区级规则。
+// 11. `initial_title` 匹配（Spotify Wayland 无 class 的情形）：niri 只有 title 匹配，且是实时标题而非初始标题。
+//
+// 另外两处「密码管理器屏蔽截图」的写法（Hyprland 那边是注释示例，niri 侧同样保留为示例）：
+// /-window-rule {
+//     match app-id=r#"^org\.keepassxc\.KeePassXC$"#
+//     match app-id=r#"^org\.gnome\.World\.Secrets$"#
+//     block-out-from "screen-capture"   // 录屏与截图都看不到；只挡录屏改用 "screencast"
+// }

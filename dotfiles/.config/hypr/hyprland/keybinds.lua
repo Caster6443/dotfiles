@@ -224,7 +224,10 @@ hl.bind(
 hl.bind("SUPER + SHIFT + L", hl.dsp.exec_cmd(vars.sleepGestureCmd), { locked = true, description = "睡眠" })
 
 -- Clipboard and emoji picker
-hl.bind("SUPER + V", hl.dsp.exec_cmd("pkill fuzzel || caelestia clipboard"), { description = "剪贴板历史" })
+-- 2026-09-14：SUPER+V 改为打开 spotlight 的「剪贴板」标签页（IPC: caelestia shell spotlight clipboard）；
+-- 面板里能搜索 / 置顶 / 删除（带确认）/ 看大图预览，再按一次同一键收回面板。
+-- 旧的 fuzzel 单行选择器仍保留在 SUPER+ALT+V（删除模式）上。
+hl.bind("SUPER + V", hl.dsp.exec_cmd("caelestia shell spotlight clipboard"), { description = "剪贴板历史（spotlight 面板）" })
 hl.bind("SUPER + ALT + V", hl.dsp.exec_cmd("pkill fuzzel || caelestia clipboard -d"), { description = "剪贴板（删除）" })
 hl.bind("SUPER + Period", hl.dsp.exec_cmd("pkill fuzzel || caelestia emoji -p"), { description = "表情选择" })
 hl.bind(
