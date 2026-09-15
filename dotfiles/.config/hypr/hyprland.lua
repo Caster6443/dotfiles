@@ -56,7 +56,7 @@ end
 
 -- Default monitor conf
 hl.monitor({
-	output = "eDP-1",
+	output = "eDP-2",
 	mode = "preferred",
 	position = "0x0",
 	scale = 1,
