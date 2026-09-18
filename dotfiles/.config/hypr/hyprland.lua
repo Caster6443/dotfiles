@@ -55,36 +55,36 @@ if type(overrides) == "table" then
 end
 
 -- Default monitor conf
+-- 用 desc:（EDID 描述前缀）代替 DRM 连接器名（eDP-N / DP-N）：
+--   连接器编号由内核「按类型全局编号池」在注册时取最小空闲号分配，会随内核/驱动更新、
+--   或 dGPU 是否注册（如 VFIO 直通时 NVIDIA 不注册）而变化 → 写死名字迟早失效。
+--   desc: 匹配的是显示器自身的 EDID 描述，插在哪个口、挂在哪块 GPU 上都不受影响。
+-- 取描述前缀的方法：`hyprctl monitors` 里 description 字段，去掉末尾的 (端口名)。
+local LAPTOP   = "desc:Sharp Corporation LQ156T1JW05" -- 内屏 Sharp LQ156T1JW05（EDID 厂商 SHP）
+local EXTERNAL = "desc:Acer"                          -- 外接屏 Acer P229HQL（EDID 厂商 ACR）；接屏后用 hyprctl monitors 看到完整描述可收紧
+
 hl.monitor({
-	output = "eDP-2",
+	output = LAPTOP,
 	mode = "preferred",
 	position = "0x0",
 	scale = 1,
 })
 
 hl.monitor({
-	output = "DP-3",
+	output = EXTERNAL,
 	mode = "1920x1080@60",
 	position = "-1920x0",
 	scale = 1,
 })
 
-hl.monitor({
-	output = "DP-9",
-	mode = "1920x1080@60",
-	position = "-1920x0",
-	scale = 1,
-})
-
--- 工作区分配
--- 循环绑定 1 到 5 号工作区到 eDP-1
+-- 工作区分配（同样用 desc:，与连接器名解耦）
+-- 1-5 号 → 内屏，1 号为默认；6-10 号 → 外接屏，6 号为默认
 for w = 1, 5 do
-	hl.workspace_rule({ workspace = tostring(w), monitor = "eDP-1", default = (w == 1) })
+	hl.workspace_rule({ workspace = tostring(w), monitor = LAPTOP, default = (w == 1) })
 end
 
--- 循环绑定 6 到 10 号工作区到 DP-9
 for w = 6, 10 do
-	hl.workspace_rule({ workspace = tostring(w), monitor = "DP-9", default = (w == 6) })
+	hl.workspace_rule({ workspace = tostring(w), monitor = EXTERNAL, default = (w == 6) })
 end
 
 -- Configs
