@@ -60,8 +60,8 @@ end
 --   或 dGPU 是否注册（如 VFIO 直通时 NVIDIA 不注册）而变化 → 写死名字迟早失效。
 --   desc: 匹配的是显示器自身的 EDID 描述，插在哪个口、挂在哪块 GPU 上都不受影响。
 -- 取描述前缀的方法：`hyprctl monitors` 里 description 字段，去掉末尾的 (端口名)。
-local LAPTOP   = "desc:Sharp Corporation LQ156T1JW05" -- 内屏 Sharp LQ156T1JW05（EDID 厂商 SHP）
-local EXTERNAL = "desc:Acer"                          -- 外接屏 Acer P229HQL（EDID 厂商 ACR）；接屏后用 hyprctl monitors 看到完整描述可收紧
+local LAPTOP = "desc:Sharp Corporation LQ156T1JW05" -- 内屏 Sharp LQ156T1JW05（EDID 厂商 SHP）
+local EXTERNAL = "desc:YCT Sculptor" -- 外接屏，EDID 描述：YCT Sculptor 0000
 
 hl.monitor({
 	output = LAPTOP,
@@ -72,9 +72,11 @@ hl.monitor({
 
 hl.monitor({
 	output = EXTERNAL,
-	mode = "1920x1080@60",
-	position = "-1920x0",
+	mode = "2560x1600@120",
+	position = "-1600x0",
 	scale = 1,
+	transform = 1,
+	-- 向右旋转90度
 })
 
 -- 工作区分配（同样用 desc:，与连接器名解耦）
