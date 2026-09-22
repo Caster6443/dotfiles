@@ -46,9 +46,6 @@ end, { release = true, description = "程序启动器" })
 -- Cheatsheet (in-shell module, toggled via caelestia IPC)
 hl.bind(vars.kbCheatsheet, hl.dsp.exec_cmd("qs -c caelestia ipc call cheatsheet toggle"), { description = "快捷键速查" })
 
--- AI 对话（fork 外挂模块 aichat，贴左侧栏的面板）
-hl.bind(vars.kbAiChat, hl.dsp.exec_cmd("qs -c caelestia ipc call aichat toggle"), { description = "AI 对话" })
-
 -- Misc
 hl.bind(vars.kbSession, hl.dsp.global("caelestia:session"), { description = "会话面板" })
 hl.bind(vars.kbShowSidebar, hl.dsp.global("caelestia:sidebar"), { description = "侧边栏" })
@@ -224,10 +221,9 @@ hl.bind(
 hl.bind("SUPER + SHIFT + L", hl.dsp.exec_cmd(vars.sleepGestureCmd), { locked = true, description = "睡眠" })
 
 -- Clipboard and emoji picker
--- 2026-09-14：SUPER+V 改为打开 spotlight 的「剪贴板」标签页（IPC: caelestia shell spotlight clipboard）；
--- 面板里能搜索 / 置顶 / 删除（带确认）/ 看大图预览，再按一次同一键收回面板。
+-- SUPER+V 打开独立居中剪贴板窗口，与 spotlight 共用历史和置顶数据。
 -- 旧的 fuzzel 单行选择器仍保留在 SUPER+ALT+V（删除模式）上。
-hl.bind("SUPER + V", hl.dsp.exec_cmd("caelestia shell spotlight clipboard"), { description = "剪贴板历史（spotlight 面板）" })
+hl.bind("SUPER + V", hl.dsp.exec_cmd("qs -c caelestia ipc call clipboard toggle"), { description = "剪贴板历史（独立浮窗）" })
 hl.bind("SUPER + ALT + V", hl.dsp.exec_cmd("pkill fuzzel || caelestia clipboard -d"), { description = "剪贴板（删除）" })
 hl.bind("SUPER + Period", hl.dsp.exec_cmd("pkill fuzzel || caelestia emoji -p"), { description = "表情选择" })
 hl.bind(

@@ -161,6 +161,17 @@ hl.window_rule({
 
 -- Picture in picture (resize and move done via script)
 hl.window_rule({
+    match = { title = "caelestia-clipboard" },
+    float = true,
+    center = true,
+    size = "640 560",
+    fullscreen_state = "0 0",
+    opaque = false,
+    animation = "popin 90%",
+})
+
+-- Picture in picture (resize and move done via script)
+hl.window_rule({
 	match = { title = "Picture(-| )in(-| )[Pp]icture" },
 	move = "(monitor_w-(window_w*0.2)) (monitor_h-(window_h*0.3))",
 	pin = true,

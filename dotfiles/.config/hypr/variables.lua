@@ -109,6 +109,4 @@ return {
 	-- Cheatsheet (in-shell caelestia module)
 	kbCheatsheet = "SUPER + Slash",
 
-	-- AI 对话（fork 外挂模块 aichat）
-	kbAiChat = "SUPER + A",
 }

@@ -11,6 +11,7 @@ if status is-interactive
     alias rm='trash-put'
     alias getaudio='yt-dlp -x --audio-format mp3 --no-playlist --embed-thumbnail --cookies-from-browser firefox'
     alias ssh="TERM=xterm-256color command ssh"
+    alias ds="dsh web --no-open"
 
     # Abbrs
     abbr lg lazygit
