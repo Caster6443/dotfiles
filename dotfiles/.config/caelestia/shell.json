@@ -97,8 +97,7 @@
                 "id": "power"
             }
         ],
-        "excludedScreens": [
-        ],
+        "excludedScreens": [],
         "persistent": true,
         "popouts": {
             "activeWindow": true,
@@ -144,10 +143,8 @@
         "tray": {
             "background": true,
             "compact": true,
-            "hiddenIcons": [
-            ],
-            "iconSubs": [
-            ],
+            "hiddenIcons": [],
+            "iconSubs": [],
             "recolour": false
         },
         "workspaces": {
@@ -159,18 +156,17 @@
             "maxWindowIcons": 0,
             "occupiedBg": false,
             "occupiedLabel": "󰮯",
-            "perMonitorWorkspaces": true,
             "showWindows": true,
             "showWindowsOnSpecialWorkspaces": true,
             "shown": 5,
-            "specialWorkspaceIcons": [
-            ],
+            "specialWorkspaceIcons": [],
             "windowIcons": [
                 {
                     "icon": "sports_esports",
                     "regex": "steam(_app_(default|[0-9]+))?"
                 }
-            ]
+            ],
+            "perMonitor": true
         }
     },
     "border": {
@@ -253,7 +249,8 @@
                 }
             ]
         },
-        "logo": ""
+        "logo": "",
+        "language": "zh_CN"
     },
     "launcher": {
         "actionPrefix": ">",
@@ -420,8 +417,7 @@
         "dragThreshold": 50,
         "enableDangerousActions": false,
         "enabled": true,
-        "favouriteApps": [
-        ],
+        "favouriteApps": [],
         "hiddenApps": [
             "yazi",
             "org.gnome.Yelp",
@@ -515,11 +511,11 @@
             }
         ],
         "smartScheme": true,
-        "useFahrenheit": false,
-        "useFahrenheitPerformance": false,
-        "useTwelveHourClock": false,
         "visualiserBars": 45,
-        "weatherLocation": "Guangzhou"
+        "weatherLocation": "Guangzhou",
+        "clockFormat": "TwentyFourHour",
+        "weatherUnits": "Celsius",
+        "sensorUnits": "Celsius"
     },
     "session": {
         "commands": {

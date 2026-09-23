@@ -164,7 +164,7 @@ hl.window_rule({
     match = { title = "caelestia-clipboard" },
     float = true,
     center = true,
-    size = "640 560",
+    size = "960 600",
     fullscreen_state = "0 0",
     opaque = false,
     animation = "popin 90%",
