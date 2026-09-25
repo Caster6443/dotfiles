@@ -73,7 +73,7 @@ hl.monitor({
 hl.monitor({
 	output = EXTERNAL,
 	mode = "2560x1600@120",
-	position = "-1600x0",
+	position = "-1600x-782",
 	scale = 1,
 	transform = 1,
 	-- 向右旋转90度
@@ -99,6 +99,8 @@ require("hyprland.decoration")
 require("hyprland.group")
 require("hyprland.execs")
 require("hyprland.rules")
+-- Caelestia uses full-output transparent layers; skip compositor backdrop blur on those layers.
+hl.layer_rule({ match = { namespace = "caelestia-(drawers|background)" }, blur = false })
 require("hyprland.gestures")
 require("hyprland.keybinds")
 

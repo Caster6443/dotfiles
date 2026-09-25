@@ -97,7 +97,8 @@
                 "id": "power"
             }
         ],
-        "excludedScreens": [],
+        "excludedScreens": [
+        ],
         "persistent": true,
         "popouts": {
             "activeWindow": true,
@@ -143,8 +144,10 @@
         "tray": {
             "background": true,
             "compact": true,
-            "hiddenIcons": [],
-            "iconSubs": [],
+            "hiddenIcons": [
+            ],
+            "iconSubs": [
+            ],
             "recolour": false
         },
         "workspaces": {
@@ -156,17 +159,20 @@
             "maxWindowIcons": 0,
             "occupiedBg": false,
             "occupiedLabel": "󰮯",
+            "perMonitor": true,
             "showWindows": true,
             "showWindowsOnSpecialWorkspaces": true,
             "shown": 5,
-            "specialWorkspaceIcons": [],
+            "specialWorkspaceIcons": [
+            ],
             "windowIcons": [
                 {
+                    "flags": "",
                     "icon": "sports_esports",
+                    "name": "",
                     "regex": "steam(_app_(default|[0-9]+))?"
                 }
-            ],
-            "perMonitor": true
+            ]
         }
     },
     "border": {
@@ -207,12 +213,14 @@
             "criticalLevel": 3,
             "warnLevels": [
                 {
+                    "critical": false,
                     "icon": "battery_android_frame_2",
                     "level": 20,
                     "message": "You might want to plug in a charger",
                     "title": "Low battery"
                 },
                 {
+                    "critical": false,
                     "icon": "battery_android_frame_1",
                     "level": 10,
                     "message": "You should probably plug in a charger <b>now</b>",
@@ -232,25 +240,37 @@
             "lockBeforeSleep": true,
             "timeouts": [
                 {
+                    "enabled": true,
                     "idleAction": "lock",
+                    "inhibitWhenAudio": false,
+                    "inhibitWhenCharging": false,
+                    "respectInhibitors": true,
                     "timeout": 900
                 },
                 {
+                    "enabled": true,
                     "idleAction": "dpms off",
+                    "inhibitWhenAudio": false,
+                    "inhibitWhenCharging": false,
+                    "respectInhibitors": true,
                     "returnAction": "dpms on",
                     "timeout": 600
                 },
                 {
+                    "enabled": true,
                     "idleAction": [
                         "systemctl",
                         "suspend-then-hibernate"
                     ],
+                    "inhibitWhenAudio": false,
+                    "inhibitWhenCharging": false,
+                    "respectInhibitors": true,
                     "timeout": 600
                 }
             ]
         },
-        "logo": "",
-        "language": "zh_CN"
+        "language": "zh_CN",
+        "logo": ""
     },
     "launcher": {
         "actionPrefix": ">",
@@ -417,7 +437,8 @@
         "dragThreshold": 50,
         "enableDangerousActions": false,
         "enabled": true,
-        "favouriteApps": [],
+        "favouriteApps": [
+        ],
         "hiddenApps": [
             "yazi",
             "org.gnome.Yelp",
@@ -500,6 +521,7 @@
     "services": {
         "audioIncrement": 0.1,
         "brightnessIncrement": 0.1,
+        "clockFormat": "TwentyFourHour",
         "defaultPlayer": "Spotify",
         "gpuType": "Auto",
         "lyricsBackend": "Auto",
@@ -510,12 +532,11 @@
                 "to": "YT Music"
             }
         ],
+        "sensorUnits": "Celsius",
         "smartScheme": true,
         "visualiserBars": 45,
         "weatherLocation": "Guangzhou",
-        "clockFormat": "TwentyFourHour",
-        "weatherUnits": "Celsius",
-        "sensorUnits": "Celsius"
+        "weatherUnits": "Celsius"
     },
     "session": {
         "commands": {
