@@ -1,5 +1,14 @@
 local vars = require("variables")
 
+-- Prefer the dGPU in the regular Hyprland session, but respect a GPU list
+-- supplied by the session launcher (UWSM keeps AMD-only for VFIO passthrough).
+local drmDevices = os.getenv("AQ_DRM_DEVICES")
+if not drmDevices or drmDevices == "" then
+	hl.env("AQ_DRM_DEVICES", "/home/caster/.local/share/drm/nvidia-dgpu:/dev/dri/amd-igpu")
+	hl.env("__NV_PRIME_RENDER_OFFLOAD", "1")
+	hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
+end
+
 -- Themes
 hl.env("QT_QPA_PLATFORMTHEME", "qtengine")
 hl.env("QQT_WAYLAND_DISABLE_WINDOWDECORATION", "1")

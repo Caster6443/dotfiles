@@ -24,7 +24,7 @@
         "desktopClock": {
             "background": {
                 "blur": true,
-                "enabled": false,
+                "enabled": true,
                 "opacity": 0.4035194174757279
             },
             "enabled": true,
@@ -98,6 +98,7 @@
             }
         ],
         "excludedScreens": [
+            "DP-3"
         ],
         "persistent": true,
         "popouts": {
