@@ -16,8 +16,8 @@ return {
 	touchpadDisableTyping = true,
 	touchScrollFactor = 0.3,
 	gestureFingers = 3,
-	workspaceSwipeFingers = 4,
-	gestureFingersMore = 4,
+	workspaceSwipeFingers = 5,
+	gestureFingersMore = 5,
 
 	-- Blur
 	blurEnabled = true,
