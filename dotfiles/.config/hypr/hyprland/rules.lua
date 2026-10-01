@@ -7,6 +7,7 @@ local vars = require("variables")
 hl.window_rule({ match = { fullscreen = false }, opacity = vars.windowOpacity .. " override" })
 
 hl.window_rule({ match = { float = true, xwayland = false }, center = true }) -- Center all floating windows (not xwayland cause popups)
+hl.window_rule({ match = { title = "caelestia-spotlight" }, float = true, center = true, animation = "popin 90%" })
 
 -- Floating Applications
 hl.window_rule({

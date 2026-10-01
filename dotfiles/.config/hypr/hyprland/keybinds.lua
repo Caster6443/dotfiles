@@ -35,13 +35,13 @@ for _, combo in ipairs({
 	hl.bind(combo, function() superLauncherBlocked = true end, { non_consuming = true })
 end
 
--- 启动器：仅当 Super 是干净地单独按下时触发
+-- Spotlight：仅当 Super 是干净地单独按下时打开/收起居中浮窗
 hl.bind("SUPER + SUPER_L", function()
 	if not superLauncherBlocked then
-		hl.dispatch(hl.dsp.global("caelestia:launcher"))
+		hl.dispatch(hl.dsp.exec_cmd("qs -c caelestia ipc call spotlight toggle"))
 	end
 	superLauncherBlocked = false
-end, { release = true, description = "程序启动器" })
+end, { release = true, description = "Spotlight" })
 
 -- Cheatsheet (in-shell module, toggled via caelestia IPC)
 hl.bind(vars.kbCheatsheet, hl.dsp.exec_cmd("qs -c caelestia ipc call cheatsheet toggle"), { description = "快捷键速查" })
@@ -52,6 +52,7 @@ hl.bind(vars.kbShowSidebar, hl.dsp.global("caelestia:sidebar"), { description = 
 hl.bind(vars.kbClearNotifs, hl.dsp.global("caelestia:clearNotifs"), { locked = true, description = "清除通知" })
 hl.bind(vars.kbShowPanels, hl.dsp.global("caelestia:showall"), { description = "显示所有面板" })
 hl.bind(vars.kbLock, hl.dsp.global("caelestia:lock"), { description = "锁屏" })
+hl.bind("XF86PowerOff", hl.dsp.global("caelestia:lock"), { locked = true, description = "电源键锁屏" })
 
 -- Restore lock
 hl.bind(vars.kbRestoreLock, function()
