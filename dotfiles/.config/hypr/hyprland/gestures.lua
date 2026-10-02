@@ -13,8 +13,9 @@ hl.config({
 
 -- 5 指横向滑动切换工作区；四指由 move 独占，避免横滑动作冲突
 hl.gesture({ fingers = vars.workspaceSwipeFingers, direction = "horizontal", action = "workspace" })
--- 3 指左右滑动滚动窗口列（scrolling 布局原生跟手手势；自然方向：左滑 → 下一列，右滑 → 上一列）
-hl.gesture({ fingers = vars.gestureFingers, direction = "horizontal", action = "scroll_move" })
+-- 3 指左右滑动按布局切换行为：scrolling 滚动窗口列，其他布局切换工作区
+local horizontalGesture = vars.layout == "scrolling" and "scroll_move" or "workspace"
+hl.gesture({ fingers = vars.gestureFingers, direction = "horizontal", action = horizontalGesture })
 -- 3 指上下滑动切换工作区（内置跟手动画；自然方向：上滑 → 下一个，下滑 → 上一个）
 hl.gesture({ fingers = vars.gestureFingers, direction = "vertical", action = "workspace" })
 -- 4 指任意方向拖动活动窗口；Hyprland 原生 move 手势会跟随手指移动窗口

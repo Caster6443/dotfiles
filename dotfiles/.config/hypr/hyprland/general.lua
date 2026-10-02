@@ -1,8 +1,8 @@
 local vars = require("variables")
 
-hl.config({
+local config = {
 	general = {
-		layout = "scrolling",
+		layout = vars.layout,
 
 		allow_tearing = false, -- Allows `immediate` window rule to work
 
@@ -16,19 +16,23 @@ hl.config({
 			inactive_border = vars.inactiveWindowBorderColour,
 		},
 	},
+}
 
-	dwindle = {
+if vars.layout == "dwindle" then
+	config.dwindle = {
 		preserve_split = true,
 		smart_split = false,
 		smart_resizing = true,
-	},
-
-	scrolling = {
+	}
+elseif vars.layout == "scrolling" then
+	config.scrolling = {
 		fullscreen_on_one_column = true,
 		focus_fit_method = 1,
 		column_width = 0.5,
 		follow_focus = true,
 		follow_min_visible = 0.0,
 		explicit_column_widths = "0.35, 0.5, 0.65, 1.0",
-	},
-})
+	}
+end
+
+hl.config(config)

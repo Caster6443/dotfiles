@@ -91,7 +91,7 @@ for i = 1, 10 do
 	hl.bind(vars.kbMoveWinToWsGroup .. " + " .. key, fn.wsaction("move", "group", i), { description = "移动窗口到 1-10 号工作区组" })
 end
 
--- Go to workspace -1/+1
+-- 所有布局通用：Super + 滚轮切换前后工作区（滚轮上/下分别对应编号 -1/+1）
 hl.bind("SUPER + mouse_up", hl.dsp.focus({ workspace = "-1" }))
 hl.bind("SUPER + mouse_down", hl.dsp.focus({ workspace = "+1" }))
 hl.bind(vars.kbPrevWs, hl.dsp.focus({ workspace = "-1" }), { repeating = true, description = "上一个工作区" })
@@ -143,9 +143,11 @@ hl.bind("SUPER + ALT + right", hl.dsp.window.resize(fn.resize_active_window(10, 
 hl.bind("SUPER + ALT + up", hl.dsp.window.resize(fn.resize_active_window(0, -10)), { repeating = true })
 hl.bind("SUPER + ALT + down", hl.dsp.window.resize(fn.resize_active_window(0, 10)), { repeating = true })
 
--- 鼠标滚轮横向切换窗口聚焦
-hl.bind("SHIFT + mouse_down", hl.dsp.layout("move +col"))
-hl.bind("SHIFT + mouse_up", hl.dsp.layout("move -col"))
+-- Scrolling 专用：鼠标滚轮横向切换窗口列
+if vars.layout == "scrolling" then
+	hl.bind("SHIFT + mouse_down", hl.dsp.layout("move +col"))
+	hl.bind("SHIFT + mouse_up", hl.dsp.layout("move -col"))
+end
 
 hl.bind("SUPER + mouse:272", hl.dsp.window.drag(), { mouse = true })
 hl.bind(vars.kbMoveWindow, hl.dsp.window.drag(), { mouse = true, description = "拖动窗口" })

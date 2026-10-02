@@ -5,6 +5,9 @@ return {
 	---- HYPRLAND ----
 	------------------
 
+	-- Default layout applied at startup/reload; Nexus can switch the active session layout immediately.
+	layout = "scrolling",
+
 	-- Apps
 	terminal = "foot",
 	browser = "zen-browser",
