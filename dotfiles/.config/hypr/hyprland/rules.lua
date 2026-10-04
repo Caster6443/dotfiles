@@ -6,6 +6,10 @@ local vars = require("variables")
 
 hl.window_rule({ match = { fullscreen = false }, opacity = vars.windowOpacity .. " override" })
 
+-- 当前 XMCL 实例的 Minecraft 窗口 class 取实例名，不含 Minecraft。
+-- 绕过全局非全屏透明度规则。
+hl.window_rule({ match = { class = "BigChadGuys Plus 2[.]11[.]0" }, opaque = true, opacity = "1 override" })
+
 hl.window_rule({ match = { float = true, xwayland = false }, center = true }) -- Center all floating windows (not xwayland cause popups)
 hl.window_rule({ match = { title = "caelestia-spotlight" }, float = true, center = true, animation = "popin 90%" })
 
