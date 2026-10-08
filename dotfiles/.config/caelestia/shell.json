@@ -45,7 +45,7 @@
             "rounding": 1,
             "spacing": 0.9532293986636967
         },
-        "wallpaperEnabled": false
+        "wallpaperEnabled": true
     },
     "bar": {
         "activeWindow": {
@@ -541,10 +541,7 @@
     },
     "session": {
         "commands": {
-            "hibernate": [
-                "systemctl",
-                "hibernate"
-            ],
+            "hibernate": ["qs", "-c", "caelestia", "ipc", "call", "lock", "lock"],
             "logout": [
                 "uwsm",
                 "stop"
@@ -561,7 +558,7 @@
         "dragThreshold": 30,
         "enabled": true,
         "icons": {
-            "hibernate": "downloading",
+            "hibernate": "lock",
             "logout": "logout",
             "reboot": "cached",
             "shutdown": "power_settings_new"
