@@ -172,3 +172,7 @@ fi
 if [ -f /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
     source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
+
+
+# Added by Antigravity CLI installer
+export PATH="/home/caster/.local/bin:$PATH"

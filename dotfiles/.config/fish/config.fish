@@ -47,3 +47,7 @@ if status is-interactive
     # Custom fish config
     source ~/.config/caelestia/user-config.fish 2>/dev/null
 end
+
+
+# Added by Antigravity CLI installer
+set -gx PATH "/home/caster/.local/bin" $PATH
