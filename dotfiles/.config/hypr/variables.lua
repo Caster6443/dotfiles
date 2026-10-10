@@ -6,7 +6,7 @@ return {
 	------------------
 
 	-- Default layout applied at startup/reload; Nexus can switch the active session layout immediately.
-	layout = "dwindle",
+	layout = "scrolling",
 
 	-- Apps
 	terminal = "foot",
