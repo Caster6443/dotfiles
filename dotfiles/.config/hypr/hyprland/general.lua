@@ -20,6 +20,7 @@ local config = {
 
 if vars.layout == "dwindle" then
 	config.dwindle = {
+		force_split = 2,
 		preserve_split = true,
 		smart_split = false,
 		smart_resizing = true,

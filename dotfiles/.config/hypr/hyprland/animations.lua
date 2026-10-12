@@ -1,3 +1,5 @@
+local vars = require("variables")
+
 hl.config({
 	animations = {
 		enabled = true,
@@ -30,7 +32,13 @@ hl.animation({
 hl.animation({ leaf = "windowsMove", enabled = true, speed = 3, bezier = "standard" })
 -- hl.animation({ leaf = "workspaces", enabled = true, speed = 5, bezier = "" })
 -- hl.animation({ leaf = "workspaces", enabled = true, speed = 5, bezier = "standard", style = "slidevert" })
-hl.animation({ leaf = "workspaces", enabled = true, speed = 3, bezier = "standard", style = "slidefadevert 20%" })
+hl.animation({
+	leaf = "workspaces",
+	enabled = true,
+	speed = 3,
+	bezier = "standard",
+	style = vars.layout == "scrolling" and "slidefadevert 20%" or "slidefade 20%",
+})
 
 hl.animation({
 	leaf = "specialWorkspace",
