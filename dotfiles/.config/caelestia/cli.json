@@ -43,5 +43,8 @@
       }
     }
   },
-  "wallpaper": {}
+  "wallpaper": {},
+  "theme": {
+    "postHook": "/usr/bin/python /home/caster/Documents/项目脚本/工具脚本/strata-colour-bridge.py"
+  }
 }

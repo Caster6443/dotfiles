@@ -20,6 +20,11 @@ return {
               validate = true,
               schemas = {
                 kubernetes = {
+                  -- Kubernetes 学习项目；不影响普通 YAML/Compose 配置
+                  "/home/caster/Projects/k8s-in-action2/**/*.yaml",
+                  "/home/caster/Projects/k8s-in-action2/**/*.yml",
+                  "**/k8s/**/*.yaml",
+                  "**/k8s/**/*.yml",
                   "k8s/*.yaml",
                   "k8s/*.yml",
                   "*.k8s.yaml",
