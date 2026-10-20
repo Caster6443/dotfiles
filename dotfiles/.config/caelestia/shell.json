@@ -536,12 +536,20 @@
         "sensorUnits": "Celsius",
         "smartScheme": true,
         "visualiserBars": 45,
-        "weatherLocation": "Guangzhou",
+        "weatherLocation": "101200110",
         "weatherUnits": "Celsius"
     },
     "session": {
         "commands": {
-            "hibernate": ["qs", "-c", "caelestia", "ipc", "call", "lock", "lock"],
+            "hibernate": [
+                "qs",
+                "-c",
+                "caelestia",
+                "ipc",
+                "call",
+                "lock",
+                "lock"
+            ],
             "logout": [
                 "uwsm",
                 "stop"
