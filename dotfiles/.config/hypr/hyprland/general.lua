@@ -29,6 +29,7 @@ elseif vars.layout == "scrolling" then
 	config.scrolling = {
 		fullscreen_on_one_column = true,
 		focus_fit_method = 1,
+		wrap_focus = false,
 		column_width = 0.5,
 		follow_focus = true,
 		follow_min_visible = 0.0,
