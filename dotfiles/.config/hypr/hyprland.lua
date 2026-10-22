@@ -71,6 +71,13 @@ hl.monitor({
 })
 
 hl.monitor({
+	output = "WAYLAND-1",
+	mode = "preferred",
+	position = "0x0",
+	scale = 1,
+})
+
+hl.monitor({
 	output = EXTERNAL,
 	mode = "2560x1600@120",
 	position = "-1600x-782",

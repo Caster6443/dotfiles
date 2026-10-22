@@ -175,6 +175,7 @@ hl.window_rule({
     size = "960 600",
     fullscreen_state = "0 0",
     opaque = false,
+    opacity = "1 override",
     animation = "popin 90%",
 })
 
@@ -240,3 +241,6 @@ hl.window_rule({
 	--size = "100, 50",
 	animation = "popin",
 })
+
+-- Spotlight solid-surface style experiment (2026-10-22).
+hl.window_rule({ match = { title = "caelestia-spotlight" }, opacity = "1 override" })

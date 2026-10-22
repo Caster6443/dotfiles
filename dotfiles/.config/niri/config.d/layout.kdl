@@ -152,7 +152,7 @@ layout {
         //设置屏幕四周与窗口的间隙
          left 5
          right 5
-         top -5
+         top 0
          bottom 2
     }
 }

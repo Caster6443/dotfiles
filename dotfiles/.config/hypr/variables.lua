@@ -18,7 +18,9 @@ return {
 
 	-- Touchpad
 	touchpadDisableTyping = true,
-	touchScrollFactor = 0.3,
+	-- 旧名 touchScrollFactor 与 input.lua 读取的变量名不匹配，0.3 从未生效；
+	-- 先按 niri 的默认 1.0 测，想更慢再改 0.3
+	touchpadScrollFactor = 1.0,
 	gestureFingers = 3,
 	workspaceSwipeFingers = 5,
 	gestureFingersMore = 5,

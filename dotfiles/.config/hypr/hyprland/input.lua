@@ -21,7 +21,8 @@ hl.config({
 
 	cursor = {
 		hotspot_padding = 1,
-		no_hardware_cursors = true,
+		-- 2 = auto；优先用硬件光标降低指针延迟
+		no_hardware_cursors = 2,
 		sync_gsettings_theme = true,
 		-- 关闭切换聚焦时鼠标跟随
 		no_warps = true,

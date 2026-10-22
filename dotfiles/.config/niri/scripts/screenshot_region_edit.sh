@@ -9,7 +9,12 @@ FROZEN="$(mktemp --tmpdir niri-freeze-XXXXXX.png)"
 CROP="$(mktemp --tmpdir niri-crop-XXXXXX.png)"
 trap 'rm -f "$FROZEN" "$CROP"' EXIT
 
-if ! grim "$FROZEN"; then
+# grim -s 1 yields one pixel per logical unit. Its canvas starts at
+# the top-left of the active output bounding box, not global (0, 0).
+OUTPUTS="$(niri msg --json outputs)" || exit 1
+ORIGIN_X="$(jq -er '[.[] | .logical // empty | .x] | min // error("no active output")' <<< "$OUTPUTS")" || exit 1
+ORIGIN_Y="$(jq -er '[.[] | .logical // empty | .y] | min // error("no active output")' <<< "$OUTPUTS")" || exit 1
+if ! grim -s 1 "$FROZEN"; then
     notify-send -a Screenshot "截图失败" "冻结画面失败（grim）" -u critical
     exit 1
 fi
@@ -25,6 +30,8 @@ case "$WH" in
     0x*|*x0) exit 0 ;;
 esac
 
+X=$((X - ORIGIN_X))
+Y=$((Y - ORIGIN_Y))
 if ! magick "$FROZEN" -crop "${WH}+${X}+${Y}" +repage "$CROP"; then
     notify-send -a Screenshot "截图失败" "从冻结帧裁剪失败（magick）" -u critical
     exit 1

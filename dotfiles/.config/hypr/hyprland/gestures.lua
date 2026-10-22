@@ -2,9 +2,11 @@ local vars = require("variables")
 
 hl.config({
 	gestures = {
-		workspace_swipe_distance = 700,
-		workspace_swipe_cancel_ratio = 0.15,
-		workspace_swipe_min_speed_to_force = 5,
+		-- 2026-10-22 第四轮：250 -> 220，再敏感一点（提交阈值 125px -> 110px）
+		-- 如太灵敏回 250/270；如仍嫌长再降到 200
+		workspace_swipe_distance = 220,
+		workspace_swipe_cancel_ratio = 0.5,
+		workspace_swipe_min_speed_to_force = 30,
 		workspace_swipe_direction_lock = true,
 		workspace_swipe_direction_lock_threshold = 10,
 		workspace_swipe_create_new = true,
@@ -13,54 +15,10 @@ hl.config({
 
 -- 5 指横向滑动切换工作区；四指由 move 独占，避免横滑动作冲突
 hl.gesture({ fingers = vars.workspaceSwipeFingers, direction = "horizontal", action = "workspace" })
--- 3 指左右滑动（scrolling 布局）：
---   滑动幅度大（>=120px）→ 切到相邻列并居中；
---   幅度小 → 当前列回到贴边，与相邻列平分桌面（只露两列）。
+-- 3 指左右滑动（scrolling 布局）：改用原生 scroll_move，1:1 跟手，
+-- 松手由 gestures.scrolling.move_snap_to_grid（默认 true）吸附到列。
 if vars.layout == "scrolling" then
-	local swipe = { total = 0 }
-
-	-- 让当前列回到“贴边 + 相邻列”的平分视图：用两次相反 focus 触发重排，焦点不变
-	local function split_view()
-		local w = hl.get_active_window()
-		if not w or not w.workspace then return end
-		local xs = {}
-		for _, other in ipairs(hl.get_workspace_windows(w.workspace.id)) do
-			xs[#xs + 1] = other.at.x
-		end
-		table.sort(xs)
-		if #xs < 2 then return end
-		if w.at.x > xs[1] + 1 then
-			hl.dispatch(hl.dsp.layout("focus l"))
-			hl.dispatch(hl.dsp.layout("focus r"))
-		elseif w.at.x < xs[#xs] - 1 then
-			hl.dispatch(hl.dsp.layout("focus r"))
-			hl.dispatch(hl.dsp.layout("focus l"))
-		end
-	end
-
-	hl.gesture({
-		fingers = vars.gestureFingers,
-		direction = "horizontal",
-		action = {
-			start = function()
-				swipe.total = 0
-			end,
-			update = function(e)
-				swipe.total = swipe.total + e.delta.x
-			end,
-			finish = function(e)
-				if e.cancelled then return end
-				if math.abs(swipe.total) >= 120 then
-					-- 手指右移 = 内容右移 = 看左侧列
-					local dir = swipe.total > 0 and "l" or "r"
-					hl.dispatch(hl.dsp.layout("focus " .. dir))
-					hl.dispatch(hl.dsp.layout("center"))
-				else
-					split_view()
-				end
-			end,
-		},
-	})
+	hl.gesture({ fingers = vars.gestureFingers, direction = "horizontal", action = "scroll_move" })
 else
 	hl.gesture({ fingers = vars.gestureFingers, direction = "horizontal", action = "workspace" })
 end
