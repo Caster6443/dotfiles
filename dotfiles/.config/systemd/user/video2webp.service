@@ -1,0 +1,13 @@
+[Unit]
+Description=Convert videos dropped into Pictures/Wallpapers to animated WebP
+
+[Service]
+Type=simple
+ExecStart=/home/caster/Documents/项目脚本/video2webp/video2webp.sh
+Restart=always
+RestartSec=10
+Nice=10
+IOSchedulingClass=idle
+
+[Install]
+WantedBy=default.target

@@ -1,6 +1,6 @@
 [Unit]
 Description=caelestia shell 无痕退出现场记录器（轮询 pid，死亡时落盘快照）
-Documentation=file:///home/caster/Documents/codex操作记录/2026-09-12_1916_caelestia-shell两次无痕退出排查.md
+Documentation=file:///home/caster/Documents/codex操作记录/2026-09-12/2026-09-12_1916_caelestia-shell两次无痕退出排查.md
 
 [Service]
 Type=simple

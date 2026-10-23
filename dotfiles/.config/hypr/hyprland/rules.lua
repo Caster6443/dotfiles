@@ -233,12 +233,12 @@ hl.layer_rule({ match = { namespace = "caelestia-(drawers|background)" }, animat
 -- Terminal
 hl.window_rule({ match = { class = "foot" }, no_blur = true })
 
--- QQ
+-- QQ 图片查看器：限制初始尺寸，避免原始图片尺寸撑出屏幕
 hl.window_rule({
-	match = { title = "图片查看器" },
+	match = { class = "QQ", title = "图片查看器" },
 	float = true,
+	size = "(monitor_w*0.7) (monitor_h*0.7)",
 	center = true,
-	--size = "100, 50",
 	animation = "popin",
 })
 
