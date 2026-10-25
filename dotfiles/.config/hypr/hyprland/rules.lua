@@ -14,7 +14,7 @@ hl.window_rule({ match = { class = "Minecraft.*|BigChadGuys Plus 2[.]11[.]0" }, 
 hl.window_rule({ match = { class = "looking-glass-client" }, opaque = true, opacity = "1 override" })
 
 hl.window_rule({ match = { float = true, xwayland = false }, center = true }) -- Center all floating windows (not xwayland cause popups)
-hl.window_rule({ match = { title = "caelestia-spotlight" }, float = true, center = true, animation = "popin 90%" })
+hl.window_rule({ match = { title = "caelestia-console" }, float = true, center = true, animation = "popin 90%" })
 
 -- Floating Applications
 hl.window_rule({
@@ -242,5 +242,5 @@ hl.window_rule({
 	animation = "popin",
 })
 
--- Spotlight solid-surface style experiment (2026-10-22).
-hl.window_rule({ match = { title = "caelestia-spotlight" }, opacity = "1 override" })
+-- Console solid-surface style experiment (2026-10-22).
+hl.window_rule({ match = { title = "caelestia-console" }, opacity = "1 override" })

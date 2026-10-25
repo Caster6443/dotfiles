@@ -35,13 +35,13 @@ for _, combo in ipairs({
 	hl.bind(combo, function() superLauncherBlocked = true end, { non_consuming = true })
 end
 
--- Spotlight：仅当 Super 是干净地单独按下时打开/收起居中浮窗
+-- Console：仅当 Super 是干净地单独按下时打开/收起居中浮窗
 hl.bind("SUPER + SUPER_L", function()
 	if not superLauncherBlocked then
-		hl.dispatch(hl.dsp.exec_cmd("qs -c caelestia ipc call spotlight toggle"))
+		hl.dispatch(hl.dsp.exec_cmd("qs -c caelestia ipc call console toggle"))
 	end
 	superLauncherBlocked = false
-end, { release = true, description = "Spotlight" })
+end, { release = true, description = "控制台" })
 
 -- Cheatsheet (in-shell module, toggled via caelestia IPC)
 hl.bind(vars.kbCheatsheet, hl.dsp.exec_cmd("qs -c caelestia ipc call cheatsheet toggle"), { description = "快捷键速查" })
@@ -224,7 +224,7 @@ hl.bind(
 hl.bind("SUPER + SHIFT + L", hl.dsp.exec_cmd(vars.sleepGestureCmd), { locked = true, description = "睡眠" })
 
 -- Clipboard and emoji picker
--- SUPER+V 打开独立居中剪贴板窗口，与 spotlight 共用历史和置顶数据。
+-- SUPER+V 打开独立居中剪贴板窗口，与 console 共用历史和置顶数据。
 -- 旧的 fuzzel 单行选择器仍保留在 SUPER+ALT+V（删除模式）上。
 hl.bind("SUPER + V", hl.dsp.exec_cmd("qs -c caelestia ipc call clipboard toggle"), { description = "剪贴板历史（独立浮窗）" })
 hl.bind("SUPER + ALT + V", hl.dsp.exec_cmd("pkill fuzzel || caelestia clipboard -d"), { description = "剪贴板（删除）" })
