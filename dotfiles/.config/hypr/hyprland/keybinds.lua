@@ -169,10 +169,31 @@ hl.bind(vars.kbWindowPip, function()
 	end
 end, { description = "画中画（悬浮置顶）" })
 hl.bind(vars.kbPinWindow, hl.dsp.window.pin(), { description = "固定/取消固定窗口" })
-hl.bind(vars.kbWindowFullscreen, hl.dsp.window.fullscreen({ mode = "fullscreen" }), { description = "全屏" })
-hl.bind(vars.kbWindowBorderedFullscreen, hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }), { description = "无边框全屏" })
+hl.bind(vars.kbWindowFullscreen, function()
+    local w = hl.get_active_window()
+    if w and w.title == "caelestia-console" then
+        hl.dispatch(hl.dsp.exec_cmd("qs -c caelestia ipc call console fullscreenSelected fullscreen"))
+    else
+        hl.dispatch(hl.dsp.window.fullscreen({ mode = "fullscreen" }))
+    end
+end, { description = "全屏" })
+hl.bind(vars.kbWindowBorderedFullscreen, function()
+    local w = hl.get_active_window()
+    if w and w.title == "caelestia-console" then
+        hl.dispatch(hl.dsp.exec_cmd("qs -c caelestia ipc call console fullscreenSelected maximized"))
+    else
+        hl.dispatch(hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
+    end
+end, { description = "无边框全屏" })
 hl.bind(vars.kbToggleWindowFloating, hl.dsp.window.float(), { description = "切换浮动" })
-hl.bind(vars.kbCloseWindow, hl.dsp.window.close(), { description = "关闭窗口" })
+hl.bind(vars.kbCloseWindow, function()
+    local w = hl.get_active_window()
+    if w and w.title == "caelestia-console" then
+        hl.dispatch(hl.dsp.exec_cmd("qs -c caelestia ipc call console closeSelected"))
+    else
+        hl.dispatch(hl.dsp.window.close())
+    end
+end, { description = "关闭窗口" })
 
 -- Special workspace toggles
 hl.bind(vars.kbSpecialWs, hl.dsp.exec_cmd("caelestia toggle specialws"), { description = "特殊工作区" })
@@ -182,13 +203,29 @@ hl.bind(vars.kbCommunicationWs, hl.dsp.exec_cmd("caelestia toggle communication"
 hl.bind(vars.kbTodoWs, hl.dsp.exec_cmd("caelestia toggle todo"), { description = "待办工作区" })
 hl.bind(vars.kbProxy, hl.dsp.exec_cmd("caelestia toggle proxy"), { description = "代理工作区" })
 
+-- Console owns the input focus; route actions to its overview selection.
+local function consoleFocused()
+    local w = hl.get_active_window()
+    return w and w.title == "caelestia-console"
+end
+local function overviewLaunch(command)
+    return function()
+        if consoleFocused() then
+            local quoted = "'" .. command:gsub("'", "'\\''") .. "'"
+            hl.dispatch(hl.dsp.exec_cmd("qs -c caelestia ipc call console launch " .. quoted))
+        else
+            hl.dispatch(hl.dsp.exec_cmd(command))
+        end
+    end
+end
+
 -- Apps
-hl.bind(vars.kbTerminal, hl.dsp.exec_cmd(vars.terminal), { description = "终端" })
-hl.bind(vars.kbBrowser, hl.dsp.exec_cmd(vars.browser), { description = "浏览器" })
-hl.bind(vars.kbEditor, hl.dsp.exec_cmd(vars.editor), { description = "编辑器" })
-hl.bind(vars.kbFileExplorer, hl.dsp.exec_cmd(vars.fileExplorer), { description = "文件管理器" })
-hl.bind("CTRL + ALT + V", hl.dsp.exec_cmd(vars.audioSettings))
-hl.bind("SUPER + O", hl.dsp.exec_cmd("obsidian"), { description = "Obsidian" })
+hl.bind(vars.kbTerminal, overviewLaunch(vars.terminal), { description = "终端" })
+hl.bind(vars.kbBrowser, overviewLaunch(vars.browser), { description = "浏览器" })
+hl.bind(vars.kbEditor, overviewLaunch(vars.editor), { description = "编辑器" })
+hl.bind(vars.kbFileExplorer, overviewLaunch(vars.fileExplorer), { description = "文件管理器" })
+hl.bind("CTRL + ALT + V", overviewLaunch(vars.audioSettings))
+hl.bind("SUPER + O", overviewLaunch("obsidian"), { description = "Obsidian" })
 
 -- Utilities
 hl.bind("Print", hl.dsp.exec_cmd("caelestia screenshot"), { locked = true, description = "截图" })
