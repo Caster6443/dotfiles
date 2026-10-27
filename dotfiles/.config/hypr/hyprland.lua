@@ -80,9 +80,10 @@ hl.monitor({
 hl.monitor({
 	output = EXTERNAL,
 	mode = "2560x1600@120",
-	position = "-1600x-782",
+	-- position = "-1600x-782",
+	position = "-2560x0",
 	scale = 1,
-	transform = 1,
+	-- transform = 1,
 	-- 向右旋转90度
 })
 
