@@ -13,6 +13,9 @@ hl.window_rule({ match = { class = "Minecraft.*|BigChadGuys Plus 2[.]11[.]0" }, 
 -- Looking Glass：覆盖全局非全屏透明度。
 hl.window_rule({ match = { class = "looking-glass-client" }, opaque = true, opacity = "1 override" })
 
+-- NIKKE 本地私服：覆盖全局非全屏透明度，保持完全不透明。
+hl.window_rule({ match = { class = "nikke[.]exe" }, opaque = true, opacity = "1 override" })
+
 hl.window_rule({ match = { float = true, xwayland = false }, center = true }) -- Center all floating windows (not xwayland cause popups)
 hl.window_rule({ match = { title = "caelestia-console" }, float = true, center = true, animation = "popin 90%" })
 
