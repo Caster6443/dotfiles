@@ -1,0 +1,16 @@
+[Unit]
+Description=EpinelPS Launcher (NIKKE private server)
+After=epinel-server.service
+
+[Service]
+Type=simple
+Environment=DOTNET_ROOT=/home/caster/Games/NIKKE-local/dotnet
+Environment=DISPLAY=:0
+Environment=WAYLAND_DISPLAY=wayland-1
+WorkingDirectory=/home/caster/Games/NIKKE-local/launcher
+ExecStart=/home/caster/Games/NIKKE-local/launcher/EpinelPSLauncher
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target
