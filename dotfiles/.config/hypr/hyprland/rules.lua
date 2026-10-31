@@ -17,7 +17,7 @@ hl.window_rule({ match = { class = "looking-glass-client" }, opaque = true, opac
 hl.window_rule({ match = { class = "nikke[.]exe" }, opaque = true, opacity = "1 override" })
 
 hl.window_rule({ match = { float = true, xwayland = false }, center = true }) -- Center all floating windows (not xwayland cause popups)
-hl.window_rule({ match = { title = "caelestia-console" }, float = true, center = true, animation = "popin 90%" })
+hl.window_rule({ match = { title = "caelestia-console" }, float = true, center = true, no_wobble = true, animation = "popin 90%" })
 
 -- Floating Applications
 hl.window_rule({
