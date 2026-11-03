@@ -96,6 +96,11 @@ hl.window_rule({
 	center = true,
 })
 
+-- 微信新消息只提醒，不响应应用自身的抢焦点请求；手动聚焦不受影响。
+hl.window_rule({ match = { class = "wechat" }, focus_on_activate = false })
+-- QQ 同样禁止应用请求自动聚焦。
+hl.window_rule({ match = { class = "QQ" }, focus_on_activate = false })
+
 -- 微信查看图片和视频：浮动 + 居中 + 适中尺寸
 hl.window_rule({
 	match = { title = "^图片和视频$", class = "wechat" },

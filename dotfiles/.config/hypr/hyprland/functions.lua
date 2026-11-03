@@ -1,17 +1,23 @@
 local function wsaction(action, range, i)
     return function()
         local activews = hl.get_active_workspace()
-        if activews then
-            local id = activews.id
-            local s  = (i - 1) * 10 + (id % 10)
-            local t  = math.floor((id - 1) / 10) * 10 + i
-            local z  = (range == "group") and s or t
+        if not activews then return end
 
-            if action == "move" then
-                return hl.dispatch(hl.dsp.window.move({ workspace = z }))
-            else
-                return hl.dispatch(hl.dsp.focus({ workspace = z }))
-            end
+        local id = activews.id
+        if type(id) ~= "number" or id < 1 then
+            -- Named workspaces have no numbered group, fall back to the first one.
+            id = 1
+        end
+
+        local slot  = (id - 1) % 10 + 1
+        local z     = range == "group" and ((i - 1) * 10 + slot) or (math.floor((id - 1) / 10) * 10 + i)
+
+        if action == "move" then
+            return hl.dispatch(hl.dsp.window.move({ workspace = z }))
+        elseif action == "move_silent" then
+            return hl.dispatch(hl.dsp.window.move({ workspace = z, follow = false }))
+        else
+            return hl.dispatch(hl.dsp.focus({ workspace = z }))
         end
     end
 end
@@ -28,24 +34,34 @@ local function resize_by_screen(x, y)
 end
 
 local function resize_active_window(x, y)
-    local win = hl.get_active_window()
-    if win and win.size then
-        local w = (win.size.x * (x / 100)) or 800
-        local h = (win.size.y * (y / 100)) or 600
+    return function() -- returning the function so hl reloads everytime correctly
+        local win = hl.get_active_window()
+        if win and win.size then
+            local w = (win.size.x * (x / 100)) or 800
+            local h = (win.size.y * (y / 100)) or 600
 
-        return { x = w, y = h, relative = true }
+            hl.dispatch(hl.dsp.window.resize({ x = w, y = h, relative = true }))
+        else
+            hl.dispatch(hl.dsp.no_op())
+        end
     end
 end
 
-local function resizer(window, pattern, x_percent, y_percent, actions, exact)
-    if (window and window.title) and string.find(window.title, pattern, 1, exact) then
+local function resizer(window, val_fn, x_percent, y_percent, actions)
+    if window and val_fn(window) then
         local disp = (type(actions) == "table") and actions or { actions }
         for _, x in ipairs(disp) do
             hl.dispatch(x)
         end
 
-        hl.dispatch(hl.dsp.window.resize(resize_by_screen(x_percent, y_percent)))
-        hl.dispatch(hl.dsp.window.set_prop({ prop = "keep_aspect_ratio", value = "true" }))
+        -- Target the matched window explicitly. Without window=, resize/set_prop
+        -- act on the currently focused window instead, mangling whatever tiled
+        -- window happened to be focused when this matched.
+        local sz = resize_by_screen(x_percent, y_percent)
+        if sz then
+            sz.window = window
+            hl.dispatch(hl.dsp.window.resize(sz))
+        end
     end
 end
 
@@ -72,6 +88,7 @@ local function move_actions(win)
         return {
             hl.dsp.window.resize({ x = x_resize, y = y_resize, window = win }),
             hl.dsp.window.move({ x = move_x, y = move_y, relative = false, window = win }),
+            hl.dsp.window.set_prop({ prop = "keep_aspect_ratio", value = "true", window = win }),
         }
     end
 end

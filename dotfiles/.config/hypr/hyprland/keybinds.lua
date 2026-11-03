@@ -58,7 +58,7 @@ hl.bind("XF86PowerOff", hl.dsp.global("caelestia:lock"), { locked = true, descri
 hl.bind(vars.kbRestoreLock, function()
 	hl.dispatch(hl.dsp.exec_cmd("caelestia shell -d"))
 	hl.dispatch(hl.dsp.global("caelestia:lock"))
-end)
+end, { locked = true, description = "恢复锁屏" })
 
 -- Brightness
 hl.bind("XF86MonBrightnessUp", hl.dsp.global("caelestia:brightnessUp"), { locked = true, description = "提高亮度" })
@@ -86,6 +86,7 @@ hl.bind(
 for i = 1, 10 do
 	local key = i % 10 -- 10 maps to key 0
 	hl.bind(vars.kbGoToWs .. " + " .. key, fn.wsaction("focus", "", i), { description = "切换到 1-10 号工作区" })
+	hl.bind("SUPER + SHIFT + " .. key, fn.wsaction("move_silent", "", i), { description = "静默移动窗口到 1-10 号工作区" })
 	hl.bind(vars.kbMoveWinToWs .. " + " .. key, fn.wsaction("move", "", i), { description = "移动窗口到 1-10 号工作区" })
 	hl.bind(vars.kbGoToWsGroup .. " + " .. key, fn.wsaction("focus", "group", i), { description = "切换到 1-10 号工作区组" })
 	hl.bind(vars.kbMoveWinToWsGroup .. " + " .. key, fn.wsaction("move", "group", i), { description = "移动窗口到 1-10 号工作区组" })
@@ -118,7 +119,7 @@ hl.bind("SUPER + ALT + S", hl.dsp.window.move({ workspace = "special:special" })
 
 -- Window groups
 hl.bind(vars.kbWindowGroupCycleNext, hl.dsp.window.cycle_next(), { repeating = true, description = "切换到下一个窗口" })
-hl.bind(vars.kbWindowGroupCyclePrev, hl.dsp.window.cycle_next(), { repeating = true, description = "切换到上一个窗口" })
+hl.bind(vars.kbWindowGroupCyclePrev, hl.dsp.window.cycle_next({ next = false }), { repeating = true, description = "切换到上一个窗口" })
 hl.bind("CTRL + ALT + Tab", hl.dsp.group.next(), { repeating = true })
 hl.bind("CTRL + SHIFT + ALT + Tab", hl.dsp.group.prev(), { repeating = true })
 hl.bind(vars.kbToggleGroup, hl.dsp.group.toggle(), { description = "切换分组" })
@@ -134,14 +135,14 @@ hl.bind("SUPER + SHIFT + left", hl.dsp.window.move({ direction = "left" }), { de
 hl.bind("SUPER + SHIFT + right", hl.dsp.window.move({ direction = "right" }), { description = "窗口右移" })
 hl.bind("SUPER + SHIFT + up", hl.dsp.window.move({ direction = "up" }), { description = "窗口上移" })
 hl.bind("SUPER + SHIFT + down", hl.dsp.window.move({ direction = "down" }), { description = "窗口下移" })
-hl.bind("SUPER + Minus", hl.dsp.window.resize(fn.resize_active_window(-10, 0)), { repeating = true, description = "窗口变窄" })
-hl.bind("SUPER + Equal", hl.dsp.window.resize(fn.resize_active_window(10, 0)), { repeating = true, description = "窗口变宽" })
-hl.bind("SUPER + SHIFT + Minus", hl.dsp.window.resize(fn.resize_active_window(0, -10)), { repeating = true, description = "窗口变矮" })
-hl.bind("SUPER + SHIFT + Equal", hl.dsp.window.resize(fn.resize_active_window(0, 10)), { repeating = true, description = "窗口变高" })
-hl.bind("SUPER + ALT + left", hl.dsp.window.resize(fn.resize_active_window(-10, 0)), { repeating = true })
-hl.bind("SUPER + ALT + right", hl.dsp.window.resize(fn.resize_active_window(10, 0)), { repeating = true })
-hl.bind("SUPER + ALT + up", hl.dsp.window.resize(fn.resize_active_window(0, -10)), { repeating = true })
-hl.bind("SUPER + ALT + down", hl.dsp.window.resize(fn.resize_active_window(0, 10)), { repeating = true })
+hl.bind("SUPER + Minus", fn.resize_active_window(-10, 0), { repeating = true, description = "窗口变窄" })
+hl.bind("SUPER + Equal", fn.resize_active_window(10, 0), { repeating = true, description = "窗口变宽" })
+hl.bind("SUPER + SHIFT + Minus", fn.resize_active_window(0, -10), { repeating = true, description = "窗口变矮" })
+hl.bind("SUPER + SHIFT + Equal", fn.resize_active_window(0, 10), { repeating = true, description = "窗口变高" })
+hl.bind("SUPER + ALT + left", fn.resize_active_window(-10, 0), { repeating = true })
+hl.bind("SUPER + ALT + right", fn.resize_active_window(10, 0), { repeating = true })
+hl.bind("SUPER + ALT + up", fn.resize_active_window(0, -10), { repeating = true })
+hl.bind("SUPER + ALT + down", fn.resize_active_window(0, 10), { repeating = true })
 
 -- Scrolling 专用：鼠标滚轮横向切换窗口列
 if vars.layout == "scrolling" then
@@ -154,8 +155,11 @@ hl.bind(vars.kbMoveWindow, hl.dsp.window.drag(), { mouse = true, description = "
 hl.bind("SUPER + mouse:273", hl.dsp.window.resize(), { mouse = true })
 hl.bind(vars.kbResizeWindow, hl.dsp.window.resize(), { mouse = true, description = "调整窗口大小" })
 hl.bind("CTRL + SUPER + Backslash", hl.dsp.window.center(), { description = "窗口居中" })
-hl.bind("CTRL + SUPER + ALT + Backslash", hl.dsp.window.resize(fn.resize_by_screen(55, 70)))
-hl.bind("CTRL + SUPER + ALT + Backslash", hl.dsp.window.center())
+hl.bind("CTRL + SUPER + ALT + Backslash", function()
+    local size = fn.resize_by_screen(55, 70)
+    if size then hl.dispatch(hl.dsp.window.resize(size)) end
+    hl.dispatch(hl.dsp.window.center())
+end, { description = "恢复标准尺寸并居中" })
 hl.bind(vars.kbWindowPip, function()
 	local a = hl.get_active_window()
 	if a then
@@ -245,14 +249,14 @@ hl.bind("SUPER + SHIFT + M", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK
 hl.bind(
 	"XF86AudioRaiseVolume",
 	hl.dsp.exec_cmd(
-		"wpctl set-mute @DEFAULT_AUDIO_SOURCE@ 0; wpctl set-volume @DEFAULT_AUDIO_SINK@ " .. vars.volumeStep .. "%+"
+		"wpctl set-mute @DEFAULT_AUDIO_SINK@ 0; wpctl set-volume -l " .. (vars.volumeMax / 100) .. " @DEFAULT_AUDIO_SINK@ " .. vars.volumeStep .. "%+"
 	),
 	{ locked = true, repeating = true }
 )
 hl.bind(
 	"XF86AudioLowerVolume",
 	hl.dsp.exec_cmd(
-		"wpctl set-mute @DEFAULT_AUDIO_SOURCE@ 0; wpctl set-volume @DEFAULT_AUDIO_SINK@ " .. vars.volumeStep .. "%-"
+		"wpctl set-volume @DEFAULT_AUDIO_SINK@ " .. vars.volumeStep .. "%-"
 	),
 	{ locked = true, repeating = true }
 )

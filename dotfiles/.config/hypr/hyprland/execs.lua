@@ -41,25 +41,22 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd("bash -c '~/.config/hypr/scripts/auto_switch_wallpaper.sh &'")
 end)
 
--- Resizer listener
-hl.on("window.title", function(win)
-	local d = {
-		hl.dsp.window.float({ action = "on", window = win }),
-		hl.dsp.window.center({ window = win }),
-	}
-	local pip = fn.move_actions(win) or {}
-
-	fn.resizer(win, "Bitwarden", 20, 54, d, true)
-	fn.resizer(win, "Picture[- ]in[- ][Pp]icture", 0, 0, pip, false)
-end)
-
-hl.on("window.open", function(win)
-	local d = {
-		hl.dsp.window.float({ action = "on", window = win }),
-		hl.dsp.window.center({ window = win }),
-	}
-	local pip = fn.move_actions(win) or {}
-
-	fn.resizer(win, "Bitwarden", 20, 54, d, true)
-	fn.resizer(win, "Picture[- ]in[- ][Pp]icture", 0, 0, pip, false)
-end)
+-- Match and resize the event window, never the unrelated focused client.
+local function apply_resizer_rules(win)
+    local function field_match(field, pattern, plain)
+        return function(w)
+            return type(w[field]) == "string" and string.find(w[field], pattern, 1, plain)
+        end
+    end
+    local float_center = {
+        hl.dsp.window.float({ action = "on", window = win }),
+        hl.dsp.window.center({ window = win }),
+    }
+    fn.resizer(win, field_match("class", "Bitwarden", true), 20, 54, float_center)
+    fn.resizer(win, field_match("title", "^Extension: %(Bitwarden Password Manager%) %- Bitwarden", false), 20, 54, float_center)
+    fn.resizer(win, field_match("class", "nngceckbapebfimnlniiiahkandclblb", true), 20, 54, float_center)
+    fn.resizer(win, field_match("title", "^Picture[- ]in[- ][Pp]icture$", false), 0, 0, fn.move_actions(win) or {})
+end
+hl.on("window.class", apply_resizer_rules)
+hl.on("window.title", apply_resizer_rules)
+hl.on("window.open", apply_resizer_rules)
