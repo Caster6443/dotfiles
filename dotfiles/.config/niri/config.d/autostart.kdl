@@ -13,8 +13,11 @@ spawn-at-startup "wl-paste" "--type" "image" "--watch" "cliphist" "store"
 // 强制同步环境变量到 DBus/Systemd 会话
 // 这能修复 Nautilus、Loupe 等通过 DBus 启动的应用没有中文、不吃主题的问题
 spawn-at-startup "dbus-update-activation-environment" "--systemd" "LANG" "LC_MESSAGES" "GSK_RENDERER" "XMODIFIERS" "GTK_IM_MODULE" "QT_IM_MODULE" "QT_QPA_PLATFORMTHEME"
-//启动noctalia v5 shell（C++ 原生，替代 v4 Quickshell 版）
-spawn-at-startup "noctalia"
+// niri 专用栏、通知、壁纸与锁屏事件监听（不会在 Hyprland 自启）
+spawn-at-startup "waybar"
+spawn-at-startup "swaync"
+spawn-at-startup "swayidle" "-w" "lock" "swaylock -f" "before-sleep" "swaylock -f"
+spawn-at-startup "sh" "/home/caster/.config/niri/scripts/wallpaper.sh"
 //解决蓝牙/USB耳机连接时，输出设备不自动切换的问题
 spawn-at-startup "pactl" "load-module" "module-switch-on-connect"
 
@@ -25,13 +28,7 @@ spawn-at-startup "ydotoold"
 //清理 30 天前的回收站 —— 对应 Hyprland 侧 execs.lua 的 trash-empty 30
 spawn-at-startup "trash-empty" "30"
 
-//休眠监听功能
-//2026-09-14 修正：本机并没有装 hypridle（`pacman -Q hypridle` 无此包，/usr/bin 下也没有），
-//这一行一直在静默失败，等于 niri 会话没有自动锁屏/息屏/挂起。
-//要恢复空闲行为，二选一（决定后再取消下面注释或换写法）：
-//  1) 安装 hypridle 并写 ~/.config/hypr/hypridle.conf；
-//  2) 改用 noctalia 自带的 idle 行为与锁屏（noctalia 设置里有 Idle 段）。
-//spawn-at-startup "hypridle"
+// 未新增自动空闲超时；swayidle 只处理锁屏请求与休眠前锁屏。
 spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 spawn-at-startup "fcitx5" "-d"
 

@@ -64,7 +64,6 @@ layout {
 
         // 启用渐变色 (从粉色到蓝色，45度角)
         // 这里的颜色代码取自 Catppuccin Mocha 配色表
-        // noctalia配置文件设置的颜色覆盖了边框配置，想恢复渐变，需要注释noctalia的设置
         active-gradient from="#f5c2e7" to="#89b4fa" angle=45
 
         // 非活动显示器上的聚焦环颜色。
@@ -155,8 +154,4 @@ layout {
          top 0
          bottom 2
     }
-}
-layer-rule {
-  match namespace="^noctalia-backdrop"
-  place-within-backdrop true
 }

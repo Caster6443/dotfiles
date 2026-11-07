@@ -31,7 +31,7 @@
 // 启用或禁用此选项后，你需要重启应用程序才能生效。
 prefer-no-csd //似乎和窗口自定义美化配置是否生效有关
 
-// ── 全局圆角与裁剪（没有 match 段 = 对所有窗口生效；数值与 noctalia 主题对齐）──
+// ── 全局圆角与裁剪（没有 match 段 = 对所有窗口生效；保留既有圆角数值）──
 // 注意：这条在最前面，后面的同属性规则会覆盖它（niri 的规则按书写顺序生效，后面的优先）。
 window-rule {
     // 设置圆角
@@ -236,28 +236,8 @@ window-rule {
 }
 
 // ══════════════════════════════════════════════════════════════════════
-// 六、noctalia / 其他本机规则（原有内容）
+// 六、其他本机规则
 // ══════════════════════════════════════════════════════════════════════
-
-// Noctalia v5 设置窗口：浮动打开，固定尺寸
-window-rule {
-    match app-id="dev.noctalia.Noctalia"
-    open-floating true
-    default-column-width { fixed 1080; }
-    default-window-height { fixed 920; }
-}
-
-// 将概览 (Overview) 的壁纸放置在背景层 (Backdrop) 上。
-layer-rule {
-    match namespace="^noctalia-overview*"
-    place-within-backdrop true
-}
-
-// 允许来自 Noctalia 的通知操作和窗口激活（自动弹出/获取焦点）：
-// 具体就是 noctalia 弹出通知时，点击通知会自动聚焦到对应程序
-debug {
-    honor-xdg-activation-with-invalid-serial
-}
 
 // ══════════════════════════════════════════════════════════════════════
 // 未移植的 Hyprland 规则及原因（保留备查，需要时另找实现）

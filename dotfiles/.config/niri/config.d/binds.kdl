@@ -1,9 +1,8 @@
 binds {
     //custom
-    // Noctalia v5 IPC 快捷键
-    Mod+A hotkey-overlay-title="打开启动器" { spawn-sh "noctalia msg panel-toggle launcher"; }
-    Mod+D hotkey-overlay-title="打开控制中心" { spawn-sh "noctalia msg panel-toggle control-center"; }
-    Mod+Shift+D hotkey-overlay-title="打开设置" { spawn-sh "noctalia msg settings-toggle"; }
+    Mod+A hotkey-overlay-title="打开启动器" { spawn-sh "fuzzel"; }
+    Mod+D hotkey-overlay-title="打开控制中心" { spawn-sh "swaync-client -t"; }
+    Mod+Shift+D hotkey-overlay-title="打开音量设置" { spawn-sh "pavucontrol"; }
     Mod+W hotkey-overlay-title="打开zen浏览器" { spawn "zen-browser"; }
     Mod+F10 hotkey-overlay-title="触控板开关" { spawn "bash" "-c" "~/.config/niri/scripts/Disable_Touchpad.sh"; }
     // 区域截图（冻结画面）：键位与效果与 Hyprland 一一对应，依据是它自己的配置与实现：
@@ -19,8 +18,7 @@ binds {
     Shift+WheelScrollDown hotkey-overlay-title="在当前工作区横向切换到下一个聚焦窗口"     { focus-column-right; }
     Shift+WheelScrollUp hotkey-overlay-title="在当前工作区横向切换到上一个聚焦窗口"       { focus-column-left; }
     // 旧的 cliphist + fuzzel 流程（明文历史，仍在 ~/.cache/cliphist/）；
-    // 保留为备用通道，主通道见下面的 Mod+V（noctalia 面板，加密历史 + 图片预览 + 自动粘贴）。
-    Mod+X hotkey-overlay-title="剪切板历史（cliphist+fuzzel，备用）" {
+    Mod+X hotkey-overlay-title="剪切板历史（cliphist+fuzzel）" {
         spawn-sh "cliphist list | fuzzel -d | cliphist decode | wl-copy"
     }
 
@@ -309,7 +307,7 @@ binds {
     Mod+Shift+E { quit; }
     // 2026-09-14 对齐 Hyprland 习惯：Ctrl+Alt+Delete 改为唤出会话面板
     // （Hyprland: kbSession = CTRL+ALT+Delete）；退出动作仍保留在 Mod+Shift+E。
-    Ctrl+Alt+Delete hotkey-overlay-title="会话面板" { spawn-sh "noctalia msg panel-toggle session"; }
+    Ctrl+Alt+Delete hotkey-overlay-title="会话面板" { spawn-sh "kitty -e ~/.config/waybar/scripts/power"; }
 
     // 关闭显示器电源。要重新打开它们，进行任何输入即可，
     // 比如移动鼠标或按任意键。
@@ -318,7 +316,6 @@ binds {
     // ══════════════════════════════════════════════════════════════════
     // Hyprland 习惯同步（2026-09-14）
     // 来源：~/.config/hypr/variables.lua + ~/.config/hypr/hyprland/keybinds.lua
-    // Hyprland 侧外壳是 caelestia，niri 侧是 noctalia —— IPC 名称按对应关系替换。
     // 与 niri 既有绑定冲突的项写在下方注释里，改动点见每行末尾的「原…」标注。
     // ══════════════════════════════════════════════════════════════════
 
@@ -328,18 +325,15 @@ binds {
     Ctrl+Alt+V hotkey-overlay-title="音量控制 (pavucontrol)" { spawn "pavucontrol"; }
 
     // ── 会话与外壳（Hyprland: kbLock / kbClearNotifs / kbCheatsheet / 重启 caelestia）──
-    Mod+L hotkey-overlay-title="锁屏" { spawn-sh "noctalia msg session lock"; }
-    Ctrl+Alt+C hotkey-overlay-title="清除通知" { spawn-sh "noctalia msg notification-clear-active"; }
+    Mod+L hotkey-overlay-title="锁屏" { spawn-sh "swaylock -f"; }
+    Ctrl+Alt+C hotkey-overlay-title="清除通知" { spawn-sh "swaync-client -C"; }
     Mod+Slash hotkey-overlay-title="快捷键说明" { show-hotkey-overlay; }
-    Mod+Ctrl+Shift+R hotkey-overlay-title="重启 noctalia" { spawn-sh "pkill -x noctalia; sleep 0.3; noctalia -d"; }
+    Mod+Ctrl+Shift+R hotkey-overlay-title="重载 Waybar" { spawn-sh "pkill -SIGUSR2 -x waybar"; }
 
     // ── 剪贴板与工具（Hyprland: SUPER+V / CTRL+SHIFT+ALT+V / SUPER+SHIFT+C / ALT+L）──
-    // 剪切板：用 noctalia 自己的面板（加密历史、图片预览、搜索、pin；选中条目后由它注入 Ctrl+V /
-    // Ctrl+Shift+V 完成粘贴 —— niri 支持 zwp_virtual_keyboard_manager_v1，所以自动粘贴可用）。
-    Mod+V hotkey-overlay-title="剪切板面板" { spawn "noctalia" "msg" "panel-toggle" "clipboard"; }
+    Mod+V hotkey-overlay-title="剪切板面板" { spawn-sh "cliphist list | fuzzel -d | cliphist decode | wl-copy"; }
     // 「把最后一项剪切板内容敲出来」：用于不吃 Ctrl+V 的场景（远程桌面、部分 X11/VNC 应用）。
-    // 数据源改成 noctalia 的历史（`clipboard-text` 打印最近一条文本内容），与 Mod+V 面板保持一致；仍走 ydotool。
-    Mod+Ctrl+Shift+V hotkey-overlay-title="键入剪切板最后一项 (ydotool)" { spawn-sh "sleep 0.3; ydotool type -d 1 \"$(noctalia msg clipboard-text)\""; }
+    Mod+Ctrl+Shift+V hotkey-overlay-title="键入剪切板最后一项 (ydotool)" { spawn-sh "sleep 0.3; ydotool type -d 1 \"$(wl-paste --type text --no-newline)\""; }
     Mod+Shift+C hotkey-overlay-title="取色器" { spawn "hyprpicker" "-a"; }
     Alt+L hotkey-overlay-title="长截图 (wayscrollshot)" { spawn "wayscrollshot"; }
 
@@ -365,14 +359,13 @@ binds {
     Mod+Ctrl+Left hotkey-overlay-title="上一个工作区" { focus-workspace-up; }
     Mod+Ctrl+Right hotkey-overlay-title="下一个工作区" { focus-workspace-down; }
 
-    // ── 媒体键（Hyprland 走 caelestia IPC + OSD，这里对应 noctalia）──
     //    原先 niri 侧只绑了音量/亮度键，媒体键是空的。
-    Mod+Ctrl+Space allow-when-locked=true hotkey-overlay-title="播放/暂停" { spawn-sh "noctalia msg media toggle"; }
-    XF86AudioPlay  allow-when-locked=true { spawn-sh "noctalia msg media toggle"; }
-    XF86AudioPause allow-when-locked=true { spawn-sh "noctalia msg media toggle"; }
-    XF86AudioNext  allow-when-locked=true { spawn-sh "noctalia msg media next"; }
-    XF86AudioPrev  allow-when-locked=true { spawn-sh "noctalia msg media previous"; }
-    XF86AudioStop  allow-when-locked=true { spawn-sh "noctalia msg media stop"; }
-    Mod+Ctrl+Equal allow-when-locked=true hotkey-overlay-title="下一曲" { spawn-sh "noctalia msg media next"; }
-    Mod+Ctrl+Minus allow-when-locked=true hotkey-overlay-title="上一曲" { spawn-sh "noctalia msg media previous"; }
+    Mod+Ctrl+Space allow-when-locked=true hotkey-overlay-title="播放/暂停" { spawn-sh "playerctl play-pause"; }
+    XF86AudioPlay  allow-when-locked=true { spawn-sh "playerctl play-pause"; }
+    XF86AudioPause allow-when-locked=true { spawn-sh "playerctl play-pause"; }
+    XF86AudioNext  allow-when-locked=true { spawn-sh "playerctl next"; }
+    XF86AudioPrev  allow-when-locked=true { spawn-sh "playerctl previous"; }
+    XF86AudioStop  allow-when-locked=true { spawn-sh "playerctl stop"; }
+    Mod+Ctrl+Equal allow-when-locked=true hotkey-overlay-title="下一曲" { spawn-sh "playerctl next"; }
+    Mod+Ctrl+Minus allow-when-locked=true hotkey-overlay-title="上一曲" { spawn-sh "playerctl previous"; }
 }

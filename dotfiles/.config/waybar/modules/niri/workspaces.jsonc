@@ -1,0 +1,11 @@
+{
+  "niri/workspaces": {
+    "format": "{icon}",
+    "format-icons": {
+      "active": "\ueaab",
+      "default": "\ueb8a"
+    },
+    "current-only": false,
+    "all-outputs": false
+  }
+}

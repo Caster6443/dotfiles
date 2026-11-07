@@ -1,0 +1,13 @@
+{
+  "niri/window": {
+    "format": "{}",
+    "max-length": 28,
+    "separate-outputs": true,
+    "rewrite": {
+      "": "Desktop",
+      "kitty": "Terminal",
+      "zsh": "Terminal",
+      "~": "Terminal"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "custom/user": {
+    "format": "\udb80\udf3d",
+    "on-click": "fuzzel",
+    "tooltip-format": "\u5e94\u7528\u542f\u52a8\u5668"
+  }
+}

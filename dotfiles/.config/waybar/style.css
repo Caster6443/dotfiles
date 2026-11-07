@@ -1,381 +1,245 @@
-@import "colors.css"; 
+@import "themes/catppuccin-mocha.css";
 
-/* --- 1. 全局和通用样式 --- */
-/* * 这是一个“全局选择器”，它会影响 Waybar 中的 *所有* 元素。*/
 * {
-    border: none;             /* 移除所有元素的边框 */
-    border-radius: 0;         /* 移除所有元素的圆角，强制使用直角 */
-    font-family: "JetBrainsMono Nerd Font Propo"; /* 指定全局字体，Nerd Font 包含箭头图标 */
-    font-size: 18px;          /* 设置基础字体大小 */
-    opacity: 1;               /* 确保所有元素默认完全不透明 */
+	font-family: "GoogleSansCode Nerd Font";
+	font-size: 13px;
+	font-weight: 500;
+	color: @fg;
 }
 
-/* * 选中 Waybar 的主窗口本身 (整个 bar)*/
-window#waybar {
-    background: transparent;  /* 将 Waybar 栏的背景设置为透明，使其融入壁纸 */
-    color: @on_surface;       /* 设置 bar 内所有文字的默认颜色 (来自 colors.css) */
+#waybar {
+	background-color: @shadow;
+}
+#waybar > box {
+	margin: 3px;
+	background-color: @bg_0;
 }
 
-/* * 选中“工具提示” (tooltip)，即鼠标悬停时弹出的信息框
- */
+.module {
+	margin-bottom: -1px; /* Vertically align modules */
+}
+
+.modules-center {
+	padding-left: 14px; /* Center center modules */
+}
+
+button {
+	border: none;
+	border-radius: 16px;
+	padding: 0 10px;
+	min-width: 16px;
+	min-height: 24px;
+}
+button:hover {
+	background-color: @bg_alt;
+	background-image: none;
+	color: @fg_alt;
+}
+
 tooltip {
-    background: @secondary_container; /* 设置提示框的背景色 */
-    border: 3px solid @outline;       /* 设置提示框的边框 */
-    opacity: 1;                       /* 确保提示框不透明 */
+	border: 2px solid @border;
+	border-radius: 0;
+	background-color: @bg_0;
+}
+tooltip box {
+	margin: -4px;
+	padding: 0 6px;
 }
 
-/* * 选中提示框 (tooltip) 内部的“标签” (label)，即提示框里的文字
- */
-tooltip label {
-    color: white;             /* 设置提示框内文字的颜色为白色 */
-    font-size: 16px;          /* 为提示框文字设置一个稍小（16px）的字体 */
+menu {
+	border: 2px solid @border;
+	border-radius: 0;
+	background-color: @bg_0;
+}
+menu menuitem {
+	margin: 0 2px;
+}
+menu menuitem:hover {
+	background-color: @bg_alt;
+}
+menu separator {
+	margin: 0 2px;
+	background-color: @bg_alt;
 }
 
-/*左侧模块*/
+/* Left modules */
 
-/* 工作区 */
-
-#workspaces button {
-    padding: 0px 10px;
-    background: @surface_container;
-    color: @tertiary;
+#custom-user {
+	padding: 0 16px;
 }
 
-#workspaces button:hover {
-    background: @on_tertiary;
+#workspaces {
+	padding: 0 1px;
+	background-color: @bg_1;
+}
+#workspaces button.active label,
+#workspaces button.focused label {
+	font-size: 18.75px;
+	color: @accent;
 }
 
-#workspaces button.focused:hover {
-    background: @surface_bright;
+#window {
+	margin: -1px 0; /* https://github.com/Alexays/Waybar/issues/2026 */
+	padding-left: 12px;
 }
 
-#workspaces button.focused {
-    background: @surface_container;
-    color: @tertiary;
-}
-
-/* 音乐播放器 */
-
-#custom-cava {
-    padding: 0px 10px;
-    background-color: @surface_bright;
-    color: @on_surface;
-    font-size: 16px;
-}
-
-/*中间模块*/
-/* 群组选择器 (Group Selector): 在 CSS 中，当你用逗号 (,) 把多个选择器（比如 #custom-clipboard 和 #custom-emoji）列在一起时，这就叫“群组选择器”。
- * 它的意思是： “请把花括号 { ... } 里的所有样式，一模一样地应用到列表里的每一个元素上。”*/
-
-#custom-clipboard,
-
-#custom-emoji {
-    background-color: @on_secondary;
-    color: @on_surface;
-    padding: 0px 7px;
-}    
-
-#custom-wfrec,
-
-#custom-screenshot {
-    background-color: @secondary_container;
-    color: @on_surface;
-    padding: 0 7px; 
-}
-
-
-/* 禁止熄屏, 更新, 电源模式 */
-
-#idle_inhibitor,
-
-#custom-updates,
-
-#power-profiles-daemon {
-    padding: 0px 6px;
-    background-color: @secondary;
-    color: @on_tertiary;
-}
-
-/* 更新 */
-
-#custom-updates {
-   /*color: @error;*/
-   font-size: 22px;	
-   color:@on_tertiary;
-}
-
-#custom-updates.has-updates {
-    color: @error;
-}
-
-/* 电源模式特殊颜色 */
-
-#power-profiles-daemon.performance {
-    color: @on_error;
-    font-size: 20px;
-}
-
-#power-profiles-daemon.balanced {
-    color: @on_tertiary;
-    font-size: 19px;
-}
-
-#power-profiles-daemon.power-saver {
-    color: #1aa052;
-    font-size: 19px;
-}
-
-/* 程序启动器 */
-
-#custom-applauncher {
-    font-size: 25px;
-    padding: 0px 7px;
-    margin: 0px;
-    background-color: @primary;
-    color: @on_primary;
-}
-
-/* 时钟 */
-
-#clock {
-    background-color: @secondary;
-    color: @on_secondary;
-    padding: 0px 7px; 
-}
-
-/* 时钟关联的日历 */
-.calendar-drawer {
-    background-color: @surface_container_high;
-    border: 2px solid @outline;
-    border-radius: 8px;
-    margin-top: 5px;
-    padding: 10px;
-}
-
-#calendar {
-    padding: 5px;
-}
-
-#calendar.header {
-    color: @primary;
-    font-weight: bold;
-}
-
-#calendar.weekdays {
-    color: @secondary;
-    margin-bottom: 5px;
-}
-
-#calendar.day.today {
-    color: @primary;
-    font-weight: bold;
-    text-decoration: underline;
-}
-
-#calendar.day.other-month {
-    color: @outline;
-}
-
-#calendar.day.focused {
-    background-color: @surface_bright;
-    border-radius: 4px;
-}
-
-/* 内存 和 温度 */
-
-#memory,
+/* Center modules */
 
 #temperature {
-    background-color: @secondary_container;
-    color: @on_secondary_container;
-    padding: 0px 8px;
+	background-color: @bg_1;
+}
+#temperature.critical {
+	color: @critical;
 }
 
-/* 电池 */
-
-#battery {
-    background-color: @on_secondary;
-    color: @on_surface;
-    padding: 0px 7px;
+#memory {
+	background-color: @bg_2;
+}
+#memory.warning {
+	color: @warning;
+}
+#memory.critical {
+	color: @critical;
 }
 
-#battery.critical:not(.charging) {
-    background-color: @error;
-    color: @on_error;
-    animation-name: blink;
-    animation-duration: 0.5s;
-    animation-timing-function: steps(12);
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
-    padding: 0px 7px;
+#cpu {
+	background-color: @bg_3;
+}
+#cpu.warning {
+	color: @warning;
+}
+#cpu.critical {
+	color: @critical;
 }
 
+#custom-distro {
+	font-size: 18.75px;
+	padding: 0 10px 0 5px;
+	background-color: @accent;
+	color: @bg_0;
+}
 
-/*右侧模块*/
+#idle_inhibitor {
+	background-color: @bg_3;
+}
+#idle_inhibitor:hover,
+#idle_inhibitor.deactivated {
+	color: @fg_alt;
+}
+#clock.time {
+	padding-right: 6px;
+	background-color: @bg_3;
+}
+
+#clock.date {
+	padding-left: 6px;
+	background-color: @bg_2;
+}
+#clock.date:hover {
+	color: @fg_alt;
+}
+
+#network {
+	padding: 0 6px 0 4px;
+	background-color: @bg_1;
+}
+#network:hover {
+	color: @fg_alt;
+}
+#bluetooth {
+	padding: 0 4px;
+	background-color: @bg_1;
+}
+#bluetooth:hover {
+	color: @fg_alt;
+}
+#custom-update {
+	padding: 0 6px 0 1px;
+	background-color: @bg_1;
+}
+#custom-update:hover {
+	color: @fg_alt;
+}
+
+/* Right modules */
+
+#mpris {
+	padding: 0 12px;
+}
+#mpris:hover,
+#mpris.paused {
+	color: @fg_alt;
+}
+
+#pulseaudio,
+#wireplumber {
+	background-color: @bg_1;
+}
+#pulseaudio:hover,
+#pulseaudio.output.muted,
+#pulseaudio.input.source-muted,
+#wireplumber:hover,
+#wireplumber.muted {
+	color: @fg_alt;
+}
 
 #backlight {
-    background-color: @secondary_container;
-    color: @on_secondary_container;
-    padding: 0px 7px;
+	background-color: @bg_2;
 }
 
-#pulseaudio {
-    padding: 0px 7px;
-    background-color: @secondary_container;
-    color: @on_secondary_container;
+#battery {
+	background-color: @bg_3;
+}
+#battery.warning {
+	color: @warning;
+}
+#battery.critical {
+	color: @critical;
+}
+#battery.charging {
+	color: @charging;
 }
 
-/* 系统托盘 */
-
-#tray {
-    padding: 0px 7px 0px 7px;
-    font-size: 20px;
-    background-color: @on_secondary;
-    color: @on_surface;
+#custom-power {
+	font-size: 16px;
+	border-radius: 16px;
+	padding: 0 19px 0 16px;
+	color: @accent;
+}
+#custom-power:hover {
+	background-color: @bg_alt;
+	color: @fg_alt;
 }
 
-/* 电源菜单组 */
+/* Dividers */
 
-#custom-wlogout,
-
-#custom-reboot,
-
-#custom-lockscreen,
-
-#custom-logout {
-    background-color: @surface_container;
-    color: @error;
-    padding: 0px 10px;
+#custom-left,
+#custom-right,
+#custom-left_inverse,
+#custom-right_inverse {
+	font-size: 19.5px;
 }
 
-/* (wlogout 有特殊 padding) */
-
-#custom-wlogout {
-    padding: 0px 15px 0px 10px; 
+#custom-left.accent,
+#custom-right.accent {
+	color: @accent;
+}
+#custom-left.bg_1,
+#custom-right.bg_1 {
+	color: @bg_1;
+}
+#custom-left.bg_2,
+#custom-right.bg_2 {
+	background-color: @bg_1;
+	color: @bg_2;
+}
+#custom-left.bg_3,
+#custom-right.bg_3 {
+	background-color: @bg_2;
+	color: @bg_3;
 }
 
-
-/*分隔符模块*/
-/* (按 config.jsonc 顺序) */
-
-/* Left */
-
-#custom-right_div.5 {
-    background: @surface_bright;
-    color: @surface_container;
-    font-size: 25px;
-    padding: 0px;
+#custom-left_inverse.bg_3,
+#custom-right_inverse.bg_3 {
+	color: @bg_3;
 }
-
-#custom-right_div.6 {
-    color: @surface_bright;
-    font-size: 25px;
-    padding: 0px;
-}
-
-/* Center */
-
-#custom-left_div.99 {
-    color: @on_secondary;
-    padding: 0px;
-    font-size: 25px;
-}
-
-#custom-left_div.2 {
-    background-color: @secondary_container;
-    color: @secondary;
-    padding: 0px 0px;
-    font-size: 25px;
-}
-
-#custom-left_div.11,
-
-#custom-right_div.11 {
-    margin: 0px;
-    padding: 0px;
-    font-size: 25px;
-}
-
-#custom-left_div.11 {
-    background-color: @secondary;
-    color: @surface_container;
-}
-
-#custom-right_div.11 {
-    background-color: @secondary;
-    color: @surface_container;
-}
-
-#custom-left_div.1,
-
-#custom-right_div.1 {
-    padding: 0px;
-    margin: 0px;
-    font-size: 25px;
-}
-
-#custom-left_div.1 {
-    background-color: @surface_container;
-    color: @primary;
-}
-
-#custom-right_div.1 {
-    background-color: @surface_container;
-    color: @primary;
-}
-
-#custom-right_div.2 {
-    background-color: @secondary_container;
-    color: @secondary;
-    padding: 0px 0px;
-    font-size: 25px;
-}
-
-#custom-right_div.3 {
-    background-color: @on_secondary;
-    color: @secondary_container;
-    padding: 0px;
-    font-size: 25px;
-}
-
-#custom-right_div.4 {
-    color: @on_secondary;
-    padding: 0px;
-    font-size: 25px;
-}
-
-/* Right */
-
-#custom-left_div.98 {
-    color: @secondary_container;
-    padding: 0px;
-    font-size: 25px;
-}
-
-#custom-left_div.10 {
-    background-color: @secondary;
-    color: @tertiary;
-}
-
-#custom-left_inv.1 {
-    padding: 0px;
-    margin: 0px;
-    font-size: 25px;
-    background-color: @surface_container;
-    color: @on_secondary;
-}
-
-#custom-left_div.97 {
-    background-color: @on_secondary;
-    color: @secondary_container;
-    padding: 0px;
-    font-size: 25px;
-}
-
-#custom-left_div.96 {
-    color: @on_secondary;
-    background-color: @secondary_container;
-    padding: 0px;
-    font-size: 25px;
-}
-
