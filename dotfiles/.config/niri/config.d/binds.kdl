@@ -1,5 +1,6 @@
 binds {
     //custom
+    Mod+Space hotkey-overlay-title="Phrova 应用启动器" { spawn "qs" "-p" "/home/caster/Projects/phrova" "ipc" "call" "launcher" "toggle"; }
     Mod+A hotkey-overlay-title="打开启动器" { spawn-sh "fuzzel"; }
     Mod+D hotkey-overlay-title="打开控制中心" { spawn-sh "swaync-client -t"; }
     Mod+Shift+D hotkey-overlay-title="打开音量设置" { spawn-sh "pavucontrol"; }
