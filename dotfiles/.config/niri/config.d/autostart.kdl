@@ -13,11 +13,9 @@ spawn-at-startup "wl-paste" "--type" "image" "--watch" "cliphist" "store"
 // 强制同步环境变量到 DBus/Systemd 会话
 // 这能修复 Nautilus、Loupe 等通过 DBus 启动的应用没有中文、不吃主题的问题
 spawn-at-startup "dbus-update-activation-environment" "--systemd" "LANG" "LC_MESSAGES" "GSK_RENDERER" "XMODIFIERS" "GTK_IM_MODULE" "QT_IM_MODULE" "QT_QPA_PLATFORMTHEME"
-// niri 专用栏、通知、壁纸与锁屏事件监听（不会在 Hyprland 自启）
-spawn-at-startup "waybar"
-spawn-at-startup "swaync"
+// niri 桌面外壳
+spawn-at-startup "noctalia"
 spawn-at-startup "swayidle" "-w" "lock" "swaylock -f" "before-sleep" "swaylock -f"
-spawn-at-startup "sh" "/home/caster/.config/niri/scripts/wallpaper.sh"
 //解决蓝牙/USB耳机连接时，输出设备不自动切换的问题
 spawn-at-startup "pactl" "load-module" "module-switch-on-connect"
 

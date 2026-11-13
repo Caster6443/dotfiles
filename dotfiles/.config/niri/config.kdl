@@ -69,3 +69,5 @@ include "./config.d/window_rules.kdl"
 include "./config.d/binds.kdl"
 // 开机自启进程
 include "./config.d/autostart.kdl"
+
+include "noctalia.kdl"

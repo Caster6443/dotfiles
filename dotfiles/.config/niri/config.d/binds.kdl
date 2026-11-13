@@ -1,8 +1,7 @@
 binds {
     //custom
-    Mod+Space hotkey-overlay-title="Phrova 应用启动器" { spawn "qs" "-p" "/home/caster/Projects/phrova" "ipc" "call" "launcher" "toggle"; }
-    Mod+A hotkey-overlay-title="打开启动器" { spawn-sh "fuzzel"; }
-    Mod+D hotkey-overlay-title="打开控制中心" { spawn-sh "swaync-client -t"; }
+    Mod+A hotkey-overlay-title="打开启动器" { spawn "noctalia" "msg" "panel-toggle" "launcher"; }
+    Mod+D hotkey-overlay-title="打开控制中心" { spawn "noctalia" "msg" "panel-toggle" "control-center"; }
     Mod+Shift+D hotkey-overlay-title="打开音量设置" { spawn-sh "pavucontrol"; }
     Mod+W hotkey-overlay-title="打开zen浏览器" { spawn "zen-browser"; }
     Mod+F10 hotkey-overlay-title="触控板开关" { spawn "bash" "-c" "~/.config/niri/scripts/Disable_Touchpad.sh"; }
@@ -48,8 +47,8 @@ binds {
     // 针对 PipeWire 和 WirePlumber 的音量键映射示例。
     // allow-when-locked=true 属性让这些快捷键即使在锁屏时也能生效。
     // 使用 spawn-sh 允许你向命令传递多个参数。
-    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+"; }
-    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-"; }
+    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05+"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05-"; }
     XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
     XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
 
@@ -308,7 +307,7 @@ binds {
     Mod+Shift+E { quit; }
     // 2026-09-14 对齐 Hyprland 习惯：Ctrl+Alt+Delete 改为唤出会话面板
     // （Hyprland: kbSession = CTRL+ALT+Delete）；退出动作仍保留在 Mod+Shift+E。
-    Ctrl+Alt+Delete hotkey-overlay-title="会话面板" { spawn-sh "kitty -e ~/.config/waybar/scripts/power"; }
+    Ctrl+Alt+Delete hotkey-overlay-title="会话面板" { spawn "noctalia" "msg" "panel-toggle" "session"; }
 
     // 关闭显示器电源。要重新打开它们，进行任何输入即可，
     // 比如移动鼠标或按任意键。
@@ -327,12 +326,12 @@ binds {
 
     // ── 会话与外壳（Hyprland: kbLock / kbClearNotifs / kbCheatsheet / 重启 caelestia）──
     Mod+L hotkey-overlay-title="锁屏" { spawn-sh "swaylock -f"; }
-    Ctrl+Alt+C hotkey-overlay-title="清除通知" { spawn-sh "swaync-client -C"; }
+    Ctrl+Alt+C hotkey-overlay-title="清除通知" { spawn "noctalia" "msg" "notification-clear-active"; }
     Mod+Slash hotkey-overlay-title="快捷键说明" { show-hotkey-overlay; }
-    Mod+Ctrl+Shift+R hotkey-overlay-title="重载 Waybar" { spawn-sh "pkill -SIGUSR2 -x waybar"; }
+    Mod+Ctrl+Shift+R hotkey-overlay-title="重载 Noctalia 配置" { spawn "noctalia" "msg" "config-reload"; }
 
     // ── 剪贴板与工具（Hyprland: SUPER+V / CTRL+SHIFT+ALT+V / SUPER+SHIFT+C / ALT+L）──
-    Mod+V hotkey-overlay-title="剪切板面板" { spawn-sh "cliphist list | fuzzel -d | cliphist decode | wl-copy"; }
+    Mod+V hotkey-overlay-title="剪切板面板" { spawn "noctalia" "msg" "panel-toggle" "clipboard"; }
     // 「把最后一项剪切板内容敲出来」：用于不吃 Ctrl+V 的场景（远程桌面、部分 X11/VNC 应用）。
     Mod+Ctrl+Shift+V hotkey-overlay-title="键入剪切板最后一项 (ydotool)" { spawn-sh "sleep 0.3; ydotool type -d 1 \"$(wl-paste --type text --no-newline)\""; }
     Mod+Shift+C hotkey-overlay-title="取色器" { spawn "hyprpicker" "-a"; }

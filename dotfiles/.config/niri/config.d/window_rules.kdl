@@ -49,6 +49,15 @@ window-rule {
 }
 
 
+// Kitty 使用半透明背景，关闭全局规则为它启用的背景模糊。
+window-rule {
+    match app-id="^kitty$"
+    background-effect {
+        blur false
+    }
+}
+
+
 // ── Steam 通知 toast（原有 niri 规则）──
 window-rule {
     match app-id="steam" title="^notificationtoasts_.*_desktop$"
@@ -269,3 +278,9 @@ window-rule {
 //     match app-id=r#"^org\.gnome\.World\.Secrets$"#
 //     block-out-from "screen-capture"   // 录屏与截图都看不到；只挡录屏改用 "screencast"
 // }
+
+// Noctalia 固定壁纸：工作区在共同背景上滑动。
+layer-rule {
+    match namespace="^noctalia-wallpaper"
+    place-within-backdrop true
+}
