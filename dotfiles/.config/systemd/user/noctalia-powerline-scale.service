@@ -1,0 +1,6 @@
+[Unit]
+Description=Match Noctalia Powerline cuts to bar thickness
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 "%h/Documents/项目脚本/工具脚本/noctalia-powerline-scale.py"

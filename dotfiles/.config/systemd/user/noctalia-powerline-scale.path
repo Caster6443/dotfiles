@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch Noctalia bar settings for Powerline sizing
+PartOf=graphical-session.target
+
+[Path]
+PathChanged=%S/noctalia/settings.toml
+
+[Install]
+WantedBy=graphical-session.target

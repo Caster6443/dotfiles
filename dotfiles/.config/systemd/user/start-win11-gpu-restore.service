@@ -1,0 +1,6 @@
+[Unit]
+Description=Restore Noctalia GPU sampling after Win11 releases the GPU
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/start-win11 --restore

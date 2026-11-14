@@ -1,0 +1,10 @@
+[Unit]
+Description=Check pending Noctalia GPU sampling restoration
+
+[Timer]
+OnStartupSec=5s
+OnUnitInactiveSec=5s
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target
