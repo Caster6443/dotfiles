@@ -13,7 +13,7 @@ binds {
     Mod+Shift+S hotkey-overlay-title="区域截图并复制到剪贴板（冻结画面）" { spawn "bash" "-c" "~/.config/niri/scripts/screenshot_region_clip.sh"; }
     Alt+Shift+S hotkey-overlay-title="区域截图并编辑（冻结画面）" { spawn "bash" "-c" "~/.config/niri/scripts/screenshot_region_edit.sh"; }
     Menu hotkey-overlay-title="显示快捷键说明 (映射CapsLock键)" { show-hotkey-overlay; }
-    Mod+E hotkey-overlay-title="打开文件管理器nautilus" { spawn "env" "GSK_RENDERER=opengl" "nautilus" "--new-window"; }
+    Mod+E hotkey-overlay-title="打开文件管理器 Strata" { spawn "gtk-launch" "io.github.lgse.Strata.desktop"; }
     Ctrl+T hotkey-overlay-title="打开kitty终端模拟器" { spawn "kitty"; }
     Shift+WheelScrollDown hotkey-overlay-title="在当前工作区横向切换到下一个聚焦窗口"     { focus-column-right; }
     Shift+WheelScrollUp hotkey-overlay-title="在当前工作区横向切换到上一个聚焦窗口"       { focus-column-left; }
