@@ -36,8 +36,10 @@ if status is-interactive
     abbr la 'ls -a'
     abbr lla 'ls -la'
 
-    # Custom colours
-    cat ~/.local/state/caelestia/sequences.txt 2>/dev/null
+    # Caelestia terminal colours belong to the Hyprland session.
+    if string match -qir '(^|:)hyprland(:|$)' -- "$XDG_CURRENT_DESKTOP"
+        cat ~/.local/state/caelestia/sequences.txt 2>/dev/null
+    end
 
     # For jumping between prompts in foot terminal
     function mark_prompt_start --on-event fish_prompt
