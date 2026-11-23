@@ -1,0 +1,10 @@
+[Unit]
+Description=Fusuma pinch gestures for Umbriel
+PartOf=umbriel-session.target
+After=umbriel.service
+
+[Service]
+Type=simple
+ExecStart=%h/.local/share/gem/ruby/3.4.0/bin/fusuma -c %h/.config/fusuma/config.yml
+Restart=on-failure
+RestartSec=3
