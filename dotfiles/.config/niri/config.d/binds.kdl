@@ -325,7 +325,7 @@ binds {
     Ctrl+Alt+V hotkey-overlay-title="音量控制 (pavucontrol)" { spawn "pavucontrol"; }
 
     // ── 会话与外壳（Hyprland: kbLock / kbClearNotifs / kbCheatsheet / 重启 caelestia）──
-    Mod+L hotkey-overlay-title="锁屏" { spawn-sh "swaylock -f"; }
+    Mod+L hotkey-overlay-title="锁屏" { spawn-sh "/home/caster/.local/bin/cosmos-lock -f"; }
     Ctrl+Alt+C hotkey-overlay-title="清除通知" { spawn "noctalia" "msg" "notification-clear-active"; }
     Mod+Slash hotkey-overlay-title="快捷键说明" { show-hotkey-overlay; }
     Mod+Ctrl+Shift+R hotkey-overlay-title="重载 Noctalia 配置" { spawn "noctalia" "msg" "config-reload"; }

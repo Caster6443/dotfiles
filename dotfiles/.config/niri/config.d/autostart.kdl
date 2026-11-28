@@ -15,7 +15,7 @@ spawn-at-startup "wl-paste" "--type" "image" "--watch" "cliphist" "store"
 spawn-at-startup "dbus-update-activation-environment" "--systemd" "LANG" "LC_MESSAGES" "GSK_RENDERER" "XMODIFIERS" "GTK_IM_MODULE" "QT_IM_MODULE" "QT_QPA_PLATFORMTHEME"
 // niri 桌面外壳
 spawn-at-startup "noctalia"
-spawn-at-startup "swayidle" "-w" "lock" "swaylock -f" "before-sleep" "swaylock -f"
+spawn-at-startup "swayidle" "-w" "lock" "/home/caster/.local/bin/cosmos-lock -f" "before-sleep" "/home/caster/.local/bin/cosmos-lock -f"
 //解决蓝牙/USB耳机连接时，输出设备不自动切换的问题
 spawn-at-startup "pactl" "load-module" "module-switch-on-connect"
 
